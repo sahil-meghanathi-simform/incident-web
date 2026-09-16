@@ -2,28 +2,36 @@ import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
 import { RouteErrorBoundary } from '../components/feedback/RouteErrorBoundary';
 import { ComingSoon } from '../components/feedback/ComingSoon';
+import { Forbidden } from '../components/feedback/Forbidden';
+import { RequireAuth } from './guards/RequireAuth';
+import LoginPage from '../features/auth/pages/LoginPage';
+import RegisterPage from '../features/auth/pages/RegisterPage';
 import { ROUTES } from './routes';
 
 /**
- * Placeholder tree (Module 0). Every branch already carries a RouteErrorBoundary as
- * its errorElement; RootErrorBoundary wraps the whole router in main.tsx. Feature
- * modules replace each ComingSoon element as they land — auth screens and guards in
- * Module 1, incidents in Modules 2-3, and so on per build-plan.md's module table.
+ * Login/register are public, top-level routes (siblings of the AppShell tree). Every
+ * child of AppShell now requires a session via RequireAuth — an anonymous visit to any
+ * of them redirects to /login?next=<pathname+search>. Feature modules replace each
+ * remaining ComingSoon element as they land (Modules 2-10 per build-plan.md).
  */
 export const router = createBrowserRouter([
   {
     path: ROUTES.login,
-    element: <ComingSoon title="Login" />,
+    element: <LoginPage />,
     errorElement: <RouteErrorBoundary />,
   },
   {
     path: ROUTES.register,
-    element: <ComingSoon title="Register" />,
+    element: <RegisterPage />,
     errorElement: <RouteErrorBoundary />,
   },
   {
     path: '/',
-    element: <AppShell />,
+    element: (
+      <RequireAuth>
+        <AppShell />
+      </RequireAuth>
+    ),
     errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <ComingSoon title="Home" /> },
@@ -42,7 +50,7 @@ export const router = createBrowserRouter([
       { path: 'admin/escalation-policy', element: <ComingSoon title="Admin · Escalation Policy" /> },
       { path: 'admin/jobs', element: <ComingSoon title="Admin · Job Diagnostics" /> },
       { path: 'admin/audit', element: <ComingSoon title="Admin · Audit Log" /> },
-      { path: '403', element: <ComingSoon title="Forbidden" /> },
+      { path: '403', element: <Forbidden /> },
       { path: '*', element: <ComingSoon title="Not Found" /> },
     ],
   },

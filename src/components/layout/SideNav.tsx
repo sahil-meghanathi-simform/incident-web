@@ -1,22 +1,24 @@
 import { NavLink } from 'react-router-dom';
 import { cn } from '../../lib/cn';
 import { ROUTES } from '../../app/routes';
+import { usePermissions } from '../../hooks/usePermissions';
 
-const NAV_ITEMS = [
-  { to: ROUTES.incidents, label: 'Incidents' },
-  { to: ROUTES.incidentMine, label: 'My reports' },
-  { to: ROUTES.triageQueue, label: 'Triage queue' },
-  { to: ROUTES.investigations, label: 'Investigations' },
-  { to: ROUTES.closuresPending, label: 'Pending closures' },
-  { to: ROUTES.escalations, label: 'Escalations' },
-  { to: ROUTES.analytics, label: 'Analytics' },
-];
-
-/** Nav items are filtered by role once usePermissions() exists (Module 1). */
 export function SideNav() {
+  const { canTriage, canInvestigate } = usePermissions();
+
+  const navItems = [
+    { to: ROUTES.incidents, label: 'Incidents', show: true },
+    { to: ROUTES.incidentMine, label: 'My reports', show: true },
+    { to: ROUTES.triageQueue, label: 'Triage queue', show: canTriage },
+    { to: ROUTES.investigations, label: 'Investigations', show: canInvestigate },
+    { to: ROUTES.closuresPending, label: 'Pending closures', show: canTriage },
+    { to: ROUTES.escalations, label: 'Escalations', show: true },
+    { to: ROUTES.analytics, label: 'Analytics', show: true },
+  ].filter((item) => item.show);
+
   return (
     <nav className="w-56 shrink-0 space-y-1 border-r border-slate-200 bg-white p-3">
-      {NAV_ITEMS.map((item) => (
+      {navItems.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}
