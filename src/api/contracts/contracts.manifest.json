@@ -1,0 +1,8 @@
+{
+  "contractVersion": "0.1.0",
+  "files": {
+    "enums.ts": "7f498791ea4ce3dfcd72967bbee6bf13f9c3ff7bd00f20f368db9b4eb693c092",
+    "errors.contract.ts": "10598742f2fe34dc871b2048f718228278085a317114bc8af5f37cdcc103ea5f",
+    "pagination.contract.ts": "000659b429e7cb41155a8cabda78a632c284b19c2b9eeebdc4e447347843512d"
+  }
+}

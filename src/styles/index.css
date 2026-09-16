@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/*
+ * Tailwind v4: design tokens live here, not in a tailwind.config.ts (build-plan.md
+ * decision). SeverityBadge, StageBadge, EscalationLevelBadge, the analytics matrix's
+ * heat shading, and every chart all read from this single source — see §17 of
+ * build-plan.md's shared component inventory.
+ *
+ * Light palette defined on bare :root; dark values are redefined under the two guarded
+ * blocks below so both "system" and an explicit dark toggle work correctly.
+ */
+@theme {
+  --color-severity-low: #2563eb;
+  --color-severity-medium: #d97706;
+  --color-severity-high: #ea580c;
+  --color-severity-critical: #dc2626;
+
+  --color-stage-reported: #64748b;
+  --color-stage-triage: #7c3aed;
+  --color-stage-investigation: #2563eb;
+  --color-stage-pending-closure: #d97706;
+  --color-stage-closed: #16a34a;
+
+  --color-escalation-l1: #f59e0b;
+  --color-escalation-l2: #ea580c;
+  --color-escalation-l3: #dc2626;
+
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0f172a;
+    --color-surface: #1e293b;
+    --color-border: #334155;
+    --color-text: #f1f5f9;
+    --color-text-muted: #94a3b8;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-border: #334155;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
