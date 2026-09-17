@@ -8,6 +8,9 @@ import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
 import ReportIncidentPage from '../features/incidents/pages/ReportIncidentPage';
 import SubmissionReceiptPage from '../features/incidents/pages/SubmissionReceiptPage';
+import IncidentListPage from '../features/incidents/pages/IncidentListPage';
+import IncidentDetailPage from '../features/incidents/pages/IncidentDetailPage';
+import MyReportsPage from '../features/incidents/pages/MyReportsPage';
 import { ROUTES } from './routes';
 
 /**
@@ -37,11 +40,11 @@ export const router = createBrowserRouter([
     errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <ComingSoon title="Home" /> },
-      { path: 'incidents', element: <ComingSoon title="Incidents" /> },
+      { path: 'incidents', element: <IncidentListPage /> },
       { path: 'incidents/new', element: <ReportIncidentPage /> },
       { path: 'incidents/new/submitted', element: <SubmissionReceiptPage /> },
-      { path: 'incidents/mine', element: <ComingSoon title="My Reports" /> },
-      { path: 'incidents/:id', element: <ComingSoon title="Incident Detail" /> },
+      { path: 'incidents/mine', element: <MyReportsPage /> },
+      { path: 'incidents/:id', element: <IncidentDetailPage /> },
       { path: 'triage/queue', element: <ComingSoon title="Triage Queue" /> },
       { path: 'investigations', element: <ComingSoon title="Investigations" /> },
       { path: 'closures/pending', element: <ComingSoon title="Pending Closures" /> },
