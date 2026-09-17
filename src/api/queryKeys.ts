@@ -24,6 +24,7 @@ export const queryKeys = {
     notes: (incidentId: string) => ['notes', incidentId] as const,
   },
   closures: {
+    all: ['closures'] as const,
     pending: (filters: unknown) => ['closures', 'pending', filters] as const,
   },
   escalations: {

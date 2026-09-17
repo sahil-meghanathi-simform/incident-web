@@ -11,6 +11,7 @@ import { IncidentDetailHeader } from '../components/IncidentDetailHeader';
 import { IncidentOverviewTab } from '../components/IncidentOverviewTab';
 import { IncidentActionBar } from '../../triage/components/IncidentActionBar';
 import { NotesPanel } from '../../investigation/components/NotesPanel';
+import { ClosureTab } from '../../closure/components/ClosureTab';
 import { useIncident } from '../hooks/useIncident';
 import { useAccessRevoked } from '../hooks/useAccessRevoked';
 import { isApiError } from '../../../api/ApiError';
@@ -28,10 +29,24 @@ const BASE_TABS: readonly TabItem[] = [
  * §10.2: the Notes tab isn't merely disabled without access — it is absent entirely.
  * A force-navigated `?tab=notes` still resolves through NotesPanel's own gate below,
  * which renders NotesRestrictedNotice rather than faking the tab open.
+ *
+ * The Closure tab uses `assignedInvestigator !== undefined` as its visibility signal —
+ * the same population the mapper's `canSeeAssignment` already exposes that field to
+ * (the assignee, a triage manager, or an Admin), which is exactly who can propose,
+ * review or have proposed a closure. It only appears once there is a closure workflow
+ * to show (INVESTIGATION onward) — a REPORTED/TRIAGE incident has neither an
+ * assignee nor anything to close yet.
  */
 function tabsFor(incident: IncidentDetail): readonly TabItem[] {
   const canSeeNotesTab = incident._actions.canReadNotes || incident._actions.canAddNote;
-  return canSeeNotesTab ? [...BASE_TABS, { key: 'notes', label: LABELS.investigation.notesTab }] : BASE_TABS;
+  const canSeeClosureTab =
+    incident.assignedInvestigator !== undefined &&
+    (incident.stage === 'INVESTIGATION' || incident.stage === 'PENDING_CLOSURE' || incident.stage === 'CLOSED');
+
+  const tabs = [...BASE_TABS];
+  if (canSeeNotesTab) tabs.push({ key: 'notes', label: LABELS.investigation.notesTab });
+  if (canSeeClosureTab) tabs.push({ key: 'closure', label: LABELS.closure.closureTab });
+  return tabs;
 }
 
 type IncidentDetailBodyProps = Readonly<{
@@ -70,6 +85,7 @@ function IncidentDetailBody({ incident }: IncidentDetailBodyProps): ReactElement
       {activeTab === 'overview' && <IncidentOverviewTab incident={incident} />}
       {activeTab === 'timeline' && <p className="py-6 text-sm text-slate-500">The timeline lands in a later module.</p>}
       {activeTab === 'notes' && <NotesPanel incident={incident} />}
+      {activeTab === 'closure' && <ClosureTab incident={incident} />}
     </>
   );
 }
