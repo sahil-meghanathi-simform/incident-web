@@ -9,6 +9,7 @@ import { TextLink } from '../../../components/ui/TextLink';
 import { AccessRevokedNotice } from '../../../components/feedback/AccessRevokedNotice';
 import { IncidentDetailHeader } from '../components/IncidentDetailHeader';
 import { IncidentOverviewTab } from '../components/IncidentOverviewTab';
+import { IncidentActionBar } from '../../triage/components/IncidentActionBar';
 import { useIncident } from '../hooks/useIncident';
 import { useAccessRevoked } from '../hooks/useAccessRevoked';
 import { isApiError } from '../../../api/ApiError';
@@ -50,9 +51,20 @@ export function IncidentDetailPage(): ReactElement {
         <ErrorState message={LABELS.incidents.loadDetailError} onRetry={() => query.refetch()} />
       )}
 
-      {query.data && (
+      {/*
+       * query.data deliberately does NOT clear on a failed refetch (TanStack Query
+       * keeps the last successful value around), so a mutation that flips this
+       * incident from visible to 403 for the ACTING user (e.g. a self-inflicted
+       * severity raise, Module 4) would otherwise render the stale header/action
+       * bar/tabs — including a still-open mutation modal — underneath the
+       * AccessRevokedNotice banner. Gating on !accessRevoked here is what actually
+       * makes the "swaps in place" comment above true for a live refetch, not only a
+       * fresh navigation that never had data to begin with.
+       */}
+      {query.data && !accessRevoked && (
         <>
           <IncidentDetailHeader incident={query.data} />
+          <IncidentActionBar incident={query.data} />
           <Tabs tabs={TABS} activeKey={tab} onChange={setTab} />
           {tab === 'overview' && <IncidentOverviewTab incident={query.data} />}
           {tab === 'timeline' && (

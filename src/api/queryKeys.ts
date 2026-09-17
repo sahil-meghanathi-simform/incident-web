@@ -13,7 +13,11 @@ export const queryKeys = {
     summary: ['incidents', 'summary'] as const,
   },
   triage: {
+    all: ['triage'] as const,
     queue: (filters: unknown) => ['triage', 'queue', filters] as const,
+  },
+  users: {
+    assignableInvestigators: (minClearance: number) => ['users', 'assignable-investigators', minClearance] as const,
   },
   investigations: {
     mine: (filters: unknown) => ['investigations', 'mine', filters] as const,

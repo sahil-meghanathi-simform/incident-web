@@ -4,6 +4,7 @@ import { RouteErrorBoundary } from '../components/feedback/RouteErrorBoundary';
 import { ComingSoon } from '../components/feedback/ComingSoon';
 import { Forbidden } from '../components/feedback/Forbidden';
 import { RequireAuth } from './guards/RequireAuth';
+import { RequireRole } from './guards/RequireRole';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { RegisterPage } from '../features/auth/pages/RegisterPage';
 import { ReportIncidentPage } from '../features/incidents/pages/ReportIncidentPage';
@@ -11,6 +12,7 @@ import { SubmissionReceiptPage } from '../features/incidents/pages/SubmissionRec
 import { IncidentListPage } from '../features/incidents/pages/IncidentListPage';
 import { IncidentDetailPage } from '../features/incidents/pages/IncidentDetailPage';
 import { MyReportsPage } from '../features/incidents/pages/MyReportsPage';
+import { TriageQueuePage } from '../features/triage/pages/TriageQueuePage';
 import { ROUTES } from './routes';
 
 /**
@@ -45,7 +47,14 @@ export const router = createBrowserRouter([
       { path: 'incidents/new/submitted', element: <SubmissionReceiptPage /> },
       { path: 'incidents/mine', element: <MyReportsPage /> },
       { path: 'incidents/:id', element: <IncidentDetailPage /> },
-      { path: 'triage/queue', element: <ComingSoon title="Triage Queue" /> },
+      {
+        path: 'triage/queue',
+        element: (
+          <RequireRole roles={['TRIAGE_MANAGER', 'ADMIN']}>
+            <TriageQueuePage />
+          </RequireRole>
+        ),
+      },
       { path: 'investigations', element: <ComingSoon title="Investigations" /> },
       { path: 'closures/pending', element: <ComingSoon title="Pending Closures" /> },
       { path: 'escalations', element: <ComingSoon title="Escalations" /> },

@@ -9,9 +9,9 @@ type IncidentDetailHeaderProps = Readonly<{
   incident: IncidentDetail;
 }>;
 
-/** Reference, badges, and action buttons — the latter driven entirely by `_actions`,
- * a UI hint only; every action endpoint re-checks server-side (§8.1). Actions
- * themselves land in Modules 4-6, so this only renders the badges for now. */
+/** Reference and badges. The action buttons driven by `_actions` render separately,
+ * in IncidentActionBar (Module 4) — a UI hint only; every action endpoint re-checks
+ * server-side (§8.1). */
 export function IncidentDetailHeader({ incident }: IncidentDetailHeaderProps): ReactElement {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
