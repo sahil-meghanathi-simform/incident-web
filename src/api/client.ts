@@ -1,5 +1,6 @@
 import type { z } from 'zod';
 import { env } from '../lib/env';
+import { recordServerDate } from '../lib/serverTime';
 import { ApiError, type ErrorDetail } from './ApiError';
 import { refreshAccessToken } from './refresh';
 
@@ -80,6 +81,8 @@ async function rawRequest<T>(path: string, schema: z.ZodType<T> | null, opts: Re
     body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
     signal: opts.signal,
   });
+
+  recordServerDate(res.headers.get('Date'));
 
   const serverContractVersion = res.headers.get('X-Contract-Version');
   if (serverContractVersion && serverContractVersion !== lastSeenContractVersion) {

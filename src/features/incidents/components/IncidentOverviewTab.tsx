@@ -1,5 +1,7 @@
 import type { ReactElement, ReactNode } from 'react';
 import { formatDateTime } from '../../../lib/datetime';
+import { EscalationBadge } from '../../../components/ui/EscalationBadge';
+import { EscalationHistoryPanel } from '../../escalations/components/EscalationHistoryPanel';
 import type { IncidentDetail } from '../types/incident.type';
 
 function Field({ label, value }: { label: string; value: ReactNode }): ReactElement {
@@ -54,6 +56,21 @@ export function IncidentOverviewTab({ incident }: IncidentOverviewTabProps): Rea
               incident.acknowledgement
                 ? `${formatDateTime(incident.acknowledgement.acknowledgedAt)} by ${incident.acknowledgement.acknowledgedBy?.displayName ?? 'someone since removed'}`
                 : 'Not yet acknowledged'
+            }
+          />
+        )}
+        {incident.escalation !== undefined && (
+          <Field
+            label="Escalation"
+            value={
+              incident.escalation.currentEscalationLevel > 0 ? (
+                <div className="space-y-2">
+                  <EscalationBadge level={incident.escalation.currentEscalationLevel} />
+                  <EscalationHistoryPanel incidentId={incident.id} />
+                </div>
+              ) : (
+                'Not escalated'
+              )
             }
           />
         )}

@@ -15,6 +15,8 @@ import { MyReportsPage } from '../features/incidents/pages/MyReportsPage';
 import { TriageQueuePage } from '../features/triage/pages/TriageQueuePage';
 import { MyInvestigationsPage } from '../features/investigation/pages/MyInvestigationsPage';
 import { PendingClosuresPage } from '../features/closure/pages/PendingClosuresPage';
+import { EscalationFeedPage } from '../features/escalations/pages/EscalationFeedPage';
+import { NotificationsPage } from '../features/notifications/pages/NotificationsPage';
 import { ROUTES } from './routes';
 
 /**
@@ -73,8 +75,8 @@ export const router = createBrowserRouter([
           </RequireRole>
         ),
       },
-      { path: 'escalations', element: <ComingSoon title="Escalations" /> },
-      { path: 'notifications', element: <ComingSoon title="Notifications" /> },
+      { path: 'escalations', element: <EscalationFeedPage /> },
+      { path: 'notifications', element: <NotificationsPage /> },
       { path: 'analytics', element: <ComingSoon title="Analytics" /> },
       { path: 'admin/users', element: <ComingSoon title="Admin · Users" /> },
       { path: 'admin/escalation-policy', element: <ComingSoon title="Admin · Escalation Policy" /> },

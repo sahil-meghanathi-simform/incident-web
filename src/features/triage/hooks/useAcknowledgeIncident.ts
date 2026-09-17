@@ -40,6 +40,9 @@ export function useAcknowledgeIncident(
       queryClient.invalidateQueries({ queryKey: queryKeys.incidents.all });
       queryClient.invalidateQueries({ queryKey: detailKey });
       queryClient.invalidateQueries({ queryKey: queryKeys.triage.all });
+      // Acknowledging removes the incident from the escalation feed's population
+      // (escalation.repository.ts::activeEscalationWhere requires acknowledgedAt: null).
+      queryClient.invalidateQueries({ queryKey: queryKeys.escalations.feed });
     },
   });
 }
