@@ -6,6 +6,8 @@ import { Forbidden } from '../components/feedback/Forbidden';
 import { RequireAuth } from './guards/RequireAuth';
 import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
+import ReportIncidentPage from '../features/incidents/pages/ReportIncidentPage';
+import SubmissionReceiptPage from '../features/incidents/pages/SubmissionReceiptPage';
 import { ROUTES } from './routes';
 
 /**
@@ -36,8 +38,8 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <ComingSoon title="Home" /> },
       { path: 'incidents', element: <ComingSoon title="Incidents" /> },
-      { path: 'incidents/new', element: <ComingSoon title="Report Incident" /> },
-      { path: 'incidents/new/submitted', element: <ComingSoon title="Submitted" /> },
+      { path: 'incidents/new', element: <ReportIncidentPage /> },
+      { path: 'incidents/new/submitted', element: <SubmissionReceiptPage /> },
       { path: 'incidents/mine', element: <ComingSoon title="My Reports" /> },
       { path: 'incidents/:id', element: <ComingSoon title="Incident Detail" /> },
       { path: 'triage/queue', element: <ComingSoon title="Triage Queue" /> },

@@ -6,6 +6,7 @@ export const queryKeys = {
   session: ['session'] as const,
   incidents: {
     all: ['incidents'] as const,
+    types: ['incidents', 'types'] as const,
     list: (filters: unknown) => ['incidents', 'list', filters] as const,
     detail: (id: string) => ['incident', id] as const,
     mine: (page: number) => ['incidents', 'mine', page] as const,

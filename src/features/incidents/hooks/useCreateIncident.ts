@@ -1,0 +1,14 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createIncident } from '../../../api/endpoints/incidents.api';
+import { queryKeys } from '../../../api/queryKeys';
+import type { CreateIncidentInput } from '../types/incident.type';
+
+export function useCreateIncident() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CreateIncidentInput) => createIncident(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.incidents.all });
+    },
+  });
+}

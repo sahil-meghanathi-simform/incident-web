@@ -7,6 +7,7 @@ export function SideNav() {
   const { canTriage, canInvestigate } = usePermissions();
 
   const navItems = [
+    { to: ROUTES.incidentNew, label: 'Report incident', show: true },
     { to: ROUTES.incidents, label: 'Incidents', show: true },
     { to: ROUTES.incidentMine, label: 'My reports', show: true },
     { to: ROUTES.triageQueue, label: 'Triage queue', show: canTriage },
