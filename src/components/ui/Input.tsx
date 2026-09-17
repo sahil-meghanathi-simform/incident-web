@@ -1,14 +1,15 @@
-import { type InputHTMLAttributes, forwardRef } from 'react';
+import { type InputHTMLAttributes, type ReactElement, forwardRef } from 'react';
 import { cn } from '../../lib/cn';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  hasError?: boolean;
-}
+type InputProps = InputHTMLAttributes<HTMLInputElement> &
+  Readonly<{
+    hasError?: boolean;
+  }>;
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   { className, hasError, ...rest },
   ref,
-) {
+): ReactElement {
   return (
     <input
       ref={ref}

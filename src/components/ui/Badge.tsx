@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { cn } from '../../lib/cn';
 
-export function Badge({ className, children }: { className?: string; children: ReactNode }) {
+export function Badge({ className, children }: { className?: string; children: ReactNode }): ReactElement {
   return (
     <span
       className={cn(

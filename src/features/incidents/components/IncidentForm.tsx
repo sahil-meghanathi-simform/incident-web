@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Field } from '../../../components/ui/Field';
@@ -10,16 +10,23 @@ import { SeveritySelect } from './SeveritySelect';
 import { createIncidentSchema, type CreateIncidentRequest } from '../schemas/incident.schema';
 import { applyApiErrorToForm } from '../../../lib/formErrors';
 import { isApiError } from '../../../api/ApiError';
+import { getErrorMessage } from '../../../lib/getErrorMessage';
+import { LABELS } from '../../../lib/labels';
 import type { IncidentTypeOption, SeverityOption } from '../types/incident.type';
 
-interface IncidentFormProps {
-  typeOptions: IncidentTypeOption[];
-  severityOptions: SeverityOption[];
+type IncidentFormProps = Readonly<{
+  typeOptions: readonly IncidentTypeOption[];
+  severityOptions: readonly SeverityOption[];
   userClearance: number;
   onSubmit: (values: CreateIncidentRequest) => Promise<void>;
-}
+}>;
 
-export function IncidentForm({ typeOptions, severityOptions, userClearance, onSubmit }: IncidentFormProps) {
+export function IncidentForm({
+  typeOptions,
+  severityOptions,
+  userClearance,
+  onSubmit,
+}: IncidentFormProps): ReactElement {
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
@@ -43,10 +50,8 @@ export function IncidentForm({ typeOptions, severityOptions, userClearance, onSu
     } catch (err) {
       if (isApiError(err) && err.status === 422) {
         applyApiErrorToForm(err, setError);
-      } else if (isApiError(err)) {
-        setFormError(err.message);
       } else {
-        setFormError('Something went wrong. Please try again.');
+        setFormError(getErrorMessage(err));
       }
     }
   });
@@ -91,10 +96,14 @@ export function IncidentForm({ typeOptions, severityOptions, userClearance, onSu
         />
       </Field>
 
-      {formError && <p className="text-sm text-red-600">{formError}</p>}
+      {formError && (
+        <p className="text-sm text-red-600" role="alert">
+          {formError}
+        </p>
+      )}
 
       <Button type="submit" isLoading={isSubmitting} disabled={isSubmitting}>
-        Submit report
+        {LABELS.incidents.submitReport}
       </Button>
     </form>
   );

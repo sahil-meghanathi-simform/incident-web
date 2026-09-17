@@ -1,0 +1,87 @@
+/**
+ * All user-visible copy lives here (labels.md) — components and hooks reference
+ * `LABELS.*`, never a literal string, so a copy edit can't silently break a branch
+ * that happens to compare against the old text.
+ */
+export const LABELS = {
+  errors: {
+    generic: 'Something went wrong. Please try again.',
+  },
+  auth: {
+    logIn: 'Log in',
+    logOut: 'Log out',
+    createAccount: 'Create account',
+    register: 'Register',
+    noAccountPrompt: "Don't have an account?",
+    hasAccountPrompt: 'Already have an account?',
+    passwordShow: 'Show',
+    passwordHide: 'Hide',
+    passwordMinLengthHint: 'At least 8 characters.',
+    emailAlreadyExists: 'An account with this email already exists.',
+    tooManyAttempts: (retryAfterSeconds: unknown) =>
+      `Too many attempts. Try again in ${retryAfterSeconds ?? 'a few'} seconds.`,
+  },
+  incidents: {
+    submitReport: 'Submit report',
+    viewIncident: 'View incident',
+    reportAnother: 'Report another incident',
+    incidentReported: 'Incident reported',
+    notFoundTitle: 'Incident not found',
+    notFoundBody: 'It may have been removed, or the link is incorrect.',
+    backToList: 'Back to incident list',
+    loadDetailError: 'Could not load this incident.',
+    loadFormError: 'Could not load the report form.',
+    reportPageTitle: 'Report Incident',
+    reportTitle: 'Report an incident',
+    reportDescription: 'Fill in what you know — invalid input is rejected before it reaches anyone.',
+    listTitle: 'Incidents',
+    listDescription: 'Showing incidents at or below your clearance level.',
+    loadListError: 'Could not load incidents.',
+    myReportsTitle: 'My reports',
+    myReportsDescription:
+      "Incidents you reported that you can still see — a report filed above your clearance won't appear here (Q9).",
+    loadMyReportsError: 'Could not load your reports.',
+    noReportsYetTitle: 'No reports yet',
+    noReportsYetBody: 'Incidents you file will show up here, as long as you can still see them.',
+    clearanceHidesEverythingTitle: 'Your clearance hides everything here',
+    clearanceHidesEverythingBody:
+      'Every incident matching these filters is above your clearance level. An investigator or manager with higher clearance can still act on them.',
+    noMatchTitle: 'No incidents match these filters',
+    noMatchBody: 'Try widening the date range or clearing a filter.',
+    clearAllFilters: 'Clear all filters',
+    noIncidentsYetTitle: 'No incidents yet',
+    noIncidentsYetBody: "Reports will show up here once they're filed.",
+    aboveClearanceWarning: 'Above your clearance — you may not be able to view this report afterwards.',
+    severityHelp: {
+      LOW: 'Routine — visible to any staff member.',
+      MEDIUM: 'Elevated — visible from clearance 2 up.',
+      HIGH: 'Serious — starts the escalation clock; visible from clearance 3 up.',
+      CRITICAL: 'Most severe — starts the escalation clock; visible to clearance 4 only.',
+    },
+    columns: {
+      reference: 'Reference',
+      title: 'Title',
+      type: 'Type',
+      severity: 'Severity',
+      stage: 'Stage',
+      assignee: 'Assignee',
+      age: 'Age',
+    },
+  },
+  nav: {
+    appTitle: 'Incident Reporting & Escalation',
+    backToHome: 'Back to home',
+  },
+  feedback: {
+    forbiddenTitle: "You don't have access to this page",
+    forbiddenBody: "Your role doesn't permit this action. If you think this is a mistake, contact an administrator.",
+    accessRevokedTitle: 'You no longer have access to this incident',
+    accessRevokedBody:
+      'Its severity was raised above your clearance level. This is expected — clearance is re-checked on every request.',
+    comingSoonTitle: 'Not built yet',
+    comingSoonBody: 'This screen lands with its feature module.',
+    unexpectedErrorTitle: 'Something went wrong',
+    unexpectedErrorBody: 'The application hit an unexpected error. Reloading the page usually resolves it.',
+    reload: 'Reload',
+  },
+} as const;

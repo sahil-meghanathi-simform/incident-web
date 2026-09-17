@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useState, type ReactElement } from 'react';
+import { useParams } from 'react-router-dom';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { SkeletonCard } from '../../../components/ui/SkeletonCard';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Tabs } from '../../../components/ui/Tabs';
+import { TextLink } from '../../../components/ui/TextLink';
 import { AccessRevokedNotice } from '../../../components/feedback/AccessRevokedNotice';
 import { IncidentDetailHeader } from '../components/IncidentDetailHeader';
 import { IncidentOverviewTab } from '../components/IncidentOverviewTab';
@@ -13,6 +14,7 @@ import { useAccessRevoked } from '../hooks/useAccessRevoked';
 import { isApiError } from '../../../api/ApiError';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { ROUTES } from '../../../app/routes';
+import { LABELS } from '../../../lib/labels';
 
 const TABS = [
   { key: 'overview', label: 'Overview' },
@@ -20,7 +22,7 @@ const TABS = [
   { key: 'notes', label: 'Notes' },
 ];
 
-export default function IncidentDetailPage() {
+export function IncidentDetailPage(): ReactElement {
   const { id = '' } = useParams<{ id: string }>();
   useDocumentTitle('Incident');
   const [tab, setTab] = useState('overview');
@@ -38,18 +40,14 @@ export default function IncidentDetailPage() {
 
       {notFound && (
         <EmptyState
-          title="Incident not found"
-          body="It may have been removed, or the link is incorrect."
-          action={
-            <Link to={ROUTES.incidents} className="text-sm font-medium text-blue-600 hover:underline">
-              Back to incident list
-            </Link>
-          }
+          title={LABELS.incidents.notFoundTitle}
+          body={LABELS.incidents.notFoundBody}
+          action={<TextLink to={ROUTES.incidents}>{LABELS.incidents.backToList}</TextLink>}
         />
       )}
 
       {query.isError && !accessRevoked && !notFound && (
-        <ErrorState message="Could not load this incident." onRetry={() => query.refetch()} />
+        <ErrorState message={LABELS.incidents.loadDetailError} onRetry={() => query.refetch()} />
       )}
 
       {query.data && (

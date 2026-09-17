@@ -1,13 +1,13 @@
-export interface OffsetEnvelope<T> {
-  items: T[];
+export type OffsetEnvelope<T> = Readonly<{
+  items: readonly T[];
   page: number;
   pageSize: number;
   totalItems: number;
   totalPages: number;
-}
+}>;
 
-export interface CursorEnvelope<T> {
-  items: T[];
+export type CursorEnvelope<T> = Readonly<{
+  items: readonly T[];
   nextCursor: string | null;
   hasMore: boolean;
-}
+}>;

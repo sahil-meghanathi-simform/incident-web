@@ -1,17 +1,18 @@
+import type { ReactElement } from 'react';
 import { cn } from '../../lib/cn';
 
-export interface TabItem {
+export type TabItem = Readonly<{
   key: string;
   label: string;
-}
+}>;
 
-interface TabsProps {
-  tabs: TabItem[];
+type TabsProps = Readonly<{
+  tabs: readonly TabItem[];
   activeKey: string;
   onChange: (key: string) => void;
-}
+}>;
 
-export function Tabs({ tabs, activeKey, onChange }: TabsProps) {
+export function Tabs({ tabs, activeKey, onChange }: TabsProps): ReactElement {
   return (
     <div role="tablist" className="flex gap-1 border-b border-slate-200">
       {tabs.map((tab) => (

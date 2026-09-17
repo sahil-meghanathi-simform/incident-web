@@ -4,13 +4,13 @@ import { RouteErrorBoundary } from '../components/feedback/RouteErrorBoundary';
 import { ComingSoon } from '../components/feedback/ComingSoon';
 import { Forbidden } from '../components/feedback/Forbidden';
 import { RequireAuth } from './guards/RequireAuth';
-import LoginPage from '../features/auth/pages/LoginPage';
-import RegisterPage from '../features/auth/pages/RegisterPage';
-import ReportIncidentPage from '../features/incidents/pages/ReportIncidentPage';
-import SubmissionReceiptPage from '../features/incidents/pages/SubmissionReceiptPage';
-import IncidentListPage from '../features/incidents/pages/IncidentListPage';
-import IncidentDetailPage from '../features/incidents/pages/IncidentDetailPage';
-import MyReportsPage from '../features/incidents/pages/MyReportsPage';
+import { LoginPage } from '../features/auth/pages/LoginPage';
+import { RegisterPage } from '../features/auth/pages/RegisterPage';
+import { ReportIncidentPage } from '../features/incidents/pages/ReportIncidentPage';
+import { SubmissionReceiptPage } from '../features/incidents/pages/SubmissionReceiptPage';
+import { IncidentListPage } from '../features/incidents/pages/IncidentListPage';
+import { IncidentDetailPage } from '../features/incidents/pages/IncidentDetailPage';
+import { MyReportsPage } from '../features/incidents/pages/MyReportsPage';
 import { ROUTES } from './routes';
 
 /**

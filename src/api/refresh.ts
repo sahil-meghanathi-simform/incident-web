@@ -1,4 +1,5 @@
 import { env } from '../lib/env';
+import { RefreshResponseSchema } from './contracts/auth.contract';
 
 let refreshPromise: Promise<string | null> | null = null;
 
@@ -24,8 +25,8 @@ async function doRefresh(): Promise<string | null> {
       credentials: 'include', // httpOnly refresh cookie — invisible to JS by design (Q8)
     });
     if (!res.ok) return null;
-    const body = (await res.json()) as { accessToken: string };
-    return body.accessToken;
+    const body: unknown = await res.json();
+    return RefreshResponseSchema.parse(body).accessToken;
   } catch {
     return null;
   }

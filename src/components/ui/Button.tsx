@@ -1,12 +1,13 @@
-import { type ButtonHTMLAttributes, forwardRef } from 'react';
+import { type ButtonHTMLAttributes, type ReactElement, forwardRef } from 'react';
 import { cn } from '../../lib/cn';
 
 type Variant = 'primary' | 'secondary' | 'danger' | 'ghost';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: Variant;
-  isLoading?: boolean;
-}
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
+  Readonly<{
+    variant?: Variant;
+    isLoading?: boolean;
+  }>;
 
 const VARIANT_CLASS: Record<Variant, string> = {
   primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300',
@@ -18,7 +19,7 @@ const VARIANT_CLASS: Record<Variant, string> = {
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { variant = 'primary', isLoading, className, children, disabled, ...rest },
   ref,
-) {
+): ReactElement {
   return (
     <button
       ref={ref}

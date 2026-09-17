@@ -1,34 +1,40 @@
+import type { ReactElement } from 'react';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
+import { LABELS } from '../../../lib/labels';
 
-interface IncidentListEmptyProps {
+type IncidentListEmptyProps = Readonly<{
   hasAnyFilter: boolean;
   clearanceLimited: boolean;
   onClearFilters: () => void;
-}
+}>;
 
 /** Distinguishes three real reasons an incident table can be empty (§8.2). */
-export function IncidentListEmpty({ hasAnyFilter, clearanceLimited, onClearFilters }: IncidentListEmptyProps) {
+export function IncidentListEmpty({
+  hasAnyFilter,
+  clearanceLimited,
+  onClearFilters,
+}: IncidentListEmptyProps): ReactElement {
   if (clearanceLimited) {
     return (
       <EmptyState
-        title="Your clearance hides everything here"
-        body="Every incident matching these filters is above your clearance level. An investigator or manager with higher clearance can still act on them."
+        title={LABELS.incidents.clearanceHidesEverythingTitle}
+        body={LABELS.incidents.clearanceHidesEverythingBody}
       />
     );
   }
   if (hasAnyFilter) {
     return (
       <EmptyState
-        title="No incidents match these filters"
-        body="Try widening the date range or clearing a filter."
+        title={LABELS.incidents.noMatchTitle}
+        body={LABELS.incidents.noMatchBody}
         action={
           <Button variant="secondary" onClick={onClearFilters}>
-            Clear all filters
+            {LABELS.incidents.clearAllFilters}
           </Button>
         }
       />
     );
   }
-  return <EmptyState title="No incidents yet" body="Reports will show up here once they're filed." />;
+  return <EmptyState title={LABELS.incidents.noIncidentsYetTitle} body={LABELS.incidents.noIncidentsYetBody} />;
 }

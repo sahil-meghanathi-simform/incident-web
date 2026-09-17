@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type ReactElement, type ReactNode } from 'react';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import { Select } from '../../../components/ui/Select';
 import { Input } from '../../../components/ui/Input';
@@ -10,13 +10,11 @@ import { SEVERITY_ORDER, SEVERITY_LABEL, SEVERITY_RANK } from '../../../lib/seve
 import { STAGE_ORDER, STAGE_LABEL } from '../../../lib/stage';
 import { IncidentTypeValues } from '../../../api/contracts/enums';
 import type { IncidentFilters as IncidentFiltersState } from '../schemas/incidentFilters.schema';
-import type { Severity } from '../../../lib/severity';
-import type { Stage } from '../../../lib/stage';
 
-interface IncidentFiltersProps {
+type IncidentFiltersProps = Readonly<{
   filters: IncidentFiltersState;
   onChange: (patch: Partial<IncidentFiltersState>) => void;
-}
+}>;
 
 function toggleInArray<T extends string>(current: T[] | undefined, value: T): T[] | undefined {
   const set = new Set(current ?? []);
@@ -25,7 +23,44 @@ function toggleInArray<T extends string>(current: T[] | undefined, value: T): T[
   return set.size ? Array.from(set) : undefined;
 }
 
-export function IncidentFilters({ filters, onChange }: IncidentFiltersProps) {
+function isIncidentType(value: string): value is (typeof IncidentTypeValues)[number] {
+  return (IncidentTypeValues as readonly string[]).includes(value);
+}
+
+/** Shared label styling for the two filter-group headers below, one per occurrence
+ * eliminates the 4x-duplicated class string (tailwind.md). Renders as a real `<label>`
+ * when paired with a form control, or a `<span>` for a checkbox-group heading. */
+function FilterFieldLabel({ children, htmlFor }: { children: ReactNode; htmlFor?: string }): ReactElement {
+  const className = 'block text-xs font-medium text-slate-500';
+  return htmlFor ? (
+    <label htmlFor={htmlFor} className={className}>
+      {children}
+    </label>
+  ) : (
+    <span className={className}>{children}</span>
+  );
+}
+
+/** Shared checkbox + label styling, eliminates the 6x-duplicated class string
+ * (tailwind.md) — every filter checkbox in this form is structurally identical. */
+function FilterCheckboxLabel({
+  checked,
+  onChange,
+  children,
+}: {
+  checked: boolean;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  children: ReactNode;
+}): ReactElement {
+  return (
+    <label className="flex items-center gap-1.5 text-sm text-slate-700">
+      <Checkbox checked={checked} onChange={onChange} />
+      {children}
+    </label>
+  );
+}
+
+export function IncidentFilters({ filters, onChange }: IncidentFiltersProps): ReactElement {
   const { user } = useAuth();
   const [qDraft, setQDraft] = useState(filters.q ?? '');
   const debouncedQ = useDebouncedValue(qDraft, 300);
@@ -65,16 +100,16 @@ export function IncidentFilters({ filters, onChange }: IncidentFiltersProps) {
     <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
       <div className="flex flex-wrap items-end gap-4">
         <div>
-          <span className="block text-xs font-medium text-slate-500">Severity</span>
+          <FilterFieldLabel>Severity</FilterFieldLabel>
           <div className="mt-1 flex flex-wrap gap-3">
             {availableSeverities.map((s) => (
-              <label key={s} className="flex items-center gap-1.5 text-sm text-slate-700">
-                <Checkbox
-                  checked={filters.severity?.includes(s) ?? false}
-                  onChange={() => onChange({ severity: toggleInArray(filters.severity as Severity[], s) })}
-                />
+              <FilterCheckboxLabel
+                key={s}
+                checked={filters.severity?.includes(s) ?? false}
+                onChange={() => onChange({ severity: toggleInArray(filters.severity, s) })}
+              >
                 {SEVERITY_LABEL[s]}
-              </label>
+              </FilterCheckboxLabel>
             ))}
           </div>
           {hiddenCount > 0 && (
@@ -85,26 +120,30 @@ export function IncidentFilters({ filters, onChange }: IncidentFiltersProps) {
         </div>
 
         <div>
-          <span className="block text-xs font-medium text-slate-500">Stage</span>
+          <FilterFieldLabel>Stage</FilterFieldLabel>
           <div className="mt-1 flex flex-wrap gap-3">
             {STAGE_ORDER.map((s) => (
-              <label key={s} className="flex items-center gap-1.5 text-sm text-slate-700">
-                <Checkbox
-                  checked={filters.stage?.includes(s) ?? false}
-                  onChange={() => onChange({ stage: toggleInArray(filters.stage as Stage[], s) })}
-                />
+              <FilterCheckboxLabel
+                key={s}
+                checked={filters.stage?.includes(s) ?? false}
+                onChange={() => onChange({ stage: toggleInArray(filters.stage, s) })}
+              >
                 {STAGE_LABEL[s]}
-              </label>
+              </FilterCheckboxLabel>
             ))}
           </div>
         </div>
 
         <div>
-          <span className="block text-xs font-medium text-slate-500">Type</span>
+          <FilterFieldLabel htmlFor="incident-filter-type">Type</FilterFieldLabel>
           <Select
+            id="incident-filter-type"
             className="mt-1"
             value={filters.type?.[0] ?? ''}
-            onChange={(e) => onChange({ type: e.target.value ? [e.target.value as (typeof IncidentTypeValues)[number]] : undefined })}
+            onChange={(e) => {
+              const { value } = e.target;
+              onChange({ type: value && isIncidentType(value) ? [value] : undefined });
+            }}
           >
             <option value="">Any type</option>
             {IncidentTypeValues.map((t) => (
@@ -115,9 +154,10 @@ export function IncidentFilters({ filters, onChange }: IncidentFiltersProps) {
           </Select>
         </div>
 
-        <div className="min-w-[16rem] flex-1">
-          <span className="block text-xs font-medium text-slate-500">Search</span>
+        <div className="min-w-64 flex-1">
+          <FilterFieldLabel htmlFor="incident-filter-search">Search</FilterFieldLabel>
           <Input
+            id="incident-filter-search"
             className="mt-1"
             placeholder="Title or reference…"
             value={qDraft}
@@ -133,25 +173,30 @@ export function IncidentFilters({ filters, onChange }: IncidentFiltersProps) {
             to={filters.to ?? ''}
             onChange={({ from, to }) => onChange({ from: from || undefined, to: to || undefined })}
           />
-          <label className="flex items-center gap-1.5 text-sm text-slate-700">
-            <Checkbox checked={filters.assignedToMe ?? false} onChange={(e) => onChange({ assignedToMe: e.target.checked || undefined })} />
+          <FilterCheckboxLabel
+            checked={filters.assignedToMe ?? false}
+            onChange={(e) => onChange({ assignedToMe: e.target.checked || undefined })}
+          >
             Assigned to me
-          </label>
-          <label className="flex items-center gap-1.5 text-sm text-slate-700">
-            <Checkbox checked={filters.reportedByMe ?? false} onChange={(e) => onChange({ reportedByMe: e.target.checked || undefined })} />
+          </FilterCheckboxLabel>
+          <FilterCheckboxLabel
+            checked={filters.reportedByMe ?? false}
+            onChange={(e) => onChange({ reportedByMe: e.target.checked || undefined })}
+          >
             Reported by me
-          </label>
-          <label className="flex items-center gap-1.5 text-sm text-slate-700">
-            <Checkbox
-              checked={filters.unacknowledged ?? false}
-              onChange={(e) => onChange({ unacknowledged: e.target.checked || undefined })}
-            />
+          </FilterCheckboxLabel>
+          <FilterCheckboxLabel
+            checked={filters.unacknowledged ?? false}
+            onChange={(e) => onChange({ unacknowledged: e.target.checked || undefined })}
+          >
             Unacknowledged
-          </label>
-          <label className="flex items-center gap-1.5 text-sm text-slate-700">
-            <Checkbox checked={filters.escalatedOnly ?? false} onChange={(e) => onChange({ escalatedOnly: e.target.checked || undefined })} />
+          </FilterCheckboxLabel>
+          <FilterCheckboxLabel
+            checked={filters.escalatedOnly ?? false}
+            onChange={(e) => onChange({ escalatedOnly: e.target.checked || undefined })}
+          >
             Escalated only
-          </label>
+          </FilterCheckboxLabel>
         </div>
 
         {hasAnyFilter && (

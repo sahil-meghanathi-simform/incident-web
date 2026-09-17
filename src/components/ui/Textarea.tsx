@@ -1,14 +1,15 @@
-import { type TextareaHTMLAttributes, forwardRef } from 'react';
+import { type TextareaHTMLAttributes, type ReactElement, forwardRef } from 'react';
 import { cn } from '../../lib/cn';
 
-interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  hasError?: boolean;
-}
+type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> &
+  Readonly<{
+    hasError?: boolean;
+  }>;
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
   { className, hasError, ...rest },
   ref,
-) {
+): ReactElement {
   return (
     <textarea
       ref={ref}

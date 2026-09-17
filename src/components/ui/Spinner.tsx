@@ -1,6 +1,7 @@
+import type { ReactElement } from 'react';
 import { cn } from '../../lib/cn';
 
-export function Spinner({ className }: { className?: string }) {
+export function Spinner({ className }: { className?: string }): ReactElement {
   return (
     <svg className={cn('animate-spin text-slate-400', className)} viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

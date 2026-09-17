@@ -1,6 +1,6 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactElement, type ReactNode, useState } from 'react';
 
-export function Tooltip({ label, children }: { label: string; children: ReactNode }) {
+export function Tooltip({ label, children }: { label: string; children: ReactNode }): ReactElement {
   const [visible, setVisible] = useState(false);
   return (
     <span

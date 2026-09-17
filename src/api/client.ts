@@ -1,3 +1,4 @@
+import type { z } from 'zod';
 import { env } from '../lib/env';
 import { ApiError, type ErrorDetail } from './ApiError';
 import { refreshAccessToken } from './refresh';
@@ -31,13 +32,13 @@ export function registerContractMismatchHandler(handler: (serverVersion: string,
   onContractMismatch = handler;
 }
 
-interface RequestOptions {
+type RequestOptions = Readonly<{
   method?: string;
   body?: unknown;
   query?: Record<string, string | number | boolean | undefined>;
   ifMatchVersion?: number;
   signal?: AbortSignal;
-}
+}>;
 
 function buildUrl(path: string, query?: RequestOptions['query']): string {
   const url = new URL(`${env.apiBaseUrl}${path}`, window.location.origin);
@@ -66,7 +67,7 @@ async function parseErrorBody(res: Response): Promise<ApiError> {
   });
 }
 
-async function rawRequest<T>(path: string, opts: RequestOptions): Promise<T> {
+async function rawRequest<T>(path: string, schema: z.ZodType<T> | null, opts: RequestOptions): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (opts.body !== undefined) headers['Content-Type'] = 'application/json';
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
@@ -94,7 +95,11 @@ async function rawRequest<T>(path: string, opts: RequestOptions): Promise<T> {
     throw await parseErrorBody(res);
   }
 
-  return (await res.json()) as T;
+  const body: unknown = await res.json();
+  // A server contract is an assumption until it's validated (queries.md) — every
+  // endpoint passes its response schema so a backend drift fails loudly here instead
+  // of silently mistyping data for every caller downstream.
+  return schema ? schema.parse(body) : (body as T);
 }
 
 /**
@@ -104,15 +109,20 @@ async function rawRequest<T>(path: string, opts: RequestOptions): Promise<T> {
  * /login?next=...). Never retries 401 UNAUTHENTICATED (no token at all) or any other
  * 401 variant, and never retries a request that has already been replayed once.
  */
-export async function apiRequest<T>(path: string, opts: RequestOptions = {}, _isRetry = false): Promise<T> {
+export async function apiRequest<T>(
+  path: string,
+  schema: z.ZodType<T> | null,
+  opts: RequestOptions = {},
+  _isRetry = false,
+): Promise<T> {
   try {
-    return await rawRequest<T>(path, opts);
+    return await rawRequest<T>(path, schema, opts);
   } catch (err) {
     if (err instanceof ApiError && err.code === 'TOKEN_EXPIRED' && !_isRetry) {
       const newToken = await refreshAccessToken();
       if (newToken) {
         setAccessToken(newToken);
-        return apiRequest<T>(path, opts, true);
+        return apiRequest<T>(path, schema, opts, true);
       }
       setAccessToken(null);
       onAuthLost?.();
@@ -122,12 +132,16 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}, _is
 }
 
 export const api = {
-  get: <T>(path: string, query?: RequestOptions['query'], signal?: AbortSignal) =>
-    apiRequest<T>(path, { method: 'GET', query, signal }),
-  post: <T>(path: string, body?: unknown, opts: Pick<RequestOptions, 'ifMatchVersion'> = {}) =>
-    apiRequest<T>(path, { method: 'POST', body, ...opts }),
-  patch: <T>(path: string, body?: unknown, opts: Pick<RequestOptions, 'ifMatchVersion'> = {}) =>
-    apiRequest<T>(path, { method: 'PATCH', body, ...opts }),
-  delete: <T>(path: string, opts: Pick<RequestOptions, 'ifMatchVersion'> = {}) =>
-    apiRequest<T>(path, { method: 'DELETE', ...opts }),
+  get: <T>(path: string, schema: z.ZodType<T> | null, query?: RequestOptions['query'], signal?: AbortSignal) =>
+    apiRequest<T>(path, schema, { method: 'GET', query, signal }),
+  post: <T>(path: string, schema: z.ZodType<T> | null, body?: unknown, opts: Pick<RequestOptions, 'ifMatchVersion'> = {}) =>
+    apiRequest<T>(path, schema, { method: 'POST', body, ...opts }),
+  patch: <T>(
+    path: string,
+    schema: z.ZodType<T> | null,
+    body?: unknown,
+    opts: Pick<RequestOptions, 'ifMatchVersion'> = {},
+  ) => apiRequest<T>(path, schema, { method: 'PATCH', body, ...opts }),
+  delete: <T>(path: string, schema: z.ZodType<T> | null, opts: Pick<RequestOptions, 'ifMatchVersion'> = {}) =>
+    apiRequest<T>(path, schema, { method: 'DELETE', ...opts }),
 };

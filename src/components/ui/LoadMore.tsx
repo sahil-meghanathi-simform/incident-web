@@ -1,14 +1,15 @@
+import type { ReactElement } from 'react';
 import { Button } from './Button';
 import { Spinner } from './Spinner';
 
-interface LoadMoreProps {
+type LoadMoreProps = Readonly<{
   hasMore: boolean;
   isLoading: boolean;
   onClick: () => void;
-}
+}>;
 
 /** Cursor "load more" control (Q27). */
-export function LoadMore({ hasMore, isLoading, onClick }: LoadMoreProps) {
+export function LoadMore({ hasMore, isLoading, onClick }: LoadMoreProps): ReactElement | null {
   if (!hasMore) return null;
   return (
     <div className="flex justify-center py-3">

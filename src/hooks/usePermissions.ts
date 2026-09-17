@@ -1,12 +1,19 @@
 import { useAuth } from './useAuth';
 import { SEVERITY_RANK, type Severity } from '../lib/severity';
 
+export type UsePermissionsReturn = Readonly<{
+  canTriage: boolean;
+  canInvestigate: boolean;
+  canAdminister: boolean;
+  canSeeSeverity: (severity: Severity) => boolean;
+}>;
+
 /**
  * Derives UI affordances only — a hidden button or nav item is a convenience, never the
  * authorization boundary. The server re-checks role/clearance on every request
  * regardless of what this hook reports (Q8b/Q10).
  */
-export function usePermissions() {
+export function usePermissions(): UsePermissionsReturn {
   const { user } = useAuth();
 
   return {

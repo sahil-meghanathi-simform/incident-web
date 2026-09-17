@@ -1,20 +1,25 @@
 import { api } from '../client';
-import type {
-  CreateIncidentRequest,
-  IncidentDetail,
-  IncidentListResponse,
-  IncidentReceipt,
-  IncidentSummary,
-  IncidentTypesResponse,
+import {
+  type CreateIncidentRequest,
+  IncidentDetailSchema,
+  type IncidentDetail,
+  IncidentListResponseSchema,
+  type IncidentListResponse,
+  IncidentReceiptSchema,
+  type IncidentReceipt,
+  IncidentSummarySchema,
+  type IncidentSummary,
+  IncidentTypesResponseSchema,
+  type IncidentTypesResponse,
 } from '../contracts/incident.contract';
 import type { IncidentFilters } from '../../features/incidents/schemas/incidentFilters.schema';
 
 export function createIncident(body: CreateIncidentRequest): Promise<IncidentReceipt> {
-  return api.post<IncidentReceipt>('/api/v1/incidents', body);
+  return api.post<IncidentReceipt>('/api/v1/incidents', IncidentReceiptSchema, body);
 }
 
 export function listIncidentTypes(): Promise<IncidentTypesResponse> {
-  return api.get<IncidentTypesResponse>('/api/v1/incidents/types');
+  return api.get<IncidentTypesResponse>('/api/v1/incidents/types', IncidentTypesResponseSchema);
 }
 
 /** Arrays serialize via `Array.prototype.toString` (comma-joined) — matches the
@@ -39,17 +44,17 @@ function serializeListFilters(filters: IncidentFilters): Record<string, string |
 }
 
 export function listIncidents(filters: IncidentFilters): Promise<IncidentListResponse> {
-  return api.get<IncidentListResponse>('/api/v1/incidents', serializeListFilters(filters));
+  return api.get<IncidentListResponse>('/api/v1/incidents', IncidentListResponseSchema, serializeListFilters(filters));
 }
 
 export function getIncident(id: string, signal?: AbortSignal): Promise<IncidentDetail> {
-  return api.get<IncidentDetail>(`/api/v1/incidents/${id}`, undefined, signal);
+  return api.get<IncidentDetail>(`/api/v1/incidents/${id}`, IncidentDetailSchema, undefined, signal);
 }
 
 export function listMyIncidents(page: number, pageSize: number): Promise<IncidentListResponse> {
-  return api.get<IncidentListResponse>('/api/v1/incidents/mine', { page, pageSize });
+  return api.get<IncidentListResponse>('/api/v1/incidents/mine', IncidentListResponseSchema, { page, pageSize });
 }
 
 export function getIncidentSummary(): Promise<IncidentSummary> {
-  return api.get<IncidentSummary>('/api/v1/incidents/summary');
+  return api.get<IncidentSummary>('/api/v1/incidents/summary', IncidentSummarySchema);
 }

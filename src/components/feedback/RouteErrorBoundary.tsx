@@ -1,9 +1,10 @@
+import type { ReactElement } from 'react';
 import { useRouteError, isRouteErrorResponse, Link } from 'react-router-dom';
 import { ErrorState } from '../ui/ErrorState';
 import { ROUTES } from '../../app/routes';
 
 /** Per-route errorElement — catches contract/parse failures and thrown loader errors. */
-export function RouteErrorBoundary() {
+export function RouteErrorBoundary(): ReactElement {
   const error = useRouteError();
   const message = isRouteErrorResponse(error)
     ? `${error.status} ${error.statusText}`

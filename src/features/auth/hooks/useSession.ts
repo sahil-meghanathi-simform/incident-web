@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { queryKeys } from '../../../api/queryKeys';
 import { getAccessToken, setAccessToken } from '../../../api/client';
 import { refreshAccessToken } from '../../../api/refresh';
-import { isApiError } from '../../../api/ApiError';
+import { isApiError, type ApiError } from '../../../api/ApiError';
 import { meRequest } from '../../../api/endpoints/auth.api';
 import type { SessionUser } from '../../../types/auth.type';
 
@@ -29,7 +29,7 @@ async function fetchSession(): Promise<SessionUser | null> {
 }
 
 /** staleTime: 0 + refetch-on-focus so a clearance/role change surfaces on the next tab focus. */
-export function useSession() {
+export function useSession(): UseQueryResult<SessionUser | null, ApiError> {
   return useQuery({
     queryKey: queryKeys.session,
     queryFn: fetchSession,

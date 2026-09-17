@@ -1,16 +1,11 @@
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useRef, useState, type ReactElement, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Toast, type ToastItem, type ToastVariant } from './Toast';
-
-interface ToastContextValue {
-  show: (message: string, variant?: ToastVariant) => void;
-}
-
-const ToastContext = createContext<ToastContextValue | null>(null);
+import { ToastContext } from './ToastContext';
 
 const AUTO_DISMISS_MS = 4000;
 
-export function ToastProvider({ children }: { children: ReactNode }) {
+export function ToastProvider({ children }: { children: ReactNode }): ReactElement {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const counter = useRef(0);
 
@@ -28,11 +23,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     [dismiss],
   );
 
+  // Error toasts interrupt (assertive) — anything else waits for a pause in speech
+  // (polite), per accessibility.md's aria-live guidance.
+  const liveness = toasts.some((t) => t.variant === 'error') ? 'assertive' : 'polite';
+
   return (
     <ToastContext.Provider value={{ show }}>
       {children}
       {createPortal(
-        <div aria-live="polite" className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2">
+        // rules-ok: z-[60] is deliberately above Modal/Drawer's z-50 so a toast stays
+        // visible over an open dialog — not worth a dedicated @theme z-index scale for
+        // this one ordering constraint (tailwind.md).
+        <div aria-live={liveness} className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2">
           {toasts.map((t) => (
             <Toast key={t.id} toast={t} onDismiss={dismiss} />
           ))}
@@ -41,10 +43,4 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       )}
     </ToastContext.Provider>
   );
-}
-
-export function useToast(): ToastContextValue {
-  const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error('useToast must be used within a ToastProvider');
-  return ctx;
 }

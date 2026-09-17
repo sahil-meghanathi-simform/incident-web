@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { Button } from '../../../components/ui/Button';
 
+type ClearanceNoticeProps = Readonly<{
+  reference: string;
+}>;
+
 /** Q9's landing spot: a reference and no dead link, rather than a 403 discovered later. */
-export function ClearanceNotice({ reference }: { reference: string }) {
+export function ClearanceNotice({ reference }: ClearanceNoticeProps): ReactElement {
   const [copied, setCopied] = useState(false);
 
-  async function handleCopy() {
+  async function handleCopy(): Promise<void> {
     try {
       await navigator.clipboard.writeText(reference);
       setCopied(true);

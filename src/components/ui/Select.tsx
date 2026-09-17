@@ -1,14 +1,15 @@
-import { type SelectHTMLAttributes, forwardRef } from 'react';
+import { type SelectHTMLAttributes, type ReactElement, forwardRef } from 'react';
 import { cn } from '../../lib/cn';
 
-interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  hasError?: boolean;
-}
+type SelectProps = SelectHTMLAttributes<HTMLSelectElement> &
+  Readonly<{
+    hasError?: boolean;
+  }>;
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
   { className, hasError, children, ...rest },
   ref,
-) {
+): ReactElement {
   return (
     <select
       ref={ref}

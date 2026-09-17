@@ -1,14 +1,18 @@
-import { createContext, useEffect, type ReactNode } from 'react';
+import { createContext, useEffect, type ReactElement, type ReactNode } from 'react';
 import { registerAuthLostHandler, setAccessToken } from '../api/client';
 import { useSession } from '../features/auth/hooks/useSession';
 import { ROUTES } from './routes';
 import type { AuthStatus, SessionUser } from '../types/auth.type';
 
-export interface AuthContextValue {
+export type AuthContextValue = Readonly<{
   user: SessionUser | null;
   status: AuthStatus;
   refetch: () => void;
-}
+}>;
+
+type AuthProviderProps = Readonly<{
+  children: ReactNode;
+}>;
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -20,7 +24,7 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
  * component renders OUTSIDE the router (AppProviders wraps RouterProvider in main.tsx),
  * so router hooks aren't available here.
  */
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: AuthProviderProps): ReactElement {
   const { data, isLoading, refetch } = useSession();
 
   useEffect(() => {

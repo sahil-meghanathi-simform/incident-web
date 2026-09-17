@@ -1,9 +1,9 @@
-export interface ErrorDetail {
+export type ErrorDetail = Readonly<{
   path: string;
   code: string;
   message: string;
   received?: unknown;
-}
+}>;
 
 /** Mirrors the backend's §2.7 error envelope shape (incident-api/src/contracts/errors.contract.ts). */
 export class ApiError extends Error {

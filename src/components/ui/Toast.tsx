@@ -1,12 +1,13 @@
+import type { ReactElement } from 'react';
 import { cn } from '../../lib/cn';
 
 export type ToastVariant = 'success' | 'error' | 'info';
 
-export interface ToastItem {
+export type ToastItem = Readonly<{
   id: string;
   variant: ToastVariant;
   message: string;
-}
+}>;
 
 const VARIANT_CLASS: Record<ToastVariant, string> = {
   success: 'bg-green-600 text-white',
@@ -14,7 +15,7 @@ const VARIANT_CLASS: Record<ToastVariant, string> = {
   info: 'bg-slate-800 text-white',
 };
 
-export function Toast({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: string) => void }) {
+export function Toast({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: string) => void }): ReactElement {
   return (
     <div
       role="status"

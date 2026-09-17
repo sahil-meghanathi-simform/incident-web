@@ -1,11 +1,14 @@
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import type { ReactElement } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { PageContainer } from '../../../components/layout/PageContainer';
+import { TextLink } from '../../../components/ui/TextLink';
 import { ReceiptCard } from '../components/ReceiptCard';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { ROUTES } from '../../../app/routes';
+import { LABELS } from '../../../lib/labels';
 import type { IncidentReceipt } from '../types/incident.type';
 
-export default function SubmissionReceiptPage() {
+export function SubmissionReceiptPage(): ReactElement {
   useDocumentTitle('Report Submitted');
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -19,15 +22,13 @@ export default function SubmissionReceiptPage() {
     return (
       <PageContainer>
         <div className="mx-auto max-w-lg space-y-3 rounded-lg border border-slate-200 bg-white p-6 text-center">
-          <p className="text-sm text-slate-500">Incident reported</p>
+          <p className="text-sm text-slate-500">{LABELS.incidents.incidentReported}</p>
           {reference ? (
             <p className="text-2xl font-semibold tracking-tight text-slate-900">{reference}</p>
           ) : (
             <p className="text-sm text-slate-600">No submission details are available.</p>
           )}
-          <Link to={ROUTES.incidentNew} className="text-sm font-medium text-blue-600 hover:underline">
-            Report another incident
-          </Link>
+          <TextLink to={ROUTES.incidentNew}>{LABELS.incidents.reportAnother}</TextLink>
         </div>
       </PageContainer>
     );

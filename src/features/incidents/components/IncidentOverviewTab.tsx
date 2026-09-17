@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { formatDateTime } from '../../../lib/datetime';
 import type { IncidentDetail } from '../types/incident.type';
 
-function Field({ label, value }: { label: string; value: ReactNode }) {
+function Field({ label, value }: { label: string; value: ReactNode }): ReactElement {
   return (
     <div>
       <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</dt>
@@ -11,8 +11,12 @@ function Field({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
+type IncidentOverviewTabProps = Readonly<{
+  incident: IncidentDetail;
+}>;
+
 /** Core fields + the meta panel — everyone who passed the clearance gate sees this much. */
-export function IncidentOverviewTab({ incident }: { incident: IncidentDetail }) {
+export function IncidentOverviewTab({ incident }: IncidentOverviewTabProps): ReactElement {
   return (
     <div className="grid gap-6 py-4 sm:grid-cols-3">
       <div className="space-y-4 sm:col-span-2">

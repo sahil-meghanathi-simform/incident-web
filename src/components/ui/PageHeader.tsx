@@ -1,12 +1,12 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
-interface PageHeaderProps {
+type PageHeaderProps = Readonly<{
   title: string;
   description?: string;
   actions?: ReactNode;
-}
+}>;
 
-export function PageHeader({ title, description, actions }: PageHeaderProps) {
+export function PageHeader({ title, description, actions }: PageHeaderProps): ReactElement {
   return (
     <div className="mb-6 flex items-start justify-between gap-4">
       <div>

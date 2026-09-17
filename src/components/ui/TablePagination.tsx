@@ -1,13 +1,14 @@
+import type { ReactElement } from 'react';
 import { Button } from './Button';
 
-interface TablePaginationProps {
+type TablePaginationProps = Readonly<{
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-}
+}>;
 
 /** Offset table pagination (Q27). */
-export function TablePagination({ page, totalPages, onPageChange }: TablePaginationProps) {
+export function TablePagination({ page, totalPages, onPageChange }: TablePaginationProps): ReactElement {
   return (
     <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
       <span className="text-xs text-slate-500">

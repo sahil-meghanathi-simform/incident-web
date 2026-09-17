@@ -1,14 +1,15 @@
+import type { ReactElement } from 'react';
 import { Field } from './Field';
 import { Input } from './Input';
 
-interface DateRangePickerProps {
+type DateRangePickerProps = Readonly<{
   from: string;
   to: string;
   onChange: (range: { from: string; to: string }) => void;
-}
+}>;
 
 /** Native date inputs — no extra dependency. */
-export function DateRangePicker({ from, to, onChange }: DateRangePickerProps) {
+export function DateRangePicker({ from, to, onChange }: DateRangePickerProps): ReactElement {
   return (
     <div className="flex gap-3">
       <Field label="From" htmlFor="date-from">

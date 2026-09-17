@@ -3,7 +3,7 @@ import { useSearchParamsState } from '../../../hooks/useSearchParamsState';
 import { incidentFiltersSchema, type IncidentFilters } from '../schemas/incidentFilters.schema';
 
 /** Filters, page and sort live in the URL — shareable, back-button-correct, refresh-stable. */
-export function useIncidentFilters() {
+export function useIncidentFilters(): readonly [IncidentFilters, (patch: Partial<IncidentFilters>) => void] {
   const [filters, update] = useSearchParamsState(incidentFiltersSchema);
 
   const setFilters = useCallback(

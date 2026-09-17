@@ -1,5 +1,7 @@
 import { Component, type ReactNode } from 'react';
 import { Button } from '../ui/Button';
+import { Heading } from '../ui/Heading';
+import { LABELS } from '../../lib/labels';
 
 interface Props {
   children: ReactNode;
@@ -10,21 +12,19 @@ interface State {
 
 /** Last resort, full-page. Mounted at the router root. */
 export class RootErrorBoundary extends Component<Props, State> {
-  state: State = { error: null };
+  override state: State = { error: null };
 
   static getDerivedStateFromError(error: Error): State {
     return { error };
   }
 
-  render() {
+  override render() {
     if (this.state.error) {
       return (
-        <div className="flex h-screen flex-col items-center justify-center gap-3 p-6 text-center">
-          <h1 className="text-lg font-semibold text-slate-900">Something went wrong</h1>
-          <p className="max-w-md text-sm text-slate-500">
-            The application hit an unexpected error. Reloading the page usually resolves it.
-          </p>
-          <Button onClick={() => window.location.reload()}>Reload</Button>
+        <div role="alert" className="flex h-screen flex-col items-center justify-center gap-3 p-6 text-center">
+          <Heading>{LABELS.feedback.unexpectedErrorTitle}</Heading>
+          <p className="max-w-md text-sm text-slate-500">{LABELS.feedback.unexpectedErrorBody}</p>
+          <Button onClick={() => window.location.reload()}>{LABELS.feedback.reload}</Button>
         </div>
       );
     }

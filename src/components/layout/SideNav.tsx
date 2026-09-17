@@ -1,9 +1,10 @@
+import type { ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '../../lib/cn';
 import { ROUTES } from '../../app/routes';
 import { usePermissions } from '../../hooks/usePermissions';
 
-export function SideNav() {
+export function SideNav(): ReactElement {
   const { canTriage, canInvestigate } = usePermissions();
 
   const navItems = [

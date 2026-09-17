@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Badge } from './Badge';
 
 const LEVEL_CLASS: Record<number, string> = {
@@ -6,7 +7,7 @@ const LEVEL_CLASS: Record<number, string> = {
   3: 'bg-escalation-l3/10 text-escalation-l3 border-escalation-l3/30',
 };
 
-export function EscalationBadge({ level }: { level: number }) {
+export function EscalationBadge({ level }: { level: number }): ReactElement | null {
   if (level <= 0) return null;
   return <Badge className={LEVEL_CLASS[level] ?? LEVEL_CLASS[3]}>Escalated · L{level}</Badge>;
 }

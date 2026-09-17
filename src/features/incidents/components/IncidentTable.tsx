@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { Table } from '../../../components/ui/Table';
 import { TableHeader } from '../../../components/ui/TableHeader';
@@ -6,19 +7,24 @@ import { StageBadge } from '../../../components/ui/StageBadge';
 import { EscalationBadge } from '../../../components/ui/EscalationBadge';
 import { formatRelative } from '../../../lib/datetime';
 import { ROUTES } from '../../../app/routes';
+import { LABELS } from '../../../lib/labels';
 import type { IncidentListItem } from '../types/incident.type';
 
-export function IncidentTable({ items }: { items: IncidentListItem[] }) {
+type IncidentTableProps = Readonly<{
+  items: readonly IncidentListItem[];
+}>;
+
+export function IncidentTable({ items }: IncidentTableProps): ReactElement {
   return (
     <Table>
       <TableHeader>
-        <th className="px-4 py-2">Reference</th>
-        <th className="px-4 py-2">Title</th>
-        <th className="px-4 py-2">Type</th>
-        <th className="px-4 py-2">Severity</th>
-        <th className="px-4 py-2">Stage</th>
-        <th className="px-4 py-2">Assignee</th>
-        <th className="px-4 py-2">Age</th>
+        <th className="px-4 py-2">{LABELS.incidents.columns.reference}</th>
+        <th className="px-4 py-2">{LABELS.incidents.columns.title}</th>
+        <th className="px-4 py-2">{LABELS.incidents.columns.type}</th>
+        <th className="px-4 py-2">{LABELS.incidents.columns.severity}</th>
+        <th className="px-4 py-2">{LABELS.incidents.columns.stage}</th>
+        <th className="px-4 py-2">{LABELS.incidents.columns.assignee}</th>
+        <th className="px-4 py-2">{LABELS.incidents.columns.age}</th>
         <th className="px-4 py-2" />
       </TableHeader>
       <tbody className="divide-y divide-slate-100">

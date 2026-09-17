@@ -1,8 +1,9 @@
+import type { ReactElement } from 'react';
 import { Outlet } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { SideNav } from './SideNav';
 
-export function AppShell() {
+export function AppShell(): ReactElement {
   return (
     <div className="flex h-screen flex-col">
       <TopBar />

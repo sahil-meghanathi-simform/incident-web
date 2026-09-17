@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { PageHeader } from '../../../components/ui/PageHeader';
 import { SkeletonTable } from '../../../components/ui/SkeletonTable';
@@ -8,26 +9,25 @@ import { IncidentTable } from '../components/IncidentTable';
 import { useMyIncidents } from '../hooks/useMyIncidents';
 import { useOffsetPagination } from '../../../hooks/useOffsetPagination';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { cn } from '../../../lib/cn';
+import { LABELS } from '../../../lib/labels';
 
-export default function MyReportsPage() {
-  useDocumentTitle('My Reports');
+export function MyReportsPage(): ReactElement {
+  useDocumentTitle(LABELS.incidents.myReportsTitle);
   const { page, setPage } = useOffsetPagination();
   const query = useMyIncidents(page);
 
   return (
     <PageContainer>
-      <PageHeader
-        title="My reports"
-        description="Incidents you reported that you can still see — a report filed above your clearance won't appear here (Q9)."
-      />
+      <PageHeader title={LABELS.incidents.myReportsTitle} description={LABELS.incidents.myReportsDescription} />
 
       {query.isPending && <SkeletonTable />}
-      {query.isError && <ErrorState message="Could not load your reports." onRetry={() => query.refetch()} />}
+      {query.isError && <ErrorState message={LABELS.incidents.loadMyReportsError} onRetry={() => query.refetch()} />}
       {query.data && query.data.items.length === 0 && (
-        <EmptyState title="No reports yet" body="Incidents you file will show up here, as long as you can still see them." />
+        <EmptyState title={LABELS.incidents.noReportsYetTitle} body={LABELS.incidents.noReportsYetBody} />
       )}
       {query.data && query.data.items.length > 0 && (
-        <div className={query.isPlaceholderData ? 'opacity-60 transition-opacity' : undefined}>
+        <div className={cn(query.isPlaceholderData && 'opacity-60 transition-opacity')}>
           <IncidentTable items={query.data.items} />
           <TablePagination page={query.data.page} totalPages={query.data.totalPages} onPageChange={setPage} />
         </div>

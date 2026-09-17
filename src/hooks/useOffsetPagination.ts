@@ -1,8 +1,14 @@
 import { useSearchParams } from 'react-router-dom';
 import { useCallback, useMemo } from 'react';
 
+export type UseOffsetPaginationReturn = Readonly<{
+  page: number;
+  pageSize: number;
+  setPage: (next: number) => void;
+}>;
+
 /** page/pageSize from the URL + total-pages math, shared by every offset table screen. */
-export function useOffsetPagination(defaultPageSize = 25) {
+export function useOffsetPagination(defaultPageSize = 25): UseOffsetPaginationReturn {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const page = useMemo(() => Math.max(1, Number(searchParams.get('page')) || 1), [searchParams]);

@@ -1,7 +1,8 @@
+import type { ReactElement } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 
-interface ConfirmDialogProps {
+type ConfirmDialogProps = Readonly<{
   isOpen: boolean;
   title: string;
   description: string;
@@ -10,7 +11,7 @@ interface ConfirmDialogProps {
   isLoading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
-}
+}>;
 
 export function ConfirmDialog({
   isOpen,
@@ -21,7 +22,7 @@ export function ConfirmDialog({
   isLoading,
   onConfirm,
   onCancel,
-}: ConfirmDialogProps) {
+}: ConfirmDialogProps): ReactElement {
   return (
     <Modal isOpen={isOpen} onClose={onCancel} title={title}>
       <p className="text-sm text-slate-600">{description}</p>

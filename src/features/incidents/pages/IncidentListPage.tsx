@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { PageHeader } from '../../../components/ui/PageHeader';
 import { SkeletonTable } from '../../../components/ui/SkeletonTable';
@@ -11,9 +12,11 @@ import { useIncidentList } from '../hooks/useIncidentList';
 import { useAuth } from '../../../hooks/useAuth';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { SEVERITY_RANK } from '../../../lib/severity';
+import { cn } from '../../../lib/cn';
+import { LABELS } from '../../../lib/labels';
 
-export default function IncidentListPage() {
-  useDocumentTitle('Incidents');
+export function IncidentListPage(): ReactElement {
+  useDocumentTitle(LABELS.incidents.listTitle);
   const { user } = useAuth();
   const [filters, setFilters] = useIncidentFilters();
   const query = useIncidentList(filters);
@@ -38,13 +41,13 @@ export default function IncidentListPage() {
 
   return (
     <PageContainer>
-      <PageHeader title="Incidents" description="Showing incidents at or below your clearance level." />
+      <PageHeader title={LABELS.incidents.listTitle} description={LABELS.incidents.listDescription} />
       <div className="mb-4">
         <IncidentFilters filters={filters} onChange={setFilters} />
       </div>
 
       {query.isPending && <SkeletonTable />}
-      {query.isError && <ErrorState message="Could not load incidents." onRetry={() => query.refetch()} />}
+      {query.isError && <ErrorState message={LABELS.incidents.loadListError} onRetry={() => query.refetch()} />}
       {query.data && query.data.items.length === 0 && (
         <IncidentListEmpty
           hasAnyFilter={hasAnyFilter}
@@ -66,7 +69,7 @@ export default function IncidentListPage() {
         />
       )}
       {query.data && query.data.items.length > 0 && (
-        <div className={query.isPlaceholderData ? 'opacity-60 transition-opacity' : undefined}>
+        <div className={cn(query.isPlaceholderData && 'opacity-60 transition-opacity')}>
           <IncidentTable items={query.data.items} />
           <TablePagination page={query.data.page} totalPages={query.data.totalPages} onPageChange={(page) => setFilters({ page })} />
         </div>

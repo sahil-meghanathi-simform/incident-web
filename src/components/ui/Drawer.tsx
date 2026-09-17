@@ -1,30 +1,18 @@
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactElement, type ReactNode, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
-interface DrawerProps {
+type DrawerProps = Readonly<{
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: ReactNode;
-}
+}>;
 
-export function Drawer({ isOpen, onClose, title, children }: DrawerProps) {
-  const previouslyFocused = useRef<HTMLElement | null>(null);
+/** Focus trap, ESC-to-close, restores focus to the trigger on close. */
+export function Drawer({ isOpen, onClose, title, children }: DrawerProps): ReactElement | null {
   const panelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    previouslyFocused.current = document.activeElement as HTMLElement;
-    panelRef.current?.focus();
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose();
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      previouslyFocused.current?.focus();
-    };
-  }, [isOpen, onClose]);
+  useFocusTrap(panelRef, isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -36,7 +24,7 @@ export function Drawer({ isOpen, onClose, title, children }: DrawerProps) {
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className="h-full w-full max-w-md overflow-y-auto bg-white p-5 shadow-xl outline-none"
+        className="h-full w-full max-w-md overflow-y-auto bg-white p-5 shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
       >
         <h2 className="mb-4 text-base font-semibold text-slate-900">{title}</h2>
         {children}

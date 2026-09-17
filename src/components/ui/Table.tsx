@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { cn } from '../../lib/cn';
 
-export function Table({ children, className }: { children: ReactNode; className?: string }) {
+export function Table({ children, className }: { children: ReactNode; className?: string }): ReactElement {
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200">
       {/* Explicit bg-white: a <table> has no background of its own, so on the dark

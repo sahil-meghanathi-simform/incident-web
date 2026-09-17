@@ -1,10 +1,14 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { SplashLoader } from '../../components/feedback/SplashLoader';
 import { ROUTES } from '../routes';
 
-export function RequireAuth({ children }: { children: ReactNode }) {
+type RequireAuthProps = Readonly<{
+  children: ReactNode;
+}>;
+
+export function RequireAuth({ children }: RequireAuthProps): ReactElement {
   const { status } = useAuth();
   const location = useLocation();
 
