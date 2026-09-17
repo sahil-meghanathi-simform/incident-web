@@ -36,6 +36,7 @@ function incident(overrides: Partial<IncidentDetail> = {}): IncidentDetail {
       canTriage: false,
       canAssign: true,
       canAcknowledge: false,
+      canReadNotes: false,
       canAddNote: false,
       canProposeClosure: false,
       canApproveClosure: false,

@@ -13,6 +13,7 @@ import { IncidentListPage } from '../features/incidents/pages/IncidentListPage';
 import { IncidentDetailPage } from '../features/incidents/pages/IncidentDetailPage';
 import { MyReportsPage } from '../features/incidents/pages/MyReportsPage';
 import { TriageQueuePage } from '../features/triage/pages/TriageQueuePage';
+import { MyInvestigationsPage } from '../features/investigation/pages/MyInvestigationsPage';
 import { ROUTES } from './routes';
 
 /**
@@ -55,7 +56,14 @@ export const router = createBrowserRouter([
           </RequireRole>
         ),
       },
-      { path: 'investigations', element: <ComingSoon title="Investigations" /> },
+      {
+        path: 'investigations',
+        element: (
+          <RequireRole roles={['INVESTIGATOR', 'ADMIN']}>
+            <MyInvestigationsPage />
+          </RequireRole>
+        ),
+      },
       { path: 'closures/pending', element: <ComingSoon title="Pending Closures" /> },
       { path: 'escalations', element: <ComingSoon title="Escalations" /> },
       { path: 'notifications', element: <ComingSoon title="Notifications" /> },
