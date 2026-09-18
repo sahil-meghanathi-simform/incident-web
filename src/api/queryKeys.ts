@@ -44,7 +44,10 @@ export const queryKeys = {
     escalationPerformance: (period: unknown) => ['analytics', 'escalation-performance', period] as const,
   },
   admin: {
+    usersAll: ['admin', 'users'] as const,
     users: (filters: unknown) => ['admin', 'users', filters] as const,
+    clearanceImpact: (userId: string, clearanceLevel: number) => ['admin', 'clearance-impact', userId, clearanceLevel] as const,
+    tiers: ['admin', 'tiers'] as const,
     jobRuns: ['admin', 'job-runs'] as const,
     audit: (filters: unknown) => ['admin', 'audit', filters] as const,
   },

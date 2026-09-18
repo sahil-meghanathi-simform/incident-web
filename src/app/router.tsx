@@ -18,6 +18,9 @@ import { PendingClosuresPage } from '../features/closure/pages/PendingClosuresPa
 import { EscalationFeedPage } from '../features/escalations/pages/EscalationFeedPage';
 import { NotificationsPage } from '../features/notifications/pages/NotificationsPage';
 import { AuditLogPage } from '../features/admin/pages/AuditLogPage';
+import { UsersPage } from '../features/admin/pages/UsersPage';
+import { EscalationPolicyPage } from '../features/admin/pages/EscalationPolicyPage';
+import { JobDiagnosticsPage } from '../features/admin/pages/JobDiagnosticsPage';
 import { AnalyticsPage } from '../features/analytics/pages/AnalyticsPage';
 import { ROUTES } from './routes';
 
@@ -80,9 +83,30 @@ export const router = createBrowserRouter([
       { path: 'escalations', element: <EscalationFeedPage /> },
       { path: 'notifications', element: <NotificationsPage /> },
       { path: 'analytics', element: <AnalyticsPage /> },
-      { path: 'admin/users', element: <ComingSoon title="Admin · Users" /> },
-      { path: 'admin/escalation-policy', element: <ComingSoon title="Admin · Escalation Policy" /> },
-      { path: 'admin/jobs', element: <ComingSoon title="Admin · Job Diagnostics" /> },
+      {
+        path: 'admin/users',
+        element: (
+          <RequireRole roles={['ADMIN']}>
+            <UsersPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'admin/escalation-policy',
+        element: (
+          <RequireRole roles={['ADMIN']}>
+            <EscalationPolicyPage />
+          </RequireRole>
+        ),
+      },
+      {
+        path: 'admin/jobs',
+        element: (
+          <RequireRole roles={['ADMIN']}>
+            <JobDiagnosticsPage />
+          </RequireRole>
+        ),
+      },
       {
         path: 'admin/audit',
         element: (

@@ -16,7 +16,9 @@ export function SideNav(): ReactElement {
     { to: ROUTES.closuresPending, label: 'Pending closures', show: canTriage },
     { to: ROUTES.escalations, label: 'Escalations', show: true },
     { to: ROUTES.analytics, label: 'Analytics', show: true },
-    // The rest of /admin/* lands with Module 10 — only the audit log exists so far.
+    { to: ROUTES.adminUsers, label: 'Users', show: canAdminister },
+    { to: ROUTES.adminEscalationPolicy, label: 'Escalation policy', show: canAdminister },
+    { to: ROUTES.adminJobs, label: 'Job diagnostics', show: canAdminister },
     { to: ROUTES.adminAudit, label: 'Audit log', show: canAdminister },
   ].filter((item) => item.show);
 

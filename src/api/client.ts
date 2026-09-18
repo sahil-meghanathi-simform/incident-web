@@ -145,6 +145,8 @@ export const api = {
     body?: unknown,
     opts: Pick<RequestOptions, 'ifMatchVersion'> = {},
   ) => apiRequest<T>(path, schema, { method: 'PATCH', body, ...opts }),
+  put: <T>(path: string, schema: z.ZodType<T> | null, body?: unknown, opts: Pick<RequestOptions, 'ifMatchVersion'> = {}) =>
+    apiRequest<T>(path, schema, { method: 'PUT', body, ...opts }),
   delete: <T>(path: string, schema: z.ZodType<T> | null, opts: Pick<RequestOptions, 'ifMatchVersion'> = {}) =>
     apiRequest<T>(path, schema, { method: 'DELETE', ...opts }),
 };
