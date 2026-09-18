@@ -12,6 +12,7 @@ import { IncidentOverviewTab } from '../components/IncidentOverviewTab';
 import { IncidentActionBar } from '../../triage/components/IncidentActionBar';
 import { NotesPanel } from '../../investigation/components/NotesPanel';
 import { ClosureTab } from '../../closure/components/ClosureTab';
+import { IncidentTimeline } from '../../timeline/components/IncidentTimeline';
 import { useIncident } from '../hooks/useIncident';
 import { useAccessRevoked } from '../hooks/useAccessRevoked';
 import { isApiError } from '../../../api/ApiError';
@@ -22,7 +23,7 @@ import type { IncidentDetail } from '../types/incident.type';
 
 const BASE_TABS: readonly TabItem[] = [
   { key: 'overview', label: 'Overview' },
-  { key: 'timeline', label: 'Timeline' },
+  { key: 'timeline', label: LABELS.timeline.timelineTab },
 ];
 
 /**
@@ -83,7 +84,7 @@ function IncidentDetailBody({ incident }: IncidentDetailBodyProps): ReactElement
       <IncidentActionBar incident={incident} />
       <Tabs tabs={tabs} activeKey={activeTab} onChange={setTab} />
       {activeTab === 'overview' && <IncidentOverviewTab incident={incident} />}
-      {activeTab === 'timeline' && <p className="py-6 text-sm text-slate-500">The timeline lands in a later module.</p>}
+      {activeTab === 'timeline' && <IncidentTimeline incidentId={incident.id} />}
       {activeTab === 'notes' && <NotesPanel incident={incident} />}
       {activeTab === 'closure' && <ClosureTab incident={incident} />}
     </>

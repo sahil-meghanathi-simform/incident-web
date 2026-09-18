@@ -45,5 +45,6 @@ export const queryKeys = {
   admin: {
     users: (filters: unknown) => ['admin', 'users', filters] as const,
     jobRuns: ['admin', 'job-runs'] as const,
+    audit: (filters: unknown) => ['admin', 'audit', filters] as const,
   },
 };

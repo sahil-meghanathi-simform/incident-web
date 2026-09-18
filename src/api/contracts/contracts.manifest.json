@@ -1,6 +1,7 @@
 {
   "contractVersion": "0.1.0",
   "files": {
+    "audit.contract.ts": "d190b497c19762b2b5b23722bbbeb79fa13864d34f514994c426521266011986",
     "auth.contract.ts": "375c6fbdeb42e4b60b4a97f816126d43d486e8041ee858da358c1ab4b4f52426",
     "closure.contract.ts": "b38b8167f07a7002b516e8a9f8518d4c2fb9b6f99359d881b20aeba0215616d7",
     "enums.ts": "7f498791ea4ce3dfcd72967bbee6bf13f9c3ff7bd00f20f368db9b4eb693c092",

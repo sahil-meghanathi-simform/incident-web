@@ -5,7 +5,7 @@ import { ROUTES } from '../../app/routes';
 import { usePermissions } from '../../hooks/usePermissions';
 
 export function SideNav(): ReactElement {
-  const { canTriage, canInvestigate } = usePermissions();
+  const { canTriage, canInvestigate, canAdminister } = usePermissions();
 
   const navItems = [
     { to: ROUTES.incidentNew, label: 'Report incident', show: true },
@@ -16,6 +16,8 @@ export function SideNav(): ReactElement {
     { to: ROUTES.closuresPending, label: 'Pending closures', show: canTriage },
     { to: ROUTES.escalations, label: 'Escalations', show: true },
     { to: ROUTES.analytics, label: 'Analytics', show: true },
+    // The rest of /admin/* lands with Module 10 — only the audit log exists so far.
+    { to: ROUTES.adminAudit, label: 'Audit log', show: canAdminister },
   ].filter((item) => item.show);
 
   return (

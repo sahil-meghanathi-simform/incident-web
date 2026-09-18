@@ -17,6 +17,7 @@ import { MyInvestigationsPage } from '../features/investigation/pages/MyInvestig
 import { PendingClosuresPage } from '../features/closure/pages/PendingClosuresPage';
 import { EscalationFeedPage } from '../features/escalations/pages/EscalationFeedPage';
 import { NotificationsPage } from '../features/notifications/pages/NotificationsPage';
+import { AuditLogPage } from '../features/admin/pages/AuditLogPage';
 import { ROUTES } from './routes';
 
 /**
@@ -81,7 +82,14 @@ export const router = createBrowserRouter([
       { path: 'admin/users', element: <ComingSoon title="Admin · Users" /> },
       { path: 'admin/escalation-policy', element: <ComingSoon title="Admin · Escalation Policy" /> },
       { path: 'admin/jobs', element: <ComingSoon title="Admin · Job Diagnostics" /> },
-      { path: 'admin/audit', element: <ComingSoon title="Admin · Audit Log" /> },
+      {
+        path: 'admin/audit',
+        element: (
+          <RequireRole roles={['ADMIN']}>
+            <AuditLogPage />
+          </RequireRole>
+        ),
+      },
       { path: '403', element: <Forbidden /> },
       { path: '*', element: <ComingSoon title="Not Found" /> },
     ],
