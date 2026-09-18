@@ -7,7 +7,7 @@
     "auth.contract.ts": "375c6fbdeb42e4b60b4a97f816126d43d486e8041ee858da358c1ab4b4f52426",
     "closure.contract.ts": "b38b8167f07a7002b516e8a9f8518d4c2fb9b6f99359d881b20aeba0215616d7",
     "enums.ts": "7f498791ea4ce3dfcd72967bbee6bf13f9c3ff7bd00f20f368db9b4eb693c092",
-    "errors.contract.ts": "10598742f2fe34dc871b2048f718228278085a317114bc8af5f37cdcc103ea5f",
+    "errors.contract.ts": "824e7ec4c09997ff96b8e4f5bf00a3e24ea02fc735ff6ec99659a9055128ee24",
     "escalation.contract.ts": "301e1e99f68b78c486dc4c1b086a5420516dee11caab6f1d19659d74236577e0",
     "incident.contract.ts": "774522f55575d29cc1bb4bd49a9d60635257b2532ddf98956a6517e8fd484810",
     "investigation.contract.ts": "beccc1017e84e0631e2c4fdc420b16b2cd65e3a73dd78dc66e0a113260d8e1d8",

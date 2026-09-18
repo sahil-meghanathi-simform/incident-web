@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Contracts check (vendored files match their own manifest)
+        run: npm run contracts:check
+
+      - name: Test (Vitest)
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  contracts-parity:
+    runs-on: ubuntu-latest
+    # The standalone `contracts:check` job above only proves the vendored
+    # src/api/contracts/ files match the manifest committed alongside them — it cannot
+    # catch the real drift case: incident-api's contracts changed and nobody re-ran
+    # `contracts:sync` here. That needs a live sibling checkout of incident-api, which
+    # is a PRIVATE repo under the same account — the default same-repo GITHUB_TOKEN
+    # can't check it out. This job needs a fine-grained PAT with read access to
+    # incident-api, stored as the `CROSS_REPO_PAT` secret in THIS repo's settings, and
+    # skips cleanly (not a failure) when that secret isn't configured.
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: incident-web
+
+      - name: Check for cross-repo access
+        id: has-pat
+        run: echo "ok=${{ secrets.CROSS_REPO_PAT != '' }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.has-pat.outputs.ok == 'true'
+        with:
+          repository: sahil-meghanathi-simform/incident-api
+          token: ${{ secrets.CROSS_REPO_PAT }}
+          path: incident-api
+
+      - uses: actions/setup-node@v4
+        if: steps.has-pat.outputs.ok == 'true'
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Export contracts from incident-api
+        if: steps.has-pat.outputs.ok == 'true'
+        working-directory: incident-api
+        run: |
+          npm ci
+          npm run contracts:export
+
+      - name: Re-sync incident-web's vendored copy from that export
+        if: steps.has-pat.outputs.ok == 'true'
+        working-directory: incident-web
+        run: |
+          npm ci
+          npm run contracts:sync
+
+      - name: Fail if the re-sync produced any diff (real cross-repo drift)
+        if: steps.has-pat.outputs.ok == 'true'
+        working-directory: incident-web
+        run: |
+          git diff --exit-code -- src/api/contracts || {
+            echo "::error::incident-web's vendored contracts are stale — incident-api's contracts changed without a re-sync+commit here.";
+            exit 1;
+          }
+
+      - name: Skipped — no CROSS_REPO_PAT configured
+        if: steps.has-pat.outputs.ok != 'true'
+        run: echo "Set the CROSS_REPO_PAT repo secret (a PAT with read access to incident-api) to enable this job. See README.md."

@@ -29,6 +29,14 @@ The API also sends `X-Contract-Version` on every response; `api/client.ts` compa
 against the client's own constant and calls a registered mismatch handler on drift —
 the runtime backstop for the two-repo contract-drift risk.
 
+CI (`.github/workflows/ci.yml`) runs `contracts:check` on every push/PR — that alone
+only proves the vendored copy matches its own committed manifest (catches a hand-edit,
+not a forgotten sync). A second job, `contracts-parity`, does the real cross-repo
+check — exports fresh from a live `incident-api` checkout, re-runs `contracts:sync`,
+and fails if that produces any diff — but `incident-api` is a private sibling repo, so
+this job needs a fine-grained PAT with read access to it, stored as this repo's
+`CROSS_REPO_PAT` secret; it skips cleanly (not a failure) if that secret is unset.
+
 ## Tailwind v4
 
 No `tailwind.config.ts` — design tokens (severity/stage/escalation-level colour scales)

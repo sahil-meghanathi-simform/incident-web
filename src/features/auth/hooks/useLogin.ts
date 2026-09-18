@@ -32,9 +32,22 @@ export function useLogin(): UseLoginReturn {
 
   const loginMutation = useMutation({
     mutationFn: (input: LoginRequest) => loginRequest(input),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setAccessToken(data.accessToken);
-      queryClient.setQueryData(queryKeys.session, data.user);
+      // Deliberately NOT queryClient.setQueryData(queryKeys.session, data.user) here.
+      // A direct cache write like that is documented elsewhere as the standard
+      // optimistic-update pattern, but empirically (Module 11 hardening,
+      // docs/decisions.md) it does not reliably reach useSession's already-mounted
+      // observer in AuthProvider — the cache ends up holding the right value
+      // (confirmed via getQueryData) while that observer's own React state stays on
+      // the previous user, with no further update ever arriving, only fixable by a
+      // full reload. Calling the observer's actual refetch cycle — which invalidate +
+      // the active observer's auto-refetch triggers — was confirmed (by directly
+      // invoking a live observer's refetch()) to update correctly every time.
+      // setAccessToken above is already the new token, so this refetch calls the real
+      // `/me` with the new user's credentials — authoritative, not a duplicate of the
+      // login response.
+      await queryClient.invalidateQueries({ queryKey: queryKeys.session });
     },
   });
 
