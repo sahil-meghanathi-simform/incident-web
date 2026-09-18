@@ -41,6 +41,7 @@ export const queryKeys = {
     overview: (period: unknown) => ['analytics', 'overview', period] as const,
     matrix: (period: unknown) => ['analytics', 'matrix', period] as const,
     trend: (period: unknown, bucket: unknown) => ['analytics', 'trend', period, bucket] as const,
+    escalationPerformance: (period: unknown) => ['analytics', 'escalation-performance', period] as const,
   },
   admin: {
     users: (filters: unknown) => ['admin', 'users', filters] as const,

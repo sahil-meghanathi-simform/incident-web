@@ -39,3 +39,15 @@ export function dayKey(value: string | Date): string {
   const d = typeof value === 'string' ? new Date(value) : value;
   return d.toDateString();
 }
+
+/** Analytics' median/p90 time-to-acknowledge — seconds to a compact "2h 15m" / "3d 4h". */
+export function formatDuration(totalSeconds: number): string {
+  const seconds = Math.round(totalSeconds);
+  const days = Math.floor(seconds / 86_400);
+  const hours = Math.floor((seconds % 86_400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m`;
+  return `${seconds}s`;
+}

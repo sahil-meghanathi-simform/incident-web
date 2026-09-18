@@ -18,6 +18,7 @@ import { PendingClosuresPage } from '../features/closure/pages/PendingClosuresPa
 import { EscalationFeedPage } from '../features/escalations/pages/EscalationFeedPage';
 import { NotificationsPage } from '../features/notifications/pages/NotificationsPage';
 import { AuditLogPage } from '../features/admin/pages/AuditLogPage';
+import { AnalyticsPage } from '../features/analytics/pages/AnalyticsPage';
 import { ROUTES } from './routes';
 
 /**
@@ -78,7 +79,7 @@ export const router = createBrowserRouter([
       },
       { path: 'escalations', element: <EscalationFeedPage /> },
       { path: 'notifications', element: <NotificationsPage /> },
-      { path: 'analytics', element: <ComingSoon title="Analytics" /> },
+      { path: 'analytics', element: <AnalyticsPage /> },
       { path: 'admin/users', element: <ComingSoon title="Admin · Users" /> },
       { path: 'admin/escalation-policy', element: <ComingSoon title="Admin · Escalation Policy" /> },
       { path: 'admin/jobs', element: <ComingSoon title="Admin · Job Diagnostics" /> },
