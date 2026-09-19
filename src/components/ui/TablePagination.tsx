@@ -15,10 +15,10 @@ export function TablePagination({ page, totalPages, onPageChange }: TablePaginat
         Page {page} of {Math.max(1, totalPages)}
       </span>
       <div className="flex gap-2">
-        <Button variant="secondary" onClick={() => onPageChange(page - 1)} disabled={page <= 1}>
+        <Button variant="outline" onClick={() => onPageChange(page - 1)} disabled={page <= 1}>
           Previous
         </Button>
-        <Button variant="secondary" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
+        <Button variant="outline" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
           Next
         </Button>
       </div>

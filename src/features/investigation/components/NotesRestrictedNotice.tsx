@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { Card } from '../../../components/ui/Card';
 import { LABELS } from '../../../lib/labels';
 import type { NotesAccessReason } from '../types/investigation.type';
 
@@ -18,9 +19,9 @@ export function NotesRestrictedNotice({ reason }: NotesRestrictedNoticeProps): R
       : { title: LABELS.investigation.restrictedNotAssignedTitle, body: LABELS.investigation.restrictedNotAssignedBody };
 
   return (
-    <div role="status" className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center">
-      <p className="text-sm font-medium text-slate-900">{copy.title}</p>
-      <p className="mt-1 text-sm text-slate-500">{copy.body}</p>
-    </div>
+    <Card role="status" className="bg-muted p-6 text-center">
+      <p className="text-sm font-medium text-foreground">{copy.title}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{copy.body}</p>
+    </Card>
   );
 }

@@ -13,7 +13,7 @@ export function ErrorState({ message = 'Something went wrong.', requestId, onRet
       <p className="text-sm font-medium text-red-800">{message}</p>
       {requestId && <p className="text-xs text-red-500">Reference: {requestId}</p>}
       {onRetry && (
-        <Button variant="secondary" onClick={onRetry} className="mt-2">
+        <Button variant="outline" onClick={onRetry} className="mt-2">
           Retry
         </Button>
       )}

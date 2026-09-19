@@ -3,6 +3,7 @@ import { Field } from '../../../components/ui/Field';
 import { Select } from '../../../components/ui/Select';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
+import { Card } from '../../../components/ui/Card';
 import { RoleValues } from '../../../api/contracts/enums';
 import { LABELS } from '../../../lib/labels';
 import type { AdminUsersFilters } from '../schemas/adminUsers.schema';
@@ -20,7 +21,7 @@ export function UsersFilters({ filters, onChange }: UsersFiltersProps): ReactEle
   const hasAnyFilter = !!filters.role?.length || filters.isActive !== undefined || !!filters.q;
 
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4 rounded-lg border border-slate-200 bg-white p-4">
+    <Card className="flex flex-wrap items-end justify-between gap-4 p-4">
       <div className="flex flex-wrap items-end gap-4">
         <div>
           <Field label={LABELS.admin.usersFilterRole} htmlFor="users-filter-role">
@@ -76,6 +77,6 @@ export function UsersFilters({ filters, onChange }: UsersFiltersProps): ReactEle
           Clear all
         </Button>
       )}
-    </div>
+    </Card>
   );
 }

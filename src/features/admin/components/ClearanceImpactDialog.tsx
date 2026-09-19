@@ -70,7 +70,7 @@ export function ClearanceImpactDialog({
         )}
 
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button type="button" onClick={onConfirm} isLoading={isSubmitting} disabled={!preview.data}>

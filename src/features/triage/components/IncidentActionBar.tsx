@@ -58,18 +58,18 @@ export function IncidentActionBar({ incident }: IncidentActionBarProps): ReactEl
   return (
     <div className="flex flex-wrap gap-2 border-b border-slate-200 py-3">
       {canTriage && (
-        <Button variant="secondary" onClick={handleTriage} isLoading={triageMutation.isPending}>
+        <Button variant="outline" onClick={handleTriage} isLoading={triageMutation.isPending}>
           {LABELS.triage.triageAction}
         </Button>
       )}
       {canAcknowledge && <AcknowledgeButton incidentId={incident.id} version={incident.version} />}
       {canChangeSeverity && (
-        <Button variant="secondary" onClick={() => setSeverityModalOpen(true)}>
+        <Button variant="outline" onClick={() => setSeverityModalOpen(true)}>
           {LABELS.triage.changeSeverity}
         </Button>
       )}
       {canAssign && (
-        <Button variant="secondary" onClick={() => setAssignDrawerOpen(true)}>
+        <Button variant="outline" onClick={() => setAssignDrawerOpen(true)}>
           {incident.assignedInvestigator ? LABELS.triage.reassign : LABELS.triage.assign}
         </Button>
       )}

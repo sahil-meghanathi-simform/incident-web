@@ -76,7 +76,7 @@ export function AnalyticsPage(): ReactElement {
             title={LABELS.analytics.matrixEmptyTitle}
             body={LABELS.analytics.matrixEmptyBody}
             action={
-              <Button variant="secondary" onClick={() => setPreset('90d')}>
+              <Button variant="outline" onClick={() => setPreset('90d')}>
                 {LABELS.analytics.matrixWidenAction}
               </Button>
             }

@@ -4,6 +4,7 @@ import { Select } from '../../../components/ui/Select';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
 import { DateRangePicker } from '../../../components/ui/DateRangePicker';
+import { Card } from '../../../components/ui/Card';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { useAuth } from '../../../hooks/useAuth';
 import { SEVERITY_ORDER, SEVERITY_LABEL, SEVERITY_RANK } from '../../../lib/severity';
@@ -97,7 +98,7 @@ export function IncidentFilters({ filters, onChange }: IncidentFiltersProps): Re
     !!filters.q;
 
   return (
-    <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
+    <Card className="space-y-4 p-4">
       <div className="flex flex-wrap items-end gap-4">
         <div>
           <FilterFieldLabel>Severity</FilterFieldLabel>
@@ -223,6 +224,6 @@ export function IncidentFilters({ filters, onChange }: IncidentFiltersProps): Re
           </Button>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

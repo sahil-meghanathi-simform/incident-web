@@ -1,6 +1,5 @@
 import type { ReactElement } from 'react';
 import { ROUTES } from '../../app/routes';
-import { Heading } from '../ui/Heading';
 import { TextLink } from '../ui/TextLink';
 import { LABELS } from '../../lib/labels';
 
@@ -12,8 +11,8 @@ import { LABELS } from '../../lib/labels';
 export function Forbidden(): ReactElement {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 p-10 text-center">
-      <Heading>{LABELS.feedback.forbiddenTitle}</Heading>
-      <p className="max-w-sm text-sm text-slate-500">{LABELS.feedback.forbiddenBody}</p>
+      <h1 className="font-display text-lg font-semibold tracking-display text-foreground">{LABELS.feedback.forbiddenTitle}</h1>
+      <p className="max-w-sm text-sm text-muted-foreground">{LABELS.feedback.forbiddenBody}</p>
       <TextLink to={ROUTES.home}>{LABELS.nav.backToHome}</TextLink>
     </div>
   );

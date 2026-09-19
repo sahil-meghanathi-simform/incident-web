@@ -4,6 +4,7 @@ import { Select } from '../../../components/ui/Select';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
 import { DateRangePicker } from '../../../components/ui/DateRangePicker';
+import { Card } from '../../../components/ui/Card';
 import { AuditEventTypeValues } from '../../../api/contracts/enums';
 import { LABELS } from '../../../lib/labels';
 import type { AuditSearchFilters } from '../schemas/auditSearch.schema';
@@ -21,7 +22,7 @@ export function AuditFilters({ filters, onChange }: AuditFiltersProps): ReactEle
   const hasAnyFilter = !!filters.type?.length || !!filters.actorId || !!filters.incidentId || !!filters.from || !!filters.to;
 
   return (
-    <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-4">
+    <Card className="space-y-4 p-4">
       <div className="flex flex-wrap items-end gap-4">
         <div>
           <Field label={LABELS.admin.auditFilterType} htmlFor="audit-filter-type">
@@ -83,6 +84,6 @@ export function AuditFilters({ filters, onChange }: AuditFiltersProps): ReactEle
           </Button>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import type { AnalyticsOverviewResponse } from '../../../api/contracts/analytics.contract';
+import { Card } from '../../../components/ui/Card';
 import { formatDuration } from '../../../lib/datetime';
 import { LABELS } from '../../../lib/labels';
 
@@ -7,10 +8,10 @@ type KpiCardRowProps = Readonly<{ data: AnalyticsOverviewResponse }>;
 
 function KpiCard({ label, value }: { label: string; value: string }): ReactElement {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-slate-900">{value}</p>
-    </div>
+    <Card className="p-4">
+      <p className="text-xs font-medium uppercase tracking-caps text-muted-foreground">{label}</p>
+      <p className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">{value}</p>
+    </Card>
   );
 }
 

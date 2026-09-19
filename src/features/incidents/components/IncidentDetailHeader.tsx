@@ -2,7 +2,6 @@ import type { ReactElement } from 'react';
 import { SeverityBadge } from '../../../components/ui/SeverityBadge';
 import { StageBadge } from '../../../components/ui/StageBadge';
 import { EscalationBadge } from '../../../components/ui/EscalationBadge';
-import { Heading } from '../../../components/ui/Heading';
 import { formatDateTime } from '../../../lib/datetime';
 import { LABELS } from '../../../lib/labels';
 import type { IncidentDetail } from '../types/incident.type';
@@ -22,7 +21,7 @@ export function IncidentDetailHeader({ incident }: IncidentDetailHeaderProps): R
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-mono text-sm text-slate-500">{incident.reference}</p>
-          <Heading className="mt-0.5">{incident.title}</Heading>
+          <h1 className="mt-0.5 font-display text-lg font-semibold tracking-display text-foreground">{incident.title}</h1>
         </div>
         <div className="flex items-center gap-2">
           <SeverityBadge severity={incident.severity} />

@@ -57,7 +57,7 @@ export function ClosureReviewPanel({ incident }: ClosureReviewPanelProps): React
 
       {incident._actions.canApproveClosure && (
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={() => setRejectOpen(true)}>
+          <Button variant="outline" onClick={() => setRejectOpen(true)}>
             {LABELS.closure.requestChangesAction}
           </Button>
           <Button onClick={() => setApproveConfirmOpen(true)}>{LABELS.closure.approveAction}</Button>

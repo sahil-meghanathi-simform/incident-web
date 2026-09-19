@@ -29,7 +29,7 @@ export function IncidentListEmpty({
         title={LABELS.incidents.noMatchTitle}
         body={LABELS.incidents.noMatchBody}
         action={
-          <Button variant="secondary" onClick={onClearFilters}>
+          <Button variant="outline" onClick={onClearFilters}>
             {LABELS.incidents.clearAllFilters}
           </Button>
         }

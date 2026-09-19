@@ -127,7 +127,7 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
             {roleError && <p role="alert" className="text-xs text-red-600">{roleError}</p>}
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
               onClick={submitRole}
               isLoading={changeRole.isPending}
               disabled={isSelf || roleDraft === null || roleDraft === user.role}
@@ -150,7 +150,7 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
             {clearanceError && <p role="alert" className="text-xs text-red-600">{clearanceError}</p>}
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
               onClick={() => clearanceDraft !== null && requestClearanceChange(clearanceDraft)}
               isLoading={changeClearance.isPending}
               disabled={isSelf || clearanceDraft === null || clearanceDraft === user.clearanceLevel}
@@ -164,7 +164,7 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
             {statusError && <p role="alert" className="text-xs text-red-600">{statusError}</p>}
             <Button
               type="button"
-              variant={user.isActive ? 'danger' : 'primary'}
+              variant={user.isActive ? 'destructive' : 'default'}
               onClick={() => toggleStatusFor(!user.isActive)}
               isLoading={toggleStatus.isPending}
             >

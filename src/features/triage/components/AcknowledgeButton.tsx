@@ -26,7 +26,7 @@ export function AcknowledgeButton({ incidentId, version }: AcknowledgeButtonProp
   }
 
   return (
-    <Button variant="secondary" onClick={handleClick} isLoading={mutation.isPending}>
+    <Button variant="outline" onClick={handleClick} isLoading={mutation.isPending}>
       {LABELS.triage.acknowledge}
     </Button>
   );

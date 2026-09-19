@@ -45,7 +45,7 @@ export function UsersTable({ items, onEdit }: UsersTableProps): ReactElement {
             </td>
             <td className="whitespace-nowrap px-4 py-2 text-xs text-slate-500">{formatDateTime(user.createdAt)}</td>
             <td className="px-4 py-2 text-right">
-              <Button type="button" variant="secondary" onClick={() => onEdit(user)}>
+              <Button type="button" variant="outline" onClick={() => onEdit(user)}>
                 Edit
               </Button>
             </td>

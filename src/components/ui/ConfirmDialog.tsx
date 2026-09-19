@@ -27,10 +27,10 @@ export function ConfirmDialog({
     <Modal isOpen={isOpen} onClose={onCancel} title={title}>
       <p className="text-sm text-slate-600">{description}</p>
       <div className="mt-5 flex justify-end gap-2">
-        <Button variant="secondary" onClick={onCancel}>
+        <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button variant={isDanger ? 'danger' : 'primary'} onClick={onConfirm} isLoading={isLoading}>
+        <Button variant={isDanger ? 'destructive' : 'default'} onClick={onConfirm} isLoading={isLoading}>
           {confirmLabel}
         </Button>
       </div>

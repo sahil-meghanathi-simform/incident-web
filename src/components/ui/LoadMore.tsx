@@ -13,7 +13,7 @@ export function LoadMore({ hasMore, isLoading, onClick }: LoadMoreProps): ReactE
   if (!hasMore) return null;
   return (
     <div className="flex justify-center py-3">
-      <Button variant="secondary" onClick={onClick} disabled={isLoading}>
+      <Button variant="outline" onClick={onClick} disabled={isLoading}>
         {isLoading ? <Spinner className="h-4 w-4" /> : 'Load more'}
       </Button>
     </div>

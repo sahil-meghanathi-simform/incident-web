@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { Table } from '../../../components/ui/Table';
 import { TableHeader } from '../../../components/ui/TableHeader';
 import { Button } from '../../../components/ui/Button';
+import { Card } from '../../../components/ui/Card';
 import { TierRow } from './TierRow';
 import { TierPreview } from './TierPreview';
 import { tierSetSchema, tierRowErrors, type TierInput } from '../schemas/tierSet.schema';
@@ -64,15 +65,15 @@ export function TierEditor({ initialTiers, isSaving, onSave }: TierEditorProps):
         </tbody>
       </Table>
 
-      <div className="space-y-1 rounded-lg border border-slate-200 bg-white p-4">
+      <Card className="space-y-1 p-4">
         {severitiesPresent.map((severity) => (
           <TierPreview key={severity} severity={severity} tiers={draft} />
         ))}
-      </div>
+      </Card>
 
       <div className="flex items-center justify-end gap-3">
         {!validation.success && <p role="alert" className="text-xs text-red-600">{LABELS.admin.tierSaveDisabledReason}</p>}
-        <Button type="button" variant="secondary" onClick={() => setDraft(initialTiers)} disabled={!isDirty || isSaving}>
+        <Button type="button" variant="outline" onClick={() => setDraft(initialTiers)} disabled={!isDirty || isSaving}>
           Reset
         </Button>
         <Button type="button" onClick={() => onSave(draft)} isLoading={isSaving} disabled={!canSave}>

@@ -7,7 +7,7 @@ import type { AnalyticsPeriodFilters } from '../schemas/analyticsPeriod.schema';
 export function ExportCsvButton({ filters }: { filters: AnalyticsPeriodFilters }): ReactElement {
   const { isExporting, exportCsv } = useExportCsv(filters);
   return (
-    <Button variant="secondary" onClick={() => void exportCsv()} isLoading={isExporting}>
+    <Button variant="outline" onClick={() => void exportCsv()} isLoading={isExporting}>
       {isExporting ? LABELS.analytics.exportingCsv : LABELS.analytics.exportCsv}
     </Button>
   );

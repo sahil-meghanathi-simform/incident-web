@@ -114,7 +114,7 @@ export function ChangeSeverityModal({ incident, isOpen, onClose }: ChangeSeverit
         </Field>
 
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button type="submit" isLoading={isSubmitting}>

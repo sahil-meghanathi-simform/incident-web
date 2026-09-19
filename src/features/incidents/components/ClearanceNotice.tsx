@@ -27,7 +27,7 @@ export function ClearanceNotice({ reference }: ClearanceNoticeProps): ReactEleme
         This incident was filed at a severity above your clearance level. An investigator or
         manager can still act on it — keep the reference below if you need to follow up.
       </p>
-      <Button type="button" variant="secondary" className="mt-3" onClick={handleCopy}>
+      <Button type="button" variant="outline" className="mt-3" onClick={handleCopy}>
         {copied ? 'Copied!' : 'Copy reference'}
       </Button>
     </div>

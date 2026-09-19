@@ -83,7 +83,7 @@ export function AssignInvestigatorDrawer({ incident, isOpen, onClose }: AssignIn
         )}
 
         <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
-          <Button variant="secondary" onClick={onClose} disabled={mutation.isPending}>
+          <Button variant="outline" onClick={onClose} disabled={mutation.isPending}>
             Cancel
           </Button>
           <Button onClick={handleAssign} disabled={!selectedId} isLoading={mutation.isPending}>
