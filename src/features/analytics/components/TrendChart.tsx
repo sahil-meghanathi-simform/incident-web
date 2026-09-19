@@ -1,16 +1,10 @@
 import type { ReactElement } from 'react';
-import { SEVERITY_LABEL, type Severity } from '../../../lib/severity';
+import { SEVERITY_LABEL, SEVERITY_FILL_CLASS, SEVERITY_SWATCH_CLASS } from '../../../lib/severity';
 import { formatDateTime } from '../../../lib/datetime';
+import { cn } from '../../../lib/cn';
 import type { PivotedTrend } from '../hooks/useTrend';
 
 type TrendChartProps = Readonly<{ data: PivotedTrend }>;
-
-const SEVERITY_FILL: Record<Severity, string> = {
-  LOW: '#2563eb',
-  MEDIUM: '#d97706',
-  HIGH: '#ea580c',
-  CRITICAL: '#dc2626',
-};
 
 const WIDTH = 720;
 const HEIGHT = 220;
@@ -61,7 +55,7 @@ export function TrendChart({ data }: TrendChartProps): ReactElement {
                     y={yCursor}
                     width={barWidth}
                     height={segmentHeight}
-                    fill={SEVERITY_FILL[severity]}
+                    className={SEVERITY_FILL_CLASS[severity]}
                   >
                     <title>
                       {formatDateTime(bucket)} · {SEVERITY_LABEL[severity]}: {count}
@@ -74,7 +68,7 @@ export function TrendChart({ data }: TrendChartProps): ReactElement {
                   x={x + barWidth / 2}
                   y={HEIGHT - PADDING.bottom + 14}
                   textAnchor="middle"
-                  className="fill-slate-500 text-[9px]"
+                  className="fill-muted-foreground text-[9px]"
                 >
                   {new Date(bucket).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </text>
@@ -85,9 +79,8 @@ export function TrendChart({ data }: TrendChartProps): ReactElement {
       </svg>
       <div className="mt-2 flex flex-wrap gap-3">
         {severities.map((severity) => (
-          <span key={severity} className="flex items-center gap-1.5 text-xs text-slate-600">
-            {/* rules-ok: swatch color mirrors the SVG fill above, computed from the same lookup */}
-            <span aria-hidden="true" className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: SEVERITY_FILL[severity] }} />
+          <span key={severity} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span aria-hidden="true" className={cn('h-2.5 w-2.5 rounded-sm', SEVERITY_SWATCH_CLASS[severity])} />
             {SEVERITY_LABEL[severity]}
           </span>
         ))}

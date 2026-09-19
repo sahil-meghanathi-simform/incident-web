@@ -1,3 +1,5 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// this file is superseded by the shadcn input in a later migration phase.
 import { type InputHTMLAttributes, type ReactElement, forwardRef } from 'react';
 import { cn } from '../../lib/cn';
 
@@ -15,11 +17,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       ref={ref}
       className={cn(
         // Tailwind's preflight makes native form elements background-transparent by
-        // default — without an explicit bg-white here (as Select.tsx already has),
-        // this text is invisible over the dark theme's body background.
-        'w-full rounded-md border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-        hasError ? 'border-red-400' : 'border-slate-300',
+        // default — an explicit background is still required even with no dark theme
+        // to defeat, since the input would otherwise show whatever it's layered over.
+        'w-full rounded-md border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground',
+        'focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring',
+        hasError ? 'border-destructive' : 'border-input',
         className,
       )}
       aria-invalid={hasError}

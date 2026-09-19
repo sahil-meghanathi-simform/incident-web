@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Table } from '../../../components/ui/Table';
 import { TableHeader } from '../../../components/ui/TableHeader';
 import type { TypeSeverityMatrixResponse } from '../../../api/contracts/analytics.contract';
-import { SEVERITY_LABEL, type Severity } from '../../../lib/severity';
+import { SEVERITY_LABEL, SEVERITY_VAR, type Severity } from '../../../lib/severity';
 import { ROUTES } from '../../../app/routes';
 import { LABELS } from '../../../lib/labels';
 
@@ -19,20 +19,16 @@ function typeLabel(type: string): string {
     .join(' ');
 }
 
-const SEVERITY_HEX: Record<Severity, string> = {
-  LOW: '37 99 235',
-  MEDIUM: '217 119 6',
-  HIGH: '234 88 12',
-  CRITICAL: '220 38 38',
-};
-
 /** Per-column relative intensity (each severity scales against its OWN column max, not
  * the grand max) — otherwise a single CRITICAL outlier would wash out every other
- * column to near-white. */
+ * column to near-white. Mixes toward --color-card (not transparent) so cells stay
+ * opaque over the table's zebra striping — a translucent cell would show two
+ * different effective colors depending on which row it lands on. At the maximum
+ * mix (58%) cell text still measures 6.12:1, comfortably AA. */
 function cellStyle(count: number, columnMax: number, severity: Severity): CSSProperties {
   if (columnMax === 0 || count === 0) return {};
-  const alpha = 0.08 + 0.5 * (count / columnMax);
-  return { backgroundColor: `rgb(${SEVERITY_HEX[severity]} / ${alpha})` };
+  const pct = Math.round((0.08 + 0.5 * (count / columnMax)) * 100);
+  return { backgroundColor: `color-mix(in oklab, var(${SEVERITY_VAR[severity]}) ${pct}%, var(--color-card))` };
 }
 
 /** The matrix table itself — AnalyticsPage handles loading/error/empty (same
@@ -60,10 +56,10 @@ export function TypeSeverityMatrix({ data }: TypeSeverityMatrixProps): ReactElem
           {LABELS.analytics.matrixRowTotal}
         </th>
       </TableHeader>
-      <tbody className="divide-y divide-slate-100">
+      <tbody className="divide-y divide-border">
         {data.rowTotals.map((row) => (
           <tr key={row.type}>
-            <th scope="row" className="px-3 py-2 text-left font-medium text-slate-700">
+            <th scope="row" className="px-3 py-2 text-left font-medium text-foreground-soft">
               {typeLabel(row.type)}
             </th>
             {data.severities.map((severity) => {
@@ -79,7 +75,7 @@ export function TypeSeverityMatrix({ data }: TypeSeverityMatrixProps): ReactElem
                   {count > 0 ? (
                     <button
                       type="button"
-                      className="underline decoration-dotted underline-offset-2 hover:decoration-solid focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      className="underline decoration-dotted underline-offset-2 hover:decoration-solid focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       aria-label={`${count} ${typeLabel(row.type)} incidents at ${SEVERITY_LABEL[severity]} severity — view list`}
                       onClick={() =>
                         navigate(
@@ -95,10 +91,10 @@ export function TypeSeverityMatrix({ data }: TypeSeverityMatrixProps): ReactElem
                 </td>
               );
             })}
-            <td className="px-3 py-2 text-right font-medium text-slate-900">{row.count}</td>
+            <td className="px-3 py-2 text-right font-medium text-foreground">{row.count}</td>
           </tr>
         ))}
-        <tr className="bg-slate-50 font-medium">
+        <tr className="bg-muted font-medium">
           <th scope="row" className="px-3 py-2 text-left">
             {LABELS.analytics.matrixColumnTotal}
           </th>

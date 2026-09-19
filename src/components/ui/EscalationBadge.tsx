@@ -1,10 +1,15 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
 import { Badge } from './Badge';
 
+// Opaque tint per level — see lib/severity.ts for why opacity-modified colors
+// are dropped. One family in three weights (tint, deeper tint, solid), not a
+// fourth rainbow duplicating the severity hues.
 const LEVEL_CLASS: Record<number, string> = {
-  1: 'bg-escalation-l1/10 text-escalation-l1 border-escalation-l1/30',
-  2: 'bg-escalation-l2/10 text-escalation-l2 border-escalation-l2/30',
-  3: 'bg-escalation-l3/10 text-escalation-l3 border-escalation-l3/30',
+  1: 'bg-escalation-l1-surface text-escalation-l1 border-escalation-l1/40',
+  2: 'bg-escalation-l2-surface text-escalation-l2 border-escalation-l2/40',
+  3: 'bg-escalation-l3 text-escalation-l3-foreground border-escalation-l3',
 };
 
 export function EscalationBadge({ level }: { level: number }): ReactElement | null {
