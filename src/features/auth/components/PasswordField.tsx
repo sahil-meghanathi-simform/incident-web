@@ -33,7 +33,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(fu
           <button
             type="button"
             onClick={() => setVisible((v) => !v)}
-            className="absolute inset-y-0 right-0 px-3 text-xs font-medium text-slate-500 hover:text-slate-700"
+            className="absolute inset-y-0 right-0 px-3 text-xs font-medium text-muted-foreground hover:text-foreground-soft"
           >
             {visible ? LABELS.auth.passwordHide : LABELS.auth.passwordShow}
           </button>

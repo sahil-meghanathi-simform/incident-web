@@ -7,8 +7,8 @@ import type { IncidentDetail } from '../types/incident.type';
 function Field({ label, value }: { label: string; value: ReactNode }): ReactElement {
   return (
     <div>
-      <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</dt>
-      <dd className="mt-0.5 text-sm text-slate-900">{value}</dd>
+      <dt className="text-xs font-medium uppercase tracking-caps text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 text-sm text-foreground">{value}</dd>
     </div>
   );
 }
@@ -23,21 +23,21 @@ export function IncidentOverviewTab({ incident }: IncidentOverviewTabProps): Rea
     <div className="grid gap-6 py-4 sm:grid-cols-3">
       <div className="space-y-4 sm:col-span-2">
         <div>
-          <h2 className="text-sm font-semibold text-slate-700">Description</h2>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-800">{incident.description}</p>
+          <h2 className="text-sm font-semibold text-foreground-soft">Description</h2>
+          <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.description}</p>
         </div>
         {(incident.rootCause || incident.correctiveAction) && (
-          <div className="space-y-3 rounded-md border border-slate-200 bg-slate-50 p-3">
+          <div className="space-y-3 rounded-md border border-border bg-muted p-3">
             {incident.rootCause && (
               <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Root cause</h3>
-                <p className="mt-1 text-sm text-slate-800">{incident.rootCause}</p>
+                <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">Root cause</h3>
+                <p className="mt-1 text-sm text-foreground">{incident.rootCause}</p>
               </div>
             )}
             {incident.correctiveAction && (
               <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Corrective action</h3>
-                <p className="mt-1 text-sm text-slate-800">{incident.correctiveAction}</p>
+                <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">Corrective action</h3>
+                <p className="mt-1 text-sm text-foreground">{incident.correctiveAction}</p>
               </div>
             )}
           </div>

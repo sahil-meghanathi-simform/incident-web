@@ -6,6 +6,7 @@ import { ErrorState } from '../../../components/ui/ErrorState';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Tabs, type TabItem } from '../../../components/ui/Tabs';
 import { TextLink } from '../../../components/ui/TextLink';
+import { Breadcrumb } from '../../../components/ui/Breadcrumb';
 import { AccessRevokedNotice } from '../../../components/feedback/AccessRevokedNotice';
 import { IncidentDetailHeader } from '../components/IncidentDetailHeader';
 import { IncidentOverviewTab } from '../components/IncidentOverviewTab';
@@ -80,6 +81,9 @@ function IncidentDetailBody({ incident }: IncidentDetailBodyProps): ReactElement
 
   return (
     <>
+      <div className="mb-3">
+        <Breadcrumb items={[{ to: ROUTES.incidents, label: LABELS.incidents.listTitle }, { label: incident.reference }]} />
+      </div>
       <IncidentDetailHeader incident={incident} />
       <IncidentActionBar incident={incident} />
       <Tabs tabs={tabs} activeKey={activeTab} onChange={setTab} />

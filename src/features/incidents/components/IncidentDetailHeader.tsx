@@ -17,10 +17,10 @@ type IncidentDetailHeaderProps = Readonly<{
  * rule as rootCause/correctiveAction, never gated behind canSeeAssignment. */
 export function IncidentDetailHeader({ incident }: IncidentDetailHeaderProps): ReactElement {
   return (
-    <div className="space-y-3 border-b border-slate-200 pb-4">
+    <div className="space-y-3 border-b border-border pb-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="font-mono text-sm text-slate-500">{incident.reference}</p>
+          <p className="font-mono text-sm text-muted-foreground">{incident.reference}</p>
           <h1 className="mt-0.5 font-display text-lg font-semibold tracking-display text-foreground">{incident.title}</h1>
         </div>
         <div className="flex items-center gap-2">
@@ -30,7 +30,7 @@ export function IncidentDetailHeader({ incident }: IncidentDetailHeaderProps): R
         </div>
       </div>
       {incident.closure && (
-        <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+        <p className="rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground-soft">
           {LABELS.closure.closedBanner(
             formatDateTime(incident.closure.closedAt),
             incident.closure.closedBy?.displayName ?? 'someone since removed',

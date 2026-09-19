@@ -25,7 +25,7 @@ export function RegisterPage(): ReactElement {
       footer={
         <>
           {LABELS.auth.hasAccountPrompt}{' '}
-          <Link to={ROUTES.login} className="font-medium text-blue-600 hover:underline">
+          <Link to={ROUTES.login} className="font-medium text-primary hover:underline">
             {LABELS.auth.logIn}
           </Link>
         </>
@@ -49,7 +49,7 @@ export function RegisterPage(): ReactElement {
           {...register('password')}
         />
         {formError && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-destructive" role="alert">
             {formError}
           </p>
         )}

@@ -93,7 +93,7 @@ export function ClosureProposalForm({ incident }: ClosureProposalFormProps): Rea
             {...register('rootCause')}
           />
         </Field>
-        <p className="text-right text-xs text-slate-400">{rootCauseLength} / {MAX_LENGTH}</p>
+        <p className="text-right text-xs text-muted-foreground">{rootCauseLength} / {MAX_LENGTH}</p>
       </div>
 
       <div className="space-y-1">
@@ -112,7 +112,7 @@ export function ClosureProposalForm({ incident }: ClosureProposalFormProps): Rea
             {...register('correctiveAction')}
           />
         </Field>
-        <p className="text-right text-xs text-slate-400">{correctiveActionLength} / {MAX_LENGTH}</p>
+        <p className="text-right text-xs text-muted-foreground">{correctiveActionLength} / {MAX_LENGTH}</p>
       </div>
 
       <div className="flex justify-end">

@@ -1,5 +1,4 @@
 import { cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
-import { cn } from '../../lib/cn';
 
 type FieldProps = Readonly<{
   label: string;
@@ -25,7 +24,9 @@ type DescribableElement = ReactElement<{ 'aria-describedby'?: string }>;
 export function Field({ label, htmlFor, error, hint, required, children }: FieldProps): ReactElement {
   const hintId = `${htmlFor}-hint`;
   const errorId = `${htmlFor}-error`;
-  const describedBy = cn(hint && hintId, error && errorId) || undefined;
+  // Not a class list — cn()/twMerge is for Tailwind utilities, not for joining DOM
+  // ids, so this builds the aria-describedby value directly instead.
+  const describedBy = [hint && hintId, error && errorId].filter(Boolean).join(' ') || undefined;
 
   const control =
     typeof children === 'function'
@@ -36,18 +37,18 @@ export function Field({ label, htmlFor, error, hint, required, children }: Field
 
   return (
     <div className="space-y-1">
-      <label htmlFor={htmlFor} className="block text-sm font-medium text-slate-700">
+      <label htmlFor={htmlFor} className="block text-sm font-medium text-foreground-soft">
         {label}
-        {required && <span className="text-red-500"> *</span>}
+        {required && <span className="text-destructive"> *</span>}
       </label>
       {control}
       {hint && !error && (
-        <p id={hintId} className="text-xs text-slate-500">
+        <p id={hintId} className="text-xs text-muted-foreground">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="text-xs text-red-600">
+        <p id={errorId} className="text-xs text-destructive">
           {error}
         </p>
       )}

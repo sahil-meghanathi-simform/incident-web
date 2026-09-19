@@ -7,7 +7,7 @@ import type { ReactElement } from 'react';
  */
 export function ClearanceExplainer(): ReactElement {
   return (
-    <p className="rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-800">
+    <p className="rounded-md border border-border bg-accent px-3 py-2 text-xs text-accent-foreground">
       New accounts start at clearance 1. If you report a high-severity incident, you may
       not be able to view it afterwards — an investigator or manager can still act on it.
     </p>

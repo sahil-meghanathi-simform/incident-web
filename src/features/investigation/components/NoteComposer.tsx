@@ -63,7 +63,7 @@ export function NoteComposer({ incidentId, autoFocus = false }: NoteComposerProp
   return (
     <form onSubmit={submit} noValidate className="space-y-2">
       {closedWhileComposing && (
-        <p role="alert" className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        <p role="alert" className="rounded-md border border-severity-medium-border bg-severity-medium-surface px-3 py-2 text-xs text-severity-medium">
           {LABELS.investigation.notesClosedNotice}
         </p>
       )}
@@ -79,7 +79,7 @@ export function NoteComposer({ incidentId, autoFocus = false }: NoteComposerProp
         />
       </Field>
       <div className="flex items-center justify-between">
-        <span className={overLimit ? 'text-xs font-medium text-red-600' : 'text-xs text-slate-400'}>
+        <span className={overLimit ? 'text-xs font-medium text-destructive' : 'text-xs text-muted-foreground'}>
           {LABELS.investigation.composerCharacterCount(length, MAX_LENGTH)}
         </span>
         <Button type="submit" isLoading={isSubmitting} disabled={disabled || overLimit}>
