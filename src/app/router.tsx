@@ -5,6 +5,7 @@ import { ComingSoon } from '../components/feedback/ComingSoon';
 import { Forbidden } from '../components/feedback/Forbidden';
 import { RequireAuth } from './guards/RequireAuth';
 import { RequireRole } from './guards/RequireRole';
+import { DashboardPage } from '../features/dashboard/pages/DashboardPage';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { RegisterPage } from '../features/auth/pages/RegisterPage';
 import { ReportIncidentPage } from '../features/incidents/pages/ReportIncidentPage';
@@ -50,7 +51,7 @@ export const router = createBrowserRouter([
     ),
     errorElement: <RouteErrorBoundary />,
     children: [
-      { index: true, element: <ComingSoon title="Home" /> },
+      { index: true, element: <DashboardPage /> },
       { path: 'incidents', element: <IncidentListPage /> },
       { path: 'incidents/new', element: <ReportIncidentPage /> },
       { path: 'incidents/new/submitted', element: <SubmissionReceiptPage /> },

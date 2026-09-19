@@ -14,6 +14,7 @@ import { NAV, FEEDBACK, CHROME } from './ui';
 import { ESCALATIONS, NOTIFICATIONS, TIMELINE } from './monitoring';
 import { ADMIN } from './admin';
 import { ANALYTICS } from './analytics';
+import { DASHBOARD } from './dashboard';
 
 export const LABELS = {
   errors: ERRORS,
@@ -30,4 +31,5 @@ export const LABELS = {
   timeline: TIMELINE,
   admin: ADMIN,
   analytics: ANALYTICS,
+  dashboard: DASHBOARD,
 } as const;
