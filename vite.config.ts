@@ -10,6 +10,12 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
+  // lucide-react ships one ES module per icon (~1,500 of them) — without this,
+  // Vite's dependency pre-bundler discovers and re-bundles them lazily on first
+  // use, which shows up as a slow, janky first paint on every cold dev start.
+  optimizeDeps: {
+    include: ['lucide-react'],
+  },
   server: {
     port: 5173,
     proxy: {

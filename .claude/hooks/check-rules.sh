@@ -199,10 +199,10 @@ case "$file" in
       add "  $(printf '%s\n' "$hits" | head -2)
   — tailwind.md: inline style objects only for genuinely dynamic values (a computed transform, a measured width). Otherwise use utilities. If this is the dynamic case, acknowledge it with a \`rules-ok:\` comment naming the value."
     fi
-    hits=$(scan "from[[:space:]]+['\"](styled-components|@emotion|class-variance-authority)")
+    hits=$(scan "from[[:space:]]+['\"](styled-components|@emotion)")
     if [ -n "$hits" ]; then
       add "  $(printf '%s\n' "$hits" | head -2)
-  — tailwind.md: utilities only. No CSS-in-JS and no variant-styling library; this project has decided against adding one."
+  — tailwind.md: utilities only. No CSS-in-JS. Variants go through cva (approved 2026-09) — styling still resolves to Tailwind utility strings."
     fi
     ;;
 esac

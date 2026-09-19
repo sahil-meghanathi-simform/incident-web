@@ -10,7 +10,7 @@ Tailwind **v4**. Utilities only — no CSS modules, no styled-components, no inl
 
 ## Where tokens live
 
-v4 is CSS-first: there is no `tailwind.config.ts`. Design tokens — colors, spacing scale, fonts, breakpoints — are declared in one `@theme` block in `src/index.css` and consumed as generated utility names.
+v4 is CSS-first: there is no `tailwind.config.ts`. Design tokens — colors, spacing scale, fonts, breakpoints — are declared in one `@theme` block in `src/styles/index.css` and consumed as generated utility names.
 
 ```css
 @import "tailwindcss";
@@ -22,7 +22,7 @@ v4 is CSS-first: there is no `tailwind.config.ts`. Design tokens — colors, spa
 }
 ```
 
-`--color-primary` generates `bg-primary`, `text-primary`, `border-primary`, and so on. Read `src/index.css` before styling anything — it is the single source of truth for the scale.
+`--color-primary` generates `bg-primary`, `text-primary`, `border-primary`, and so on. Read `src/styles/index.css` before styling anything — it is the single source of truth for the scale.
 
 Adding a token to `@theme` is a design-system change, not a per-feature convenience. Use the nearest existing token and raise the gap instead of appending a new variable mid-feature.
 
@@ -34,6 +34,14 @@ Adding a token to `@theme` is a design-system change, not a per-feature convenie
 - Flex and grid over absolute positioning.
 - When the same class string appears a third time, extract a shared component — not an `@apply` rule.
 - Fluid layouts over fixed pixel widths. Test that long strings and empty values don't break the layout.
+
+## Variants
+
+Component variants are declared with `class-variance-authority` (`cva`) — the shadcn/ui convention, approved 2026-09, superseding the earlier decision against a variant-styling library. One `cva()` call per component, colocated in the component file and exported alongside it so callers can compose (`buttonVariants({ variant: "ghost" })`).
+
+- `cva` declares the matrix; `cn()` still merges the caller's `className` last so a one-off override wins. Both, not either.
+- No other styling library. CSS-in-JS (`styled-components`, `@emotion`) remains banned.
+- A component with one appearance does not get a `cva()`. Reach for it at the second variant axis.
 
 ## Class order
 

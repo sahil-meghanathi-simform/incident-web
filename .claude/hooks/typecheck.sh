@@ -25,8 +25,12 @@ root="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 cd "$root" || exit 0
 npx --no-install tsc --version >/dev/null 2>&1 || exit 0
 
+# `tsc --noEmit` alone resolves the root tsconfig.json, which is a solution-style
+# stub (`{"files": [], "references": [...]}`) — outside build mode tsc ignores
+# `references` and silently compiles zero files, always exiting 0. `-b` is what
+# actually walks the referenced project and checks the real source tree.
 log=$(mktemp)
-if ! npx --no-install tsc --noEmit >"$log" 2>&1; then
+if ! npx --no-install tsc -b --noEmit >"$log" 2>&1; then
   {
     echo "tsc --noEmit is failing — architecture.md requires typecheck clean before a change is handed over:"
     echo
