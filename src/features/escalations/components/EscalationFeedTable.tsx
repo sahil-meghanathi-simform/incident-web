@@ -34,22 +34,22 @@ export function EscalationFeedTable({ items }: EscalationFeedTableProps): ReactE
         <th className="px-4 py-2">SLA</th>
         <th className="px-4 py-2" />
       </TableHeader>
-      <tbody className="divide-y divide-slate-100">
+      <tbody className="divide-y divide-border">
         {items.map((item) => (
-          <tr key={item.incidentId} className="hover:bg-slate-50">
-            <td className="px-4 py-2 font-mono text-xs text-slate-700">
-              <Link to={ROUTES.incidentDetail(item.incidentId)} className="text-blue-600 hover:underline">
+          <tr key={item.incidentId} className="hover:bg-accent">
+            <td className="px-4 py-2 font-mono text-xs text-foreground-soft">
+              <Link to={ROUTES.incidentDetail(item.incidentId)} className="text-primary hover:underline">
                 {item.incidentReference}
               </Link>
             </td>
-            <td className="max-w-xs truncate px-4 py-2 text-slate-900">{item.incidentTitle}</td>
+            <td className="max-w-xs truncate px-4 py-2 text-foreground">{item.incidentTitle}</td>
             <td className="px-4 py-2">
               <SeverityBadge severity={item.severity} />
             </td>
             <td className="px-4 py-2">
               <EscalationBadge level={item.level} />
             </td>
-            <td className="px-4 py-2 text-slate-600">{item.assignedInvestigator?.displayName ?? '—'}</td>
+            <td className="px-4 py-2 text-foreground-soft">{item.assignedInvestigator?.displayName ?? '—'}</td>
             <td className="px-4 py-2">
               <SlaCountdown dueAt={item.dueAt} />
             </td>

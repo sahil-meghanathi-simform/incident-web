@@ -1,6 +1,6 @@
 import { useState, type ReactElement } from 'react';
 import { Drawer } from '../../../components/ui/Drawer';
-import { Spinner } from '../../../components/ui/Spinner';
+import { Loader2 } from 'lucide-react';
 import { TextLink } from '../../../components/ui/TextLink';
 import { NotificationItem } from './NotificationItem';
 import { useNotifications } from '../hooks/useNotifications';
@@ -46,7 +46,7 @@ export function NotificationBell(): ReactElement {
       </button>
 
       <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={LABELS.notifications.drawerTitle}>
-        {query.isPending && <Spinner className="h-4 w-4" />}
+        {query.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
 
         {/* A poll failure degrades to the stale data plus a "last updated" marker
             below, never a blocking error screen — unless there is no data at all yet. */}

@@ -3,7 +3,7 @@ import { Skeleton } from './Skeleton';
 
 export function SkeletonTable({ rows = 6, columns = 5 }: { rows?: number; columns?: number }): ReactElement {
   return (
-    <div role="status" className="space-y-2 rounded-lg border border-slate-200 p-4">
+    <div role="status" className="space-y-2 rounded-lg border border-border p-4">
       {Array.from({ length: rows }).map((_, r) => (
         <div key={`row-${r}`} className="flex gap-3">
           {Array.from({ length: columns }).map((__, c) => (

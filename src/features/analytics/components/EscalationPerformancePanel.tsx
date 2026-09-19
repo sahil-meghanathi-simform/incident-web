@@ -30,7 +30,7 @@ export function EscalationPerformancePanel({ data }: EscalationPerformancePanelP
           {LABELS.analytics.escalationColumns.p90Ack}
         </th>
       </TableHeader>
-      <tbody className="divide-y divide-slate-100">
+      <tbody className="divide-y divide-border">
         {data.bySeverity.map((row) => (
           <tr key={row.severity}>
             <td className="px-3 py-2">

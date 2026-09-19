@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { SeverityBadge } from '../../../components/ui/SeverityBadge';
-import { Spinner } from '../../../components/ui/Spinner';
+import { Loader2 } from 'lucide-react';
 import { formatMinutes } from '../../../components/ui/SlaCountdown';
 import { useEscalationTiers } from '../hooks/useEscalationTiers';
 import type { Severity } from '../../../lib/severity';
@@ -10,7 +10,7 @@ import type { Severity } from '../../../lib/severity';
 export function TierThresholdsPanel(): ReactElement | null {
   const query = useEscalationTiers();
 
-  if (query.isPending) return <Spinner className="h-4 w-4" />;
+  if (query.isPending) return <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />;
   if (query.isError || !query.data.tiers.length) return null;
 
   const bySeverity = new Map<Severity, typeof query.data.tiers>();

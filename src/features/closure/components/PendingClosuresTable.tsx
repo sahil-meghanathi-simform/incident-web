@@ -25,20 +25,20 @@ export function PendingClosuresTable({ items }: PendingClosuresTableProps): Reac
         <th className="px-4 py-2">{LABELS.incidents.columns.assignee}</th>
         <th className="px-4 py-2">{LABELS.incidents.columns.age}</th>
       </TableHeader>
-      <tbody className="divide-y divide-slate-100">
+      <tbody className="divide-y divide-border">
         {items.map((item) => (
-          <tr key={item.id} className="hover:bg-slate-50">
-            <td className="px-4 py-2 font-mono text-xs text-slate-700">
-              <Link to={`${ROUTES.incidentDetail(item.id)}?tab=closure`} className="text-blue-600 hover:underline">
+          <tr key={item.id} className="hover:bg-accent">
+            <td className="px-4 py-2 font-mono text-xs text-foreground-soft">
+              <Link to={`${ROUTES.incidentDetail(item.id)}?tab=closure`} className="text-primary hover:underline">
                 {item.reference}
               </Link>
             </td>
-            <td className="max-w-xs truncate px-4 py-2 text-slate-900">{item.title}</td>
+            <td className="max-w-xs truncate px-4 py-2 text-foreground">{item.title}</td>
             <td className="px-4 py-2">
               <SeverityBadge severity={item.severity} />
             </td>
-            <td className="px-4 py-2 text-slate-600">{item.assignedInvestigator?.displayName ?? '—'}</td>
-            <td className="px-4 py-2 text-slate-500">{formatRelative(item.updatedAt)}</td>
+            <td className="px-4 py-2 text-foreground-soft">{item.assignedInvestigator?.displayName ?? '—'}</td>
+            <td className="px-4 py-2 text-muted-foreground">{formatRelative(item.updatedAt)}</td>
           </tr>
         ))}
       </tbody>

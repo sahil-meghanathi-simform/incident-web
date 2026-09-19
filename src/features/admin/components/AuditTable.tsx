@@ -25,27 +25,27 @@ export function AuditTable({ items }: AuditTableProps): ReactElement {
         <th className="px-4 py-2">{LABELS.admin.auditColumns.fromTo}</th>
         <th className="px-4 py-2">{LABELS.admin.auditColumns.reason}</th>
       </TableHeader>
-      <tbody className="divide-y divide-slate-100">
+      <tbody className="divide-y divide-border">
         {items.map((row) => (
-          <tr key={row.id} className="hover:bg-slate-50">
-            <td className="whitespace-nowrap px-4 py-2 text-xs text-slate-500">{formatDateTime(row.occurredAt)}</td>
+          <tr key={row.id} className="hover:bg-accent">
+            <td className="whitespace-nowrap px-4 py-2 text-xs text-muted-foreground">{formatDateTime(row.occurredAt)}</td>
             <td className="px-4 py-2">
-              <Badge className="border-slate-300 bg-slate-50 text-slate-700">{row.type.replaceAll('_', ' ')}</Badge>
+              <Badge className="border-border bg-muted text-foreground-soft">{row.type.replaceAll('_', ' ')}</Badge>
             </td>
-            <td className="px-4 py-2 text-slate-700">{row.actor?.displayName ?? '—'}</td>
-            <td className="px-4 py-2 font-mono text-xs text-slate-700">
+            <td className="px-4 py-2 text-foreground-soft">{row.actor?.displayName ?? '—'}</td>
+            <td className="px-4 py-2 font-mono text-xs text-foreground-soft">
               {row.incidentId && row.incidentReference ? (
-                <Link to={ROUTES.incidentDetail(row.incidentId)} className="text-blue-600 hover:underline">
+                <Link to={ROUTES.incidentDetail(row.incidentId)} className="text-primary hover:underline">
                   {row.incidentReference}
                 </Link>
               ) : (
                 '—'
               )}
             </td>
-            <td className="px-4 py-2 text-xs text-slate-600">
+            <td className="px-4 py-2 text-xs text-foreground-soft">
               {row.fromValue || row.toValue ? `${row.fromValue ?? '—'} → ${row.toValue ?? '—'}` : '—'}
             </td>
-            <td className="max-w-xs truncate px-4 py-2 text-xs text-slate-500">{row.reason ?? '—'}</td>
+            <td className="max-w-xs truncate px-4 py-2 text-xs text-muted-foreground">{row.reason ?? '—'}</td>
           </tr>
         ))}
       </tbody>

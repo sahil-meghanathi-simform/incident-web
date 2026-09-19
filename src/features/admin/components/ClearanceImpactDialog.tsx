@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
-import { Spinner } from '../../../components/ui/Spinner';
+import { Loader2 } from 'lucide-react';
 import { useClearanceImpactPreview } from '../hooks/useClearanceImpactPreview';
 import { ROUTES } from '../../../app/routes';
 import { LABELS } from '../../../lib/labels';
@@ -41,7 +41,7 @@ export function ClearanceImpactDialog({
       <div className="space-y-4">
         {preview.isPending && (
           <p className="flex items-center gap-2 text-sm text-slate-600">
-            <Spinner className="h-4 w-4" /> {LABELS.admin.clearanceImpactLoading}
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {LABELS.admin.clearanceImpactLoading}
           </p>
         )}
 

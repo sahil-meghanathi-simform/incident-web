@@ -35,23 +35,23 @@ export function JobRunsTable({ runs }: JobRunsTableProps): ReactElement {
         <th className="px-4 py-2">{LABELS.admin.jobRunColumns.notified}</th>
         <th className="px-4 py-2">{LABELS.admin.jobRunColumns.duration}</th>
       </TableHeader>
-      <tbody className="divide-y divide-slate-100">
+      <tbody className="divide-y divide-border">
         {runs.map((run) => (
-          <tr key={run.id} className="hover:bg-slate-50">
-            <td className="whitespace-nowrap px-4 py-2 text-xs text-slate-500">{formatDateTime(run.startedAt)}</td>
+          <tr key={run.id} className="hover:bg-accent">
+            <td className="whitespace-nowrap px-4 py-2 text-xs text-muted-foreground">{formatDateTime(run.startedAt)}</td>
             <td className="px-4 py-2">
               {run.outcome ? (
-                <Badge className={OUTCOME_CLASS[run.outcome] ?? 'border-slate-300 bg-slate-50 text-slate-600'}>
+                <Badge className={OUTCOME_CLASS[run.outcome] ?? 'border-border bg-muted text-foreground-soft'}>
                   {run.outcome.replaceAll('_', ' ')}
                 </Badge>
               ) : (
-                <Badge className="border-slate-300 bg-slate-50 text-slate-500">RUNNING</Badge>
+                <Badge className="border-border bg-muted text-muted-foreground">RUNNING</Badge>
               )}
             </td>
-            <td className="px-4 py-2 text-slate-700">{run.scanned}</td>
-            <td className="px-4 py-2 text-slate-700">{run.escalated}</td>
-            <td className="px-4 py-2 text-slate-700">{run.notified}</td>
-            <td className="px-4 py-2 text-slate-700">{formatDuration(run.startedAt, run.finishedAt)}</td>
+            <td className="px-4 py-2 text-foreground-soft">{run.scanned}</td>
+            <td className="px-4 py-2 text-foreground-soft">{run.escalated}</td>
+            <td className="px-4 py-2 text-foreground-soft">{run.notified}</td>
+            <td className="px-4 py-2 text-foreground-soft">{formatDuration(run.startedAt, run.finishedAt)}</td>
           </tr>
         ))}
       </tbody>

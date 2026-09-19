@@ -23,27 +23,27 @@ export function UsersTable({ items, onEdit }: UsersTableProps): ReactElement {
         <th className="px-4 py-2">{LABELS.admin.usersColumns.createdAt}</th>
         <th className="px-4 py-2" />
       </TableHeader>
-      <tbody className="divide-y divide-slate-100">
+      <tbody className="divide-y divide-border">
         {items.map((user) => (
-          <tr key={user.id} className="hover:bg-slate-50">
+          <tr key={user.id} className="hover:bg-accent">
             <td className="px-4 py-2">
-              <div className="font-medium text-slate-900">{user.displayName}</div>
-              <div className="text-xs text-slate-500">{user.email}</div>
+              <div className="font-medium text-foreground">{user.displayName}</div>
+              <div className="text-xs text-muted-foreground">{user.email}</div>
             </td>
-            <td className="px-4 py-2 text-slate-700">{user.role.replaceAll('_', ' ')}</td>
-            <td className="px-4 py-2 text-slate-700">{user.clearanceLevel}</td>
+            <td className="px-4 py-2 text-foreground-soft">{user.role.replaceAll('_', ' ')}</td>
+            <td className="px-4 py-2 text-foreground-soft">{user.clearanceLevel}</td>
             <td className="px-4 py-2">
               <Badge
                 className={
                   user.isActive
                     ? 'border-green-300 bg-green-50 text-green-700'
-                    : 'border-slate-300 bg-slate-50 text-slate-500'
+                    : 'border-border bg-muted text-muted-foreground'
                 }
               >
                 {user.isActive ? LABELS.admin.statusActive : LABELS.admin.statusInactive}
               </Badge>
             </td>
-            <td className="whitespace-nowrap px-4 py-2 text-xs text-slate-500">{formatDateTime(user.createdAt)}</td>
+            <td className="whitespace-nowrap px-4 py-2 text-xs text-muted-foreground">{formatDateTime(user.createdAt)}</td>
             <td className="px-4 py-2 text-right">
               <Button type="button" variant="outline" onClick={() => onEdit(user)}>
                 Edit

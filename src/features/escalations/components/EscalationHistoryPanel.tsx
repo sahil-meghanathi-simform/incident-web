@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { Spinner } from '../../../components/ui/Spinner';
+import { Loader2 } from 'lucide-react';
 import { formatDateTime } from '../../../lib/datetime';
 import { useIncidentEscalationEvents } from '../hooks/useIncidentEscalationEvents';
 import { LABELS } from '../../../lib/labels';
@@ -16,7 +16,7 @@ type EscalationHistoryPanelProps = Readonly<{
 export function EscalationHistoryPanel({ incidentId }: EscalationHistoryPanelProps): ReactElement {
   const query = useIncidentEscalationEvents(incidentId, true);
 
-  if (query.isPending) return <Spinner className="h-4 w-4" />;
+  if (query.isPending) return <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />;
   if (query.isError) return <p className="text-xs text-red-600">{LABELS.escalations.historyLoadError}</p>;
   if (query.data.events.length === 0) return <p className="text-xs text-slate-500">{LABELS.escalations.historyEmpty}</p>;
 

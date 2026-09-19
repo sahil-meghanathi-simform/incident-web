@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { Button } from './Button';
-import { Spinner } from './Spinner';
+import { Loader2 } from 'lucide-react';
 
 type LoadMoreProps = Readonly<{
   hasMore: boolean;
@@ -14,7 +14,7 @@ export function LoadMore({ hasMore, isLoading, onClick }: LoadMoreProps): ReactE
   return (
     <div className="flex justify-center py-3">
       <Button variant="outline" onClick={onClick} disabled={isLoading}>
-        {isLoading ? <Spinner className="h-4 w-4" /> : 'Load more'}
+        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : 'Load more'}
       </Button>
     </div>
   );
