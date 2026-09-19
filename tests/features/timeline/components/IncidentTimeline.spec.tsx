@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { IncidentTimeline } from '../../../../src/features/timeline/components/IncidentTimeline';
 
 const { getIncidentTimelineMock } = vi.hoisted(() => ({ getIncidentTimelineMock: vi.fn() }));
@@ -17,7 +18,9 @@ function renderTimeline() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <IncidentTimeline incidentId="inc-1" />
+      <TooltipProvider>
+        <IncidentTimeline incidentId="inc-1" />
+      </TooltipProvider>
     </QueryClientProvider>,
   );
 }

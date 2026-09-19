@@ -1,7 +1,7 @@
 import { useEffect, type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Modal } from '../../../components/ui/Modal';
+import { Dialog, DialogContent, DialogTitle } from '../../../components/ui/Dialog';
 import { Field } from '../../../components/ui/Field';
 import { Select } from '../../../components/ui/Select';
 import { Textarea } from '../../../components/ui/Textarea';
@@ -82,8 +82,10 @@ export function ChangeSeverityModal({ incident, isOpen, onClose }: ChangeSeverit
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={LABELS.triage.changeSeverityModalTitle}>
-      <form onSubmit={submit} noValidate className="space-y-4">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogTitle>{LABELS.triage.changeSeverityModalTitle}</DialogTitle>
+        <form onSubmit={submit} noValidate className="mt-4 space-y-4">
         <Field label={LABELS.incidents.columns.severity} htmlFor="change-severity" error={errors.severity?.message} required>
           {/* SEVERITY_ORDER/SEVERITY_LABEL are static, contract-defined constants — never
               fetched — so the option list exists synchronously at mount and the form's
@@ -121,7 +123,8 @@ export function ChangeSeverityModal({ incident, isOpen, onClose }: ChangeSeverit
             {LABELS.triage.changeSeverity}
           </Button>
         </div>
-      </form>
-    </Modal>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
-import { Modal } from '../../../components/ui/Modal';
+import { Dialog, DialogContent, DialogTitle } from '../../../components/ui/Dialog';
 import { Button } from '../../../components/ui/Button';
 import { Loader2 } from 'lucide-react';
 import { useClearanceImpactPreview } from '../hooks/useClearanceImpactPreview';
@@ -37,47 +37,50 @@ export function ClearanceImpactDialog({
   if (!isOpen) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onCancel} title={LABELS.admin.clearanceImpactDialogTitle}>
-      <div className="space-y-4">
-        {preview.isPending && (
-          <p className="flex items-center gap-2 text-sm text-slate-600">
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {LABELS.admin.clearanceImpactLoading}
-          </p>
-        )}
-
-        {preview.isError && <p role="alert" className="text-sm text-red-600">{LABELS.errors.generic}</p>}
-
-        {preview.data && preview.data.count === 0 && (
-          <p className="text-sm text-slate-600">{LABELS.admin.clearanceImpactNone}</p>
-        )}
-
-        {preview.data && preview.data.count > 0 && (
-          <div className="space-y-2">
-            <p role="alert" className="text-sm font-medium text-amber-800">
-              {LABELS.admin.clearanceImpactWarning(preview.data.count)}
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <DialogContent>
+        <DialogTitle>{LABELS.admin.clearanceImpactDialogTitle}</DialogTitle>
+        <div className="mt-4 space-y-4">
+          {preview.isPending && (
+            <p className="flex items-center gap-2 text-sm text-foreground-soft">
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {LABELS.admin.clearanceImpactLoading}
             </p>
-            <ul className="max-h-48 space-y-1 overflow-y-auto rounded-md border border-amber-200 bg-amber-50 p-3 text-sm">
-              {preview.data.affectedIncidents.map((incident) => (
-                <li key={incident.id}>
-                  <Link to={ROUTES.incidentDetail(incident.id)} className="font-mono text-blue-700 hover:underline">
-                    {incident.reference}
-                  </Link>{' '}
-                  <span className="text-slate-500">({incident.severity})</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          )}
 
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button type="button" onClick={onConfirm} isLoading={isSubmitting} disabled={!preview.data}>
-            {LABELS.admin.clearanceImpactConfirm}
-          </Button>
+          {preview.isError && <p role="alert" className="text-sm text-destructive">{LABELS.errors.generic}</p>}
+
+          {preview.data && preview.data.count === 0 && (
+            <p className="text-sm text-foreground-soft">{LABELS.admin.clearanceImpactNone}</p>
+          )}
+
+          {preview.data && preview.data.count > 0 && (
+            <div className="space-y-2">
+              <p role="alert" className="text-sm font-medium text-severity-medium">
+                {LABELS.admin.clearanceImpactWarning(preview.data.count)}
+              </p>
+              <ul className="max-h-48 space-y-1 overflow-y-auto rounded-md border border-severity-medium-border bg-severity-medium-surface p-3 text-sm">
+                {preview.data.affectedIncidents.map((incident) => (
+                  <li key={incident.id}>
+                    <Link to={ROUTES.incidentDetail(incident.id)} className="font-mono text-primary hover:underline">
+                      {incident.reference}
+                    </Link>{' '}
+                    <span className="text-muted-foreground">({incident.severity})</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={onConfirm} isLoading={isSubmitting} disabled={!preview.data}>
+              {LABELS.admin.clearanceImpactConfirm}
+            </Button>
+          </div>
         </div>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }

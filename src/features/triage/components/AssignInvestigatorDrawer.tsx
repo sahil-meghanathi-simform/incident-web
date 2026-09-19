@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from 'react';
-import { Drawer } from '../../../components/ui/Drawer';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/Sheet';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { ErrorState } from '../../../components/ui/ErrorState';
@@ -49,8 +49,12 @@ export function AssignInvestigatorDrawer({ incident, isOpen, onClose }: AssignIn
   }
 
   return (
-    <Drawer isOpen={isOpen} onClose={onClose} title={LABELS.triage.assignDrawerTitle}>
-      <div className="space-y-4">
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>{LABELS.triage.assignDrawerTitle}</SheetTitle>
+        </SheetHeader>
+        <div className="space-y-4">
         {query.isPending && (
           <div role="status" className="space-y-2">
             <Skeleton className="h-12 w-full" />
@@ -79,10 +83,10 @@ export function AssignInvestigatorDrawer({ incident, isOpen, onClose }: AssignIn
         )}
 
         {hiddenCount > 0 && (
-          <p className="text-xs text-slate-500">{LABELS.triage.hiddenInvestigatorsFootnote(hiddenCount)}</p>
+          <p className="text-xs text-muted-foreground">{LABELS.triage.hiddenInvestigatorsFootnote(hiddenCount)}</p>
         )}
 
-        <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
+        <div className="flex justify-end gap-2 border-t border-border pt-4">
           <Button variant="outline" onClick={onClose} disabled={mutation.isPending}>
             Cancel
           </Button>
@@ -90,7 +94,8 @@ export function AssignInvestigatorDrawer({ incident, isOpen, onClose }: AssignIn
             {incident.assignedInvestigator ? LABELS.triage.reassign : LABELS.triage.assign}
           </Button>
         </div>
-      </div>
-    </Drawer>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

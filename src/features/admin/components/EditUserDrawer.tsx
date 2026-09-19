@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from 'react';
-import { Drawer } from '../../../components/ui/Drawer';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/Sheet';
 import { Field } from '../../../components/ui/Field';
 import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
@@ -109,22 +109,26 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
 
   return (
     <>
-      <Drawer isOpen={isOpen} onClose={handleClose} title={LABELS.admin.editUserDrawerTitle(user.displayName)}>
-        <div className="space-y-6">
-          <div className="flex items-center gap-2 text-sm text-slate-600">
+      <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>{LABELS.admin.editUserDrawerTitle(user.displayName)}</SheetTitle>
+          </SheetHeader>
+          <div className="space-y-6">
+          <div className="flex items-center gap-2 text-sm text-foreground-soft">
             <span>{user.email}</span>
-            <Badge className={user.isActive ? 'border-green-300 bg-green-50 text-green-700' : 'border-slate-300 bg-slate-50 text-slate-500'}>
+            <Badge className={user.isActive ? 'border-border bg-muted text-stage-closed' : 'border-border bg-muted text-muted-foreground'}>
               {user.isActive ? LABELS.admin.statusActive : LABELS.admin.statusInactive}
             </Badge>
           </div>
 
-          {isSelf && <p className="text-xs text-slate-500">{LABELS.admin.selfModificationForbidden}</p>}
+          {isSelf && <p className="text-xs text-muted-foreground">{LABELS.admin.selfModificationForbidden}</p>}
 
           <section className="space-y-2">
             <Field label={LABELS.admin.roleLabel} htmlFor="edit-user-role">
               <RoleSelect id="edit-user-role" value={currentRole} disabled={isSelf} onChange={setRoleDraft} />
             </Field>
-            {roleError && <p role="alert" className="text-xs text-red-600">{roleError}</p>}
+            {roleError && <p role="alert" className="text-xs text-destructive">{roleError}</p>}
             <Button
               type="button"
               variant="outline"
@@ -136,7 +140,7 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
             </Button>
           </section>
 
-          <section className="space-y-2 border-t border-slate-200 pt-4">
+          <section className="space-y-2 border-t border-border pt-4">
             <Field label={LABELS.admin.clearanceLabel} htmlFor="edit-user-clearance">
               <ClearanceSelect
                 id="edit-user-clearance"
@@ -147,7 +151,7 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
                 }}
               />
             </Field>
-            {clearanceError && <p role="alert" className="text-xs text-red-600">{clearanceError}</p>}
+            {clearanceError && <p role="alert" className="text-xs text-destructive">{clearanceError}</p>}
             <Button
               type="button"
               variant="outline"
@@ -159,9 +163,9 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
             </Button>
           </section>
 
-          <section className="space-y-2 border-t border-slate-200 pt-4">
-            <p className="text-sm font-medium text-slate-700">{LABELS.admin.statusLabel}</p>
-            {statusError && <p role="alert" className="text-xs text-red-600">{statusError}</p>}
+          <section className="space-y-2 border-t border-border pt-4">
+            <p className="text-sm font-medium text-foreground-soft">{LABELS.admin.statusLabel}</p>
+            {statusError && <p role="alert" className="text-xs text-destructive">{statusError}</p>}
             <Button
               type="button"
               variant={user.isActive ? 'destructive' : 'default'}
@@ -171,8 +175,9 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
               {user.isActive ? LABELS.admin.deactivateUser : LABELS.admin.activateUser}
             </Button>
           </section>
-        </div>
-      </Drawer>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <ClearanceImpactDialog
         isOpen={pendingClearance !== null}

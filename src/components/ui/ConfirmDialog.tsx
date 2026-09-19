@@ -1,6 +1,17 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { Modal } from './Modal';
-import { Button } from './Button';
+import { Loader2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from './AlertDialog';
 
 type ConfirmDialogProps = Readonly<{
   isOpen: boolean;
@@ -24,16 +35,32 @@ export function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps): ReactElement {
   return (
-    <Modal isOpen={isOpen} onClose={onCancel} title={title}>
-      <p className="text-sm text-slate-600">{description}</p>
-      <div className="mt-5 flex justify-end gap-2">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button variant={isDanger ? 'destructive' : 'default'} onClick={onConfirm} isLoading={isLoading}>
-          {confirmLabel}
-        </Button>
-      </div>
-    </Modal>
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            destructive={isDanger}
+            disabled={isLoading}
+            aria-busy={isLoading}
+            onClick={(e) => {
+              // Confirm here is asynchronous (a mutation) — the caller controls
+              // `isOpen` itself and closes it once the mutation settles, so the
+              // dialog must NOT auto-close on click the way AlertDialogAction
+              // does by default.
+              e.preventDefault();
+              onConfirm();
+            }}
+          >
+            {isLoading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+            {confirmLabel}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

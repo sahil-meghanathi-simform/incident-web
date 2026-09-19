@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Modal } from '../../../components/ui/Modal';
+import { Dialog, DialogContent, DialogTitle } from '../../../components/ui/Dialog';
 import { Field } from '../../../components/ui/Field';
 import { Textarea } from '../../../components/ui/Textarea';
 import { Button } from '../../../components/ui/Button';
@@ -54,8 +54,10 @@ export function RejectClosureDialog({ incident, isOpen, onClose }: RejectClosure
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={LABELS.closure.rejectModalTitle}>
-      <form onSubmit={submit} noValidate className="space-y-4">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogTitle>{LABELS.closure.rejectModalTitle}</DialogTitle>
+        <form onSubmit={submit} noValidate className="mt-4 space-y-4">
         <Field
           label={LABELS.closure.rejectReasonLabel}
           htmlFor="reject-closure-reason"
@@ -80,7 +82,8 @@ export function RejectClosureDialog({ incident, isOpen, onClose }: RejectClosure
             {LABELS.closure.requestChangesAction}
           </Button>
         </div>
-      </form>
-    </Modal>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
