@@ -26,8 +26,8 @@ export function SeveritySelect({
 }: SeveritySelectProps): ReactElement {
   return (
     <fieldset className="space-y-2">
-      <legend className="block text-sm font-medium text-slate-700">
-        Severity<span className="text-red-500"> *</span>
+      <legend className="block text-sm font-medium text-foreground-soft">
+        Severity<span className="text-destructive"> *</span>
       </legend>
       <div className="grid gap-2 sm:grid-cols-2">
         {options.map((option) => {
@@ -38,10 +38,10 @@ export function SeveritySelect({
               key={option.value}
               className={cn(
                 'flex cursor-pointer flex-col rounded-md border p-3 text-sm transition-colors',
-                selected ? 'border-blue-500 ring-1 ring-blue-500' : 'border-slate-300 hover:bg-slate-50',
+                selected ? 'border-ring ring-1 ring-ring' : 'border-input hover:bg-accent',
               )}
             >
-              <span className="flex items-center gap-2 font-medium text-slate-900">
+              <span className="flex items-center gap-2 font-medium text-foreground">
                 <input
                   type="radio"
                   name="severity"
@@ -51,15 +51,15 @@ export function SeveritySelect({
                 />
                 {option.label}
               </span>
-              <span className="mt-1 text-xs text-slate-500">{LABELS.incidents.severityHelp[option.value]}</span>
+              <span className="mt-1 text-xs text-muted-foreground">{LABELS.incidents.severityHelp[option.value]}</span>
               {aboveClearance && (
-                <span className="mt-1 text-xs font-medium text-amber-700">{LABELS.incidents.aboveClearanceWarning}</span>
+                <span className="mt-1 text-xs font-medium text-severity-medium">{LABELS.incidents.aboveClearanceWarning}</span>
               )}
             </label>
           );
         })}
       </div>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </fieldset>
   );
 }

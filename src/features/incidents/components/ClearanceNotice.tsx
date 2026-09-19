@@ -21,9 +21,9 @@ export function ClearanceNotice({ reference }: ClearanceNoticeProps): ReactEleme
   }
 
   return (
-    <div className="rounded-md bg-amber-50 px-4 py-3 text-left text-sm text-amber-900">
+    <div className="rounded-md border border-severity-medium-border bg-severity-medium-surface px-4 py-3 text-left text-sm text-severity-medium">
       <p className="font-medium">You may not be able to view this report</p>
-      <p className="mt-1 text-amber-800">
+      <p className="mt-1 text-severity-medium">
         This incident was filed at a severity above your clearance level. An investigator or
         manager can still act on it — keep the reference below if you need to follow up.
       </p>

@@ -10,9 +10,9 @@ export type ToastItem = Readonly<{
 }>;
 
 const VARIANT_CLASS: Record<ToastVariant, string> = {
-  success: 'bg-green-600 text-white',
-  error: 'bg-red-600 text-white',
-  info: 'bg-slate-800 text-white',
+  success: 'bg-stage-closed text-primary-foreground',
+  error: 'bg-destructive text-destructive-foreground',
+  info: 'bg-brand-deep text-primary-foreground',
 };
 
 export function Toast({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: string) => void }): ReactElement {

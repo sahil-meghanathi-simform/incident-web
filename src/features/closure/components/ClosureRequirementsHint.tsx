@@ -5,5 +5,5 @@ import { LABELS } from '../../../lib/labels';
  * §Module 6) — the form disables submit until both fields validate, but this is
  * documentation for the human, not the enforcement; the server's own gates are that. */
 export function ClosureRequirementsHint(): ReactElement {
-  return <p className="text-xs text-slate-500">{LABELS.closure.requirementsHint}</p>;
+  return <p className="text-xs text-muted-foreground">{LABELS.closure.requirementsHint}</p>;
 }

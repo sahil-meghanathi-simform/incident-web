@@ -51,7 +51,7 @@ export function TierEditor({ initialTiers, isSaving, onSave }: TierEditorProps):
           <th className="px-4 py-2">{LABELS.admin.tierColumns.level}</th>
           <th className="px-4 py-2">{LABELS.admin.tierColumns.thresholdMinutes}</th>
         </TableHeader>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-border">
           {sortedDraft.map((tier) => (
             <TierRow
               key={`${tier.severity}-${tier.level}`}
@@ -72,7 +72,7 @@ export function TierEditor({ initialTiers, isSaving, onSave }: TierEditorProps):
       </Card>
 
       <div className="flex items-center justify-end gap-3">
-        {!validation.success && <p role="alert" className="text-xs text-red-600">{LABELS.admin.tierSaveDisabledReason}</p>}
+        {!validation.success && <p role="alert" className="text-xs text-destructive">{LABELS.admin.tierSaveDisabledReason}</p>}
         <Button type="button" variant="outline" onClick={() => setDraft(initialTiers)} disabled={!isDirty || isSaving}>
           Reset
         </Button>

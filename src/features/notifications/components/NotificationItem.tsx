@@ -29,20 +29,20 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
         to={ROUTES.incidentDetail(notification.incidentId)}
         onClick={handleClick}
         className={cn(
-          'block space-y-1 rounded-md border border-slate-200 px-3 py-2 hover:bg-slate-50',
-          isUnread && 'bg-blue-50/60',
+          'block space-y-1 rounded-md border border-border px-3 py-2 hover:bg-accent',
+          isUnread && 'bg-accent/60',
         )}
       >
         <div className="flex items-center gap-2">
-          {isUnread && <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600" />}
-          <span className="truncate text-sm font-medium text-slate-900">{notification.incidentTitle}</span>
+          {isUnread && <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />}
+          <span className="truncate text-sm font-medium text-foreground">{notification.incidentTitle}</span>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SeverityBadge severity={notification.severity} />
           <EscalationBadge level={notification.level} />
-          <span className="font-mono text-xs text-slate-500">{notification.incidentReference}</span>
+          <span className="font-mono text-xs text-muted-foreground">{notification.incidentReference}</span>
         </div>
-        <p className="text-xs text-slate-500">{formatRelative(notification.createdAt)}</p>
+        <p className="text-xs text-muted-foreground">{formatRelative(notification.createdAt)}</p>
       </Link>
     </li>
   );

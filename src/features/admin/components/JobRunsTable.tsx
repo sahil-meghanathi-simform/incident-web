@@ -11,9 +11,11 @@ type JobRunsTableProps = Readonly<{
 }>;
 
 const OUTCOME_CLASS: Record<string, string> = {
-  COMPLETED: 'border-green-300 bg-green-50 text-green-700',
-  SKIPPED_LOCKED: 'border-amber-300 bg-amber-50 text-amber-700',
-  FAILED: 'border-red-300 bg-red-50 text-red-700',
+  COMPLETED: 'border-border bg-muted text-stage-closed',
+  SKIPPED_LOCKED: 'border-severity-medium-border bg-severity-medium-surface text-severity-medium',
+  // Not the severity-critical tokens — those are solid-only by design (index.css),
+  // so surface/border/ink there are identical and would render invisible text.
+  FAILED: 'border-destructive/30 bg-destructive/10 text-destructive',
 };
 
 function formatDuration(startedAt: string, finishedAt: string | null): string {

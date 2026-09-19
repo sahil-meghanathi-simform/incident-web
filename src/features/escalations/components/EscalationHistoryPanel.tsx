@@ -17,15 +17,15 @@ export function EscalationHistoryPanel({ incidentId }: EscalationHistoryPanelPro
   const query = useIncidentEscalationEvents(incidentId, true);
 
   if (query.isPending) return <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />;
-  if (query.isError) return <p className="text-xs text-red-600">{LABELS.escalations.historyLoadError}</p>;
-  if (query.data.events.length === 0) return <p className="text-xs text-slate-500">{LABELS.escalations.historyEmpty}</p>;
+  if (query.isError) return <p className="text-xs text-destructive">{LABELS.escalations.historyLoadError}</p>;
+  if (query.data.events.length === 0) return <p className="text-xs text-muted-foreground">{LABELS.escalations.historyEmpty}</p>;
 
   return (
     <ol className="space-y-1.5">
       {query.data.events.map((event) => (
         <li key={event.id} className="flex items-baseline justify-between gap-3 text-xs">
-          <span className="font-medium text-slate-700">{LABELS.escalations.dueLabel(event.level)}</span>
-          <span className="text-slate-500">triggered {formatDateTime(event.triggeredAt)}</span>
+          <span className="font-medium text-foreground-soft">{LABELS.escalations.dueLabel(event.level)}</span>
+          <span className="text-muted-foreground">triggered {formatDateTime(event.triggeredAt)}</span>
         </li>
       ))}
     </ol>

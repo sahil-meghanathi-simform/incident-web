@@ -36,7 +36,7 @@ export function UsersTable({ items, onEdit }: UsersTableProps): ReactElement {
               <Badge
                 className={
                   user.isActive
-                    ? 'border-green-300 bg-green-50 text-green-700'
+                    ? 'border-border bg-muted text-stage-closed'
                     : 'border-border bg-muted text-muted-foreground'
                 }
               >

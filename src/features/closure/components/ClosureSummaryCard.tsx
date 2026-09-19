@@ -12,16 +12,16 @@ type ClosureSummaryCardProps = Readonly<{
 export function ClosureSummaryCard({ incident }: ClosureSummaryCardProps): ReactElement {
   return (
     <div className="space-y-4 py-4">
-      <div className="space-y-3 rounded-md border border-slate-200 bg-slate-50 p-3">
+      <div className="space-y-3 rounded-md border border-border bg-muted p-3">
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{LABELS.closure.rootCauseLabel}</h3>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-800">{incident.rootCause}</p>
+          <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">{LABELS.closure.rootCauseLabel}</h3>
+          <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.rootCause}</p>
         </div>
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">
             {LABELS.closure.correctiveActionLabel}
           </h3>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-800">{incident.correctiveAction}</p>
+          <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.correctiveAction}</p>
         </div>
       </div>
     </div>

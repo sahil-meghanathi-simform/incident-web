@@ -1,4 +1,5 @@
 import { type ReactElement, useEffect, useState } from 'react';
+import { AlertTriangle, Clock } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { serverNow } from '../../lib/serverTime';
 
@@ -29,14 +30,18 @@ export function SlaCountdown({ dueAt }: SlaCountdownProps): ReactElement {
 
   const minutes = Math.round((new Date(dueAt).getTime() - now.getTime()) / 60_000);
   const overdue = minutes < 0;
+  const atRisk = !overdue && minutes < 15;
 
   return (
     <span
       className={cn(
         'inline-flex items-center gap-1 text-xs font-medium tabular-nums',
-        overdue ? 'text-red-600' : minutes < 15 ? 'text-amber-600' : 'text-slate-500',
+        overdue ? 'text-destructive' : atRisk ? 'text-severity-medium' : 'text-muted-foreground',
       )}
     >
+      {/* Never color alone (accessibility.md) — overdue/at-risk carry a matching icon. */}
+      {overdue && <AlertTriangle className="h-3 w-3" aria-hidden="true" />}
+      {atRisk && <Clock className="h-3 w-3" aria-hidden="true" />}
       {overdue ? `Overdue ${formatMinutes(minutes)}` : `Due in ${formatMinutes(minutes)}`}
     </span>
   );

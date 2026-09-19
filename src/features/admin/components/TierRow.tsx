@@ -16,9 +16,9 @@ type TierRowProps = Readonly<{
 export function TierRow({ severity, level, thresholdMinutes, error, onChange }: TierRowProps): ReactElement {
   const inputId = `tier-${severity}-${level}`;
   return (
-    <tr className="hover:bg-slate-50">
-      <td className="px-4 py-2 text-slate-700">{SEVERITY_LABEL[severity]}</td>
-      <td className="px-4 py-2 text-slate-700">{level}</td>
+    <tr className="hover:bg-accent">
+      <td className="px-4 py-2 text-foreground-soft">{SEVERITY_LABEL[severity]}</td>
+      <td className="px-4 py-2 text-foreground-soft">{level}</td>
       <td className="px-4 py-2">
         <label htmlFor={inputId} className="sr-only">
           {SEVERITY_LABEL[severity]} level {level} threshold minutes
@@ -34,7 +34,7 @@ export function TierRow({ severity, level, thresholdMinutes, error, onChange }: 
           aria-describedby={error ? `${inputId}-error` : undefined}
         />
         {error && (
-          <p id={`${inputId}-error`} role="alert" className="mt-1 text-xs text-red-600">
+          <p id={`${inputId}-error`} role="alert" className="mt-1 text-xs text-destructive">
             {error}
           </p>
         )}

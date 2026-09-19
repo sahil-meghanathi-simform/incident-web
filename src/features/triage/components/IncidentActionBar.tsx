@@ -56,7 +56,7 @@ export function IncidentActionBar({ incident }: IncidentActionBarProps): ReactEl
   }
 
   return (
-    <div className="flex flex-wrap gap-2 border-b border-slate-200 py-3">
+    <div className="flex flex-wrap gap-2 border-b border-border py-3">
       {canTriage && (
         <Button variant="outline" onClick={handleTriage} isLoading={triageMutation.isPending}>
           {LABELS.triage.triageAction}

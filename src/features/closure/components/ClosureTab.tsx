@@ -19,5 +19,5 @@ export function ClosureTab({ incident }: ClosureTabProps): ReactElement {
   if (incident.stage === 'PENDING_CLOSURE') return <ClosureReviewPanel incident={incident} />;
   if (incident.stage === 'CLOSED') return <ClosureSummaryCard incident={incident} />;
   if (incident._actions.canProposeClosure) return <ClosureProposalForm incident={incident} />;
-  return <p className="py-6 text-sm text-slate-500">No closure has been proposed for this incident yet.</p>;
+  return <p className="py-6 text-sm text-muted-foreground">No closure has been proposed for this incident yet.</p>;
 }

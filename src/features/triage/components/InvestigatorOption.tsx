@@ -13,14 +13,14 @@ export function InvestigatorOption({ investigator, selected, onSelect }: Investi
     <label
       className={cn(
         'flex cursor-pointer items-center justify-between rounded-md border p-3 text-sm transition-colors',
-        selected ? 'border-blue-500 ring-1 ring-blue-500' : 'border-slate-300 hover:bg-slate-50',
+        selected ? 'border-ring ring-1 ring-ring' : 'border-input hover:bg-accent',
       )}
     >
-      <span className="flex items-center gap-2 font-medium text-slate-900">
+      <span className="flex items-center gap-2 font-medium text-foreground">
         <input type="radio" name="investigator" role="radio" aria-checked={selected} checked={selected} onChange={onSelect} />
         {investigator.displayName}
       </span>
-      <span className="text-xs text-slate-500">Clearance {investigator.clearanceLevel}</span>
+      <span className="text-xs text-muted-foreground">Clearance {investigator.clearanceLevel}</span>
     </label>
   );
 }

@@ -20,5 +20,5 @@ export function TierPreview({ severity, tiers }: TierPreviewProps): ReactElement
 
   if (thresholds.length === 0) return null;
 
-  return <p className="text-sm text-slate-600">{LABELS.admin.tierPreview(SEVERITY_LABEL[severity], thresholds)}</p>;
+  return <p className="text-sm text-foreground-soft">{LABELS.admin.tierPreview(SEVERITY_LABEL[severity], thresholds)}</p>;
 }

@@ -38,20 +38,20 @@ export function ClosureReviewPanel({ incident }: ClosureReviewPanelProps): React
   return (
     <div className="space-y-4 py-4">
       <div>
-        <h2 className="text-sm font-semibold text-slate-700">{LABELS.closure.reviewTitle}</h2>
-        <p className="mt-0.5 text-xs text-slate-500">{LABELS.closure.reviewDescription}</p>
+        <h2 className="text-sm font-semibold text-foreground-soft">{LABELS.closure.reviewTitle}</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">{LABELS.closure.reviewDescription}</p>
       </div>
 
-      <div className="space-y-3 rounded-md border border-slate-200 bg-slate-50 p-3">
+      <div className="space-y-3 rounded-md border border-border bg-muted p-3">
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{LABELS.closure.rootCauseLabel}</h3>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-800">{incident.rootCause}</p>
+          <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">{LABELS.closure.rootCauseLabel}</h3>
+          <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.rootCause}</p>
         </div>
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">
             {LABELS.closure.correctiveActionLabel}
           </h3>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-800">{incident.correctiveAction}</p>
+          <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.correctiveAction}</p>
         </div>
       </div>
 

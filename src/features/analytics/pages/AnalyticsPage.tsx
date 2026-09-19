@@ -66,7 +66,7 @@ export function AnalyticsPage(): ReactElement {
       {overviewQuery.data && <KpiCardRow data={overviewQuery.data} />}
 
       <section className="mb-6">
-        <h2 className="mb-2 text-sm font-semibold text-slate-700">{LABELS.analytics.matrixTitle}</h2>
+        <h2 className="mb-2 text-sm font-semibold text-foreground-soft">{LABELS.analytics.matrixTitle}</h2>
         {matrixQuery.isPending && <SkeletonTable />}
         {matrixQuery.isError && (
           <ErrorState message={LABELS.analytics.matrixLoadError} requestId={matrixQuery.error.requestId} onRetry={() => matrixQuery.refetch()} />
@@ -86,7 +86,7 @@ export function AnalyticsPage(): ReactElement {
       </section>
 
       <section className="mb-6">
-        <h2 className="mb-2 text-sm font-semibold text-slate-700">{LABELS.analytics.trendTitle}</h2>
+        <h2 className="mb-2 text-sm font-semibold text-foreground-soft">{LABELS.analytics.trendTitle}</h2>
         {trendQuery.isPending && <SkeletonCard />}
         {trendQuery.isError && (
           <ErrorState message={LABELS.analytics.trendLoadError} requestId={trendQuery.error.requestId} onRetry={() => trendQuery.refetch()} />
@@ -98,10 +98,10 @@ export function AnalyticsPage(): ReactElement {
       </section>
 
       <section>
-        <h2 className="mb-1 text-sm font-semibold text-slate-700">{LABELS.analytics.escalationPerformanceTitle}</h2>
-        <p className="mb-2 text-sm text-slate-500">{LABELS.analytics.escalationPerformanceDescription}</p>
+        <h2 className="mb-1 text-sm font-semibold text-foreground-soft">{LABELS.analytics.escalationPerformanceTitle}</h2>
+        <p className="mb-2 text-sm text-muted-foreground">{LABELS.analytics.escalationPerformanceDescription}</p>
         {!canTriage && (
-          <div role="status" className="rounded-lg border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-slate-500">
+          <div role="status" className="rounded-lg border border-dashed border-input px-4 py-6 text-center text-sm text-muted-foreground">
             {LABELS.analytics.escalationPerformanceForbidden}
           </div>
         )}

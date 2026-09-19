@@ -16,7 +16,7 @@ export function RouteErrorBoundary(): ReactElement {
     <div className="p-6">
       <ErrorState message={message} onRetry={() => window.location.reload()} />
       <p className="mt-3 text-center text-sm">
-        <Link to={ROUTES.home} className="text-blue-600 hover:underline">
+        <Link to={ROUTES.home} className="text-primary hover:underline">
           Return home
         </Link>
       </p>

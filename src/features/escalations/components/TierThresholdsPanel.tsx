@@ -21,11 +21,11 @@ export function TierThresholdsPanel(): ReactElement | null {
   return (
     <dl className="mx-auto flex max-w-sm flex-col gap-2 text-left">
       {[...bySeverity.entries()].map(([severity, tiers]) => (
-        <div key={severity} className="flex items-center justify-between gap-3 rounded-md border border-slate-200 px-3 py-2">
+        <div key={severity} className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2">
           <dt>
             <SeverityBadge severity={severity} />
           </dt>
-          <dd className="text-xs text-slate-600">
+          <dd className="text-xs text-foreground-soft">
             {[...tiers]
               .sort((a, b) => a.level - b.level)
               .map((t) => `L${t.level} · ${formatMinutes(t.thresholdMinutes)}`)
