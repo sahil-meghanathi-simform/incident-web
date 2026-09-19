@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../component
 import { Field } from '../../../components/ui/Field';
 import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
+import { Separator } from '../../../components/ui/Separator';
 import { useToast } from '../../../components/ui/useToast';
 import { useChangeUserRole } from '../hooks/useChangeUserRole';
 import { useChangeUserClearance } from '../hooks/useChangeUserClearance';
@@ -140,7 +141,8 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
             </Button>
           </section>
 
-          <section className="space-y-2 border-t border-border pt-4">
+          <Separator />
+          <section className="space-y-2">
             <Field label={LABELS.admin.clearanceLabel} htmlFor="edit-user-clearance">
               <ClearanceSelect
                 id="edit-user-clearance"
@@ -163,7 +165,8 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
             </Button>
           </section>
 
-          <section className="space-y-2 border-t border-border pt-4">
+          <Separator />
+          <section className="space-y-2">
             <p className="text-sm font-medium text-foreground-soft">{LABELS.admin.statusLabel}</p>
             {statusError && <p role="alert" className="text-xs text-destructive">{statusError}</p>}
             <Button
