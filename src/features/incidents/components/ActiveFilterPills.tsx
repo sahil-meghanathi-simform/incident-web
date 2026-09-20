@@ -1,62 +1,51 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { X } from 'lucide-react';
-import { SEVERITY_LABEL, type Severity } from '../../../lib/severity';
-import { STAGE_LABEL, type Stage } from '../../../lib/stage';
+import { FilterChips, type FilterChip } from '../../../components/ui/FilterChips';
+import { SEVERITY_LABEL } from '../../../lib/severity';
+import { STAGE_LABEL } from '../../../lib/stage';
+import { LABELS } from '../../../lib/labels';
+import { TOGGLE_FILTER_KEYS, togglePatch } from '../schemas/incidentFilterPatches';
 import type { IncidentFilters as IncidentFiltersState } from '../schemas/incidentFilters.schema';
-
-type Pill = Readonly<{ key: string; label: string; onRemove: () => void }>;
 
 type ActiveFilterPillsProps = Readonly<{
   filters: IncidentFiltersState;
   onChange: (patch: Partial<IncidentFiltersState>) => void;
+  onClearAll: () => void;
 }>;
+
+const COPY = LABELS.filters;
 
 function removeFromArray<T extends string>(current: T[] | undefined, value: T): T[] | undefined {
   const next = (current ?? []).filter((v) => v !== value);
   return next.length ? next : undefined;
 }
 
-/** The dismissible chip row above the results — the single clearest signal of
- * what's currently filtering the list, replacing the old design's total
- * reliance on scanning every checkbox to find what's checked. */
-export function ActiveFilterPills({ filters, onChange }: ActiveFilterPillsProps): ReactElement | null {
-  const pills: Pill[] = [
-    ...(filters.severity ?? []).map((s: Severity) => ({
-      key: `severity:${s}`,
-      label: SEVERITY_LABEL[s],
-      onRemove: () => onChange({ severity: removeFromArray(filters.severity, s) }),
-    })),
-    ...(filters.stage ?? []).map((s: Stage) => ({
-      key: `stage:${s}`,
-      label: STAGE_LABEL[s],
-      onRemove: () => onChange({ stage: removeFromArray(filters.stage, s) }),
-    })),
-    ...(filters.type?.[0] ? [{ key: 'type', label: filters.type[0].replace('_', ' '), onRemove: () => onChange({ type: undefined }) }] : []),
-    ...(filters.q ? [{ key: 'q', label: `"${filters.q}"`, onRemove: () => onChange({ q: undefined }) }] : []),
-    ...(filters.assignedToMe ? [{ key: 'assignedToMe', label: 'Assigned to me', onRemove: () => onChange({ assignedToMe: undefined }) }] : []),
-    ...(filters.reportedByMe ? [{ key: 'reportedByMe', label: 'Reported by me', onRemove: () => onChange({ reportedByMe: undefined }) }] : []),
-    ...(filters.unacknowledged ? [{ key: 'unacknowledged', label: 'Unacknowledged', onRemove: () => onChange({ unacknowledged: undefined }) }] : []),
-    ...(filters.escalatedOnly ? [{ key: 'escalatedOnly', label: 'Escalated only', onRemove: () => onChange({ escalatedOnly: undefined }) }] : []),
+function chip(id: string, label: string, onRemove: () => void): FilterChip {
+  return { id, label, removeLabel: COPY.chips.remove(label), onRemove };
+}
+
+/** The dismissible chip row under the toolbar — the single clearest signal of what's
+ * currently filtering the list, with "Clear all" right beside it. Chip text comes from
+ * the same label map as the controls themselves. */
+export function ActiveFilterPills({ filters, onChange, onClearAll }: ActiveFilterPillsProps): ReactElement | null {
+  const type = filters.type?.[0];
+  const chips: FilterChip[] = [
+    ...(filters.severity ?? []).map((s) =>
+      chip(`severity:${s}`, SEVERITY_LABEL[s], () => onChange({ severity: removeFromArray(filters.severity, s) })),
+    ),
+    ...(filters.stage ?? []).map((s) =>
+      chip(`stage:${s}`, STAGE_LABEL[s], () => onChange({ stage: removeFromArray(filters.stage, s) })),
+    ),
+    ...(type ? [chip('type', LABELS.incidents.typeName(type), () => onChange({ type: undefined }))] : []),
+    ...(filters.q ? [chip('q', COPY.chips.search(filters.q), () => onChange({ q: undefined }))] : []),
+    ...TOGGLE_FILTER_KEYS.filter((key) => filters[key]).map((key) =>
+      chip(key, COPY.toggles[key], () => onChange(togglePatch(key, false))),
+    ),
     ...(filters.from || filters.to
-      ? [{ key: 'dateRange', label: [filters.from, filters.to].filter(Boolean).join(' – '), onRemove: () => onChange({ from: undefined, to: undefined }) }]
+      ? [chip('dateRange', COPY.chips.dateRange(filters.from, filters.to), () => onChange({ from: undefined, to: undefined }))]
       : []),
   ];
 
-  if (pills.length === 0) return null;
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      {pills.map((pill) => (
-        <button
-          key={pill.key}
-          type="button"
-          onClick={pill.onRemove}
-          className="inline-flex items-center gap-1 rounded-full border border-border bg-accent px-2.5 py-1 text-xs font-medium text-accent-foreground hover:bg-accent/70"
-        >
-          {pill.label}
-          <X className="h-3 w-3" aria-hidden="true" />
-        </button>
-      ))}
-    </div>
-  );
+  return <FilterChips chips={chips} clearAllLabel={COPY.clearAll} onClearAll={onClearAll} />;
 }

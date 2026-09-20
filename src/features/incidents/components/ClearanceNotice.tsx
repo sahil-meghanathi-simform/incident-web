@@ -1,5 +1,10 @@
-import { useState, type ReactElement } from 'react';
-import { Button } from '../../../components/ui/Button';
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
+import type { ReactElement } from 'react';
+import { EyeOff } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '../../../components/ui/Alert';
+import { CopyReferenceButton } from './CopyReferenceButton';
+import { LABELS } from '../../../lib/labels';
 
 type ClearanceNoticeProps = Readonly<{
   reference: string;
@@ -7,29 +12,16 @@ type ClearanceNoticeProps = Readonly<{
 
 /** Q9's landing spot: a reference and no dead link, rather than a 403 discovered later. */
 export function ClearanceNotice({ reference }: ClearanceNoticeProps): ReactElement {
-  const [copied, setCopied] = useState(false);
-
-  async function handleCopy(): Promise<void> {
-    try {
-      await navigator.clipboard.writeText(reference);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Clipboard API unavailable (e.g. an insecure context) — the reference is already
-      // shown on screen, so copying is a convenience, not the only way to retain it.
-    }
-  }
-
   return (
-    <div className="rounded-md border border-severity-medium-border bg-severity-medium-surface px-4 py-3 text-left text-sm text-severity-medium">
-      <p className="font-medium">You may not be able to view this report</p>
-      <p className="mt-1 text-severity-medium">
-        This incident was filed at a severity above your clearance level. An investigator or
-        manager can still act on it — keep the reference below if you need to follow up.
-      </p>
-      <Button type="button" variant="outline" className="mt-3" onClick={handleCopy}>
-        {copied ? 'Copied!' : 'Copy reference'}
-      </Button>
-    </div>
+    <Alert variant="warning" role="note" className="flex gap-3 text-left">
+      <EyeOff aria-hidden="true" />
+      <div className="min-w-0 space-y-3">
+        <div>
+          <AlertTitle>{LABELS.incidents.clearanceNotice.title}</AlertTitle>
+          <AlertDescription>{LABELS.incidents.clearanceNotice.body}</AlertDescription>
+        </div>
+        <CopyReferenceButton reference={reference} />
+      </div>
+    </Alert>
   );
 }

@@ -30,6 +30,18 @@ export const TRIAGE = {
   acknowledgedToast: 'Incident acknowledged.',
   selfInflictedRaiseToast: 'Severity updated — you may lose access to this incident.',
   staleVersionError: 'This incident changed while you were viewing it. Refreshing…',
+  actionsHeading: 'Actions',
+  actionsRegionLabel: 'Incident actions',
+  assignDrawerDescription: 'Only investigators whose clearance covers this incident’s severity are listed.',
+  noEligibleInvestigatorsTitle: 'No eligible investigators',
+  clearanceBadge: (level: number) => `Clearance ${level}`,
+  changeSeverityModalDescription: 'The change and your reason are recorded on the incident’s audit trail.',
+  severityCurrent: 'Current',
+  severityNext: 'New',
+  severityChangePreview: 'Severity change',
+  impactWarningTitle: 'The assigned investigator will lose access',
+  impactWarningBody:
+    ' will be unassigned and this incident will return to Triage — their clearance doesn’t cover this severity.',
 } as const;
 
 export const INVESTIGATION = {
@@ -55,6 +67,10 @@ export const INVESTIGATION = {
   restrictedNotAssignedBody:
     'Only the assigned investigator and administrators can read or add investigation notes — a triage role alone is not enough.',
   notesClosedNotice: 'This incident is closed. Notes can no longer be added, but existing notes are preserved above.',
+  noInvestigationsAction: 'View the full incident list',
+  sendingNote: 'Sending…',
+  composerShortcutHint: 'Ctrl + Enter to add',
+  notesListLabel: 'Investigation notes',
 } as const;
 
 export const CLOSURE = {
@@ -85,4 +101,17 @@ export const CLOSURE = {
   loadPendingQueueError: 'Could not load pending closures.',
   pendingQueueEmptyTitle: 'Nothing awaiting closure review',
   pendingQueueEmptyBody: 'Proposed closures you can see will show up here.',
+  pendingQueueEmptyAction: 'View the full incident list',
+  proposedColumn: 'Proposed',
+  idleTitle: 'No closure has been proposed for this incident yet',
+  idleBody: 'The assigned investigator proposes closure once the root cause and corrective action are known.',
+  formTitle: 'Closure proposal',
+  formDescription:
+    'Explain what caused this incident and how a recurrence is prevented. A manager reviews it before the incident closes.',
+  overLimitWarning: (max: number) => `Shorten the highlighted field to ${max} characters or fewer to continue.`,
+  awaitingReview: 'Awaiting manager review',
+  rejectModalDescription:
+    'The incident returns to Investigation with its proposed text kept, so the investigator can revise it.',
+  summaryTitle: 'Closure record',
+  summaryDescription: 'Permanent and read-only — a closed incident cannot be reopened or modified.',
 } as const;

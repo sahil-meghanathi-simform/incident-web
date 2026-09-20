@@ -1,9 +1,14 @@
-import { useState, type ReactElement } from 'react';
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
+import { useState, type KeyboardEvent, type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Lock, Send } from 'lucide-react';
 import { Field } from '../../../components/ui/Field';
 import { Textarea } from '../../../components/ui/Textarea';
 import { Button } from '../../../components/ui/Button';
+import { CharacterCount } from '../../../components/ui/CharacterCount';
+import { Alert, AlertDescription } from '../../../components/ui/Alert';
 import { useToast } from '../../../components/ui/useToast';
 import { useAddNote } from '../hooks/useAddNote';
 import { addNoteSchema } from '../schemas/notes.schema';
@@ -12,6 +17,8 @@ import { getErrorMessage } from '../../../lib/getErrorMessage';
 import { LABELS } from '../../../lib/labels';
 import type { AddNoteRequest } from '../types/investigation.type';
 
+/** Mirrors AddNoteRequestSchema's bounds (investigation.contract.ts) for the counter. */
+const MIN_LENGTH = 5;
 const MAX_LENGTH = 4000;
 
 type NoteComposerProps = Readonly<{
@@ -25,6 +32,9 @@ type NoteComposerProps = Readonly<{
  * NotesPanel stays a pure layout container. On error the typed text is never cleared —
  * `reset()` only runs after a confirmed success — so a rollback or a stage-closed
  * refusal both leave the composer exactly as the user left it, ready to copy out.
+ *
+ * Ctrl/⌘ + Enter submits through the same handler as the button, and only when the
+ * button itself would be enabled; plain Enter still inserts a newline.
  */
 export function NoteComposer({ incidentId, autoFocus = false }: NoteComposerProps): ReactElement {
   const { show } = useToast();
@@ -60,14 +70,31 @@ export function NoteComposer({ incidentId, autoFocus = false }: NoteComposerProp
     }
   });
 
+  function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>): void {
+    if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) return;
+    event.preventDefault();
+    if (disabled || overLimit) return;
+    void submit();
+  }
+
   return (
-    <form onSubmit={submit} noValidate className="space-y-2">
+    <form
+      onSubmit={submit}
+      noValidate
+      className="space-y-3 rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow focus-within:shadow-md"
+    >
       {closedWhileComposing && (
-        <p role="alert" className="rounded-md border border-severity-medium-border bg-severity-medium-surface px-3 py-2 text-xs text-severity-medium">
-          {LABELS.investigation.notesClosedNotice}
-        </p>
+        <Alert variant="warning" className="flex items-start gap-2.5">
+          <Lock aria-hidden="true" />
+          <AlertDescription className="text-xs">{LABELS.investigation.notesClosedNotice}</AlertDescription>
+        </Alert>
       )}
-      <Field label={LABELS.investigation.composerLabel} htmlFor="note-composer" error={errors.body?.message}>
+      <Field
+        label={LABELS.investigation.composerLabel}
+        htmlFor="note-composer"
+        error={errors.body?.message}
+        counter={<CharacterCount count={length} max={MAX_LENGTH} min={MIN_LENGTH} />}
+      >
         <Textarea
           id="note-composer"
           rows={3}
@@ -75,14 +102,14 @@ export function NoteComposer({ incidentId, autoFocus = false }: NoteComposerProp
           hasError={Boolean(errors.body) || overLimit}
           disabled={disabled}
           autoFocus={autoFocus && !disabled}
+          onKeyDown={handleKeyDown}
           {...register('body')}
         />
       </Field>
-      <div className="flex items-center justify-between">
-        <span className={overLimit ? 'text-xs font-medium text-destructive' : 'text-xs text-muted-foreground'}>
-          {LABELS.investigation.composerCharacterCount(length, MAX_LENGTH)}
-        </span>
-        <Button type="submit" isLoading={isSubmitting} disabled={disabled || overLimit}>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs text-muted-foreground max-sm:hidden">{LABELS.investigation.composerShortcutHint}</span>
+        <Button type="submit" isLoading={isSubmitting} disabled={disabled || overLimit} className="ml-auto">
+          {!isSubmitting && <Send aria-hidden="true" />}
           {LABELS.investigation.addNote}
         </Button>
       </div>

@@ -1,5 +1,7 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { Table } from '../../../components/ui/Table';
+import { Table, TableBody, TableCell, TableRow } from '../../../components/ui/Table';
 import { TableHeader } from '../../../components/ui/TableHeader';
 import { SeverityBadge } from '../../../components/ui/SeverityBadge';
 import type { EscalationPerformanceResponse } from '../../../api/contracts/analytics.contract';
@@ -8,45 +10,53 @@ import { LABELS } from '../../../lib/labels';
 
 type EscalationPerformancePanelProps = Readonly<{ data: EscalationPerformanceResponse }>;
 
+const COLUMNS = LABELS.analytics.escalationColumns;
+
+function durationOrDash(seconds: number | null): string {
+  return seconds === null ? LABELS.analytics.kpiNoData : formatDuration(seconds);
+}
+
 /** The table only — AnalyticsPage decides between this, the forbidden notice, the
  * loading skeleton, and the empty state (same discipline as IncidentListPage). */
 export function EscalationPerformancePanel({ data }: EscalationPerformancePanelProps): ReactElement {
   return (
-    <Table>
+    <Table isStacked minWidth="sm">
       <TableHeader>
-        <th scope="col" className="px-3 py-2">
-          {LABELS.analytics.escalationColumns.severity}
+        <th scope="col">{COLUMNS.severity}</th>
+        <th scope="col" className="text-right">
+          {COLUMNS.escalatedCount}
         </th>
-        <th scope="col" className="px-3 py-2 text-right">
-          {LABELS.analytics.escalationColumns.escalatedCount}
+        <th scope="col" className="text-right">
+          {COLUMNS.acknowledgedCount}
         </th>
-        <th scope="col" className="px-3 py-2 text-right">
-          {LABELS.analytics.escalationColumns.acknowledgedCount}
+        <th scope="col" className="text-right">
+          {COLUMNS.medianAck}
         </th>
-        <th scope="col" className="px-3 py-2 text-right">
-          {LABELS.analytics.escalationColumns.medianAck}
-        </th>
-        <th scope="col" className="px-3 py-2 text-right">
-          {LABELS.analytics.escalationColumns.p90Ack}
+        <th scope="col" className="text-right">
+          {COLUMNS.p90Ack}
         </th>
       </TableHeader>
-      <tbody className="divide-y divide-border">
+      <TableBody>
         {data.bySeverity.map((row) => (
-          <tr key={row.severity}>
-            <td className="px-3 py-2">
+          <TableRow key={row.severity}>
+            <TableCell label={COLUMNS.severity} isWide>
               <SeverityBadge severity={row.severity} />
-            </td>
-            <td className="px-3 py-2 text-right">{row.escalatedCount}</td>
-            <td className="px-3 py-2 text-right">{row.acknowledgedCount}</td>
-            <td className="px-3 py-2 text-right">
-              {row.medianAckSeconds === null ? LABELS.analytics.kpiNoData : formatDuration(row.medianAckSeconds)}
-            </td>
-            <td className="px-3 py-2 text-right">
-              {row.p90AckSeconds === null ? LABELS.analytics.kpiNoData : formatDuration(row.p90AckSeconds)}
-            </td>
-          </tr>
+            </TableCell>
+            <TableCell label={COLUMNS.escalatedCount} isNumeric>
+              {row.escalatedCount}
+            </TableCell>
+            <TableCell label={COLUMNS.acknowledgedCount} isNumeric>
+              {row.acknowledgedCount}
+            </TableCell>
+            <TableCell label={COLUMNS.medianAck} isNumeric className="font-medium text-foreground">
+              {durationOrDash(row.medianAckSeconds)}
+            </TableCell>
+            <TableCell label={COLUMNS.p90Ack} isNumeric>
+              {durationOrDash(row.p90AckSeconds)}
+            </TableCell>
+          </TableRow>
         ))}
-      </tbody>
+      </TableBody>
     </Table>
   );
 }

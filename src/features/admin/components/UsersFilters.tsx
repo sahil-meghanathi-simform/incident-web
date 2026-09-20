@@ -1,10 +1,13 @@
-import type { ReactElement } from 'react';
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
+import { useCallback, type ReactElement } from 'react';
+import { Search } from 'lucide-react';
 import { Field } from '../../../components/ui/Field';
-import { Select } from '../../../components/ui/Select';
-import { Input } from '../../../components/ui/Input';
-import { Button } from '../../../components/ui/Button';
+import { OptionSelect, type SelectOption } from '../../../components/ui/OptionSelect';
 import { Card } from '../../../components/ui/Card';
-import { RoleValues } from '../../../api/contracts/enums';
+import { FilterChips, type FilterChip } from '../../../components/ui/FilterChips';
+import { FilterTextInput } from './FilterTextInput';
+import { RoleValues, type Role } from '../../../api/contracts/enums';
 import { LABELS } from '../../../lib/labels';
 import type { AdminUsersFilters } from '../schemas/adminUsers.schema';
 
@@ -13,70 +16,87 @@ type UsersFiltersProps = Readonly<{
   onChange: (patch: Partial<AdminUsersFilters>) => void;
 }>;
 
-function isRole(value: string): value is (typeof RoleValues)[number] {
-  return (RoleValues as readonly string[]).includes(value);
+const ROLE_OPTIONS: ReadonlyArray<SelectOption<Role>> = RoleValues.map((role) => ({
+  value: role,
+  label: LABELS.admin.roleLabelFor(role),
+}));
+
+const STATUS_OPTIONS: ReadonlyArray<SelectOption<'true' | 'false'>> = [
+  { value: 'true', label: LABELS.admin.usersFilterStatusActive },
+  { value: 'false', label: LABELS.admin.usersFilterStatusInactive },
+];
+
+function buildChips(filters: AdminUsersFilters, onChange: UsersFiltersProps['onChange']): FilterChip[] {
+  const chips: FilterChip[] = [];
+  for (const role of filters.role ?? []) {
+    const label = LABELS.admin.usersChip.role(LABELS.admin.roleLabelFor(role));
+    const remaining = (filters.role ?? []).filter((r) => r !== role);
+    chips.push({
+      id: `role-${role}`,
+      label,
+      removeLabel: LABELS.admin.removeFilter(label),
+      onRemove: () => onChange({ role: remaining.length ? remaining : undefined }),
+    });
+  }
+  if (filters.isActive !== undefined) {
+    const label = LABELS.admin.usersChip.status(
+      filters.isActive ? LABELS.admin.usersFilterStatusActive : LABELS.admin.usersFilterStatusInactive,
+    );
+    chips.push({ id: 'status', label, removeLabel: LABELS.admin.removeFilter(label), onRemove: () => onChange({ isActive: undefined }) });
+  }
+  if (filters.q) {
+    const label = LABELS.admin.usersChip.search(filters.q);
+    chips.push({ id: 'q', label, removeLabel: LABELS.admin.removeFilter(label), onRemove: () => onChange({ q: undefined }) });
+  }
+  return chips;
 }
 
+/** A compact toolbar: debounced search, role and status pickers, then the active
+ * filters as removable chips. URL keys and patch shapes are unchanged. */
 export function UsersFilters({ filters, onChange }: UsersFiltersProps): ReactElement {
-  const hasAnyFilter = !!filters.role?.length || filters.isActive !== undefined || !!filters.q;
+  const commitSearch = useCallback((q: string | undefined) => onChange({ q }), [onChange]);
 
   return (
-    <Card className="flex flex-wrap items-end justify-between gap-4 p-4">
-      <div className="flex flex-wrap items-end gap-4">
-        <div>
-          <Field label={LABELS.admin.usersFilterRole} htmlFor="users-filter-role">
-            <Select
-              id="users-filter-role"
-              value={filters.role?.[0] ?? ''}
-              onChange={(e) => {
-                const { value } = e.target;
-                onChange({ role: value && isRole(value) ? [value] : undefined });
-              }}
-            >
-              <option value="">{LABELS.admin.usersFilterRoleAny}</option>
-              {RoleValues.map((role) => (
-                <option key={role} value={role}>
-                  {role.replaceAll('_', ' ')}
-                </option>
-              ))}
-            </Select>
-          </Field>
+    <div className="mb-4 space-y-3">
+      <Card className="grid gap-3 p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-4">
+        <div className="sm:col-span-2">
+          <FilterTextInput
+            id="users-filter-search"
+            type="search"
+            icon={Search}
+            label={LABELS.admin.usersFilterSearch}
+            placeholder={LABELS.admin.usersFilterSearchPlaceholder}
+            value={filters.q}
+            onCommit={commitSearch}
+          />
         </div>
 
-        <div>
-          <Field label={LABELS.admin.usersFilterStatus} htmlFor="users-filter-status">
-            <Select
-              id="users-filter-status"
-              value={filters.isActive === undefined ? '' : String(filters.isActive)}
-              onChange={(e) => {
-                const { value } = e.target;
-                onChange({ isActive: value === '' ? undefined : value === 'true' });
-              }}
-            >
-              <option value="">{LABELS.admin.usersFilterStatusAny}</option>
-              <option value="true">{LABELS.admin.usersFilterStatusActive}</option>
-              <option value="false">{LABELS.admin.usersFilterStatusInactive}</option>
-            </Select>
-          </Field>
-        </div>
+        <Field label={LABELS.admin.usersFilterRole} htmlFor="users-filter-role">
+          <OptionSelect
+            id="users-filter-role"
+            options={ROLE_OPTIONS}
+            anyLabel={LABELS.admin.usersFilterRoleAny}
+            value={filters.role?.[0]}
+            onChange={(role) => onChange({ role: role ? [role] : undefined })}
+          />
+        </Field>
 
-        <div className="min-w-56">
-          <Field label={LABELS.admin.usersFilterSearch} htmlFor="users-filter-search">
-            <Input
-              id="users-filter-search"
-              placeholder={LABELS.admin.usersFilterSearchPlaceholder}
-              value={filters.q ?? ''}
-              onChange={(e) => onChange({ q: e.target.value || undefined })}
-            />
-          </Field>
-        </div>
-      </div>
+        <Field label={LABELS.admin.usersFilterStatus} htmlFor="users-filter-status">
+          <OptionSelect
+            id="users-filter-status"
+            options={STATUS_OPTIONS}
+            anyLabel={LABELS.admin.usersFilterStatusAny}
+            value={filters.isActive === undefined ? undefined : filters.isActive ? 'true' : 'false'}
+            onChange={(status) => onChange({ isActive: status === undefined ? undefined : status === 'true' })}
+          />
+        </Field>
+      </Card>
 
-      {hasAnyFilter && (
-        <Button type="button" variant="ghost" onClick={() => onChange({ role: undefined, isActive: undefined, q: undefined })}>
-          Clear all
-        </Button>
-      )}
-    </Card>
+      <FilterChips
+        chips={buildChips(filters, onChange)}
+        clearAllLabel={LABELS.admin.usersClearFilters}
+        onClearAll={() => onChange({ role: undefined, isActive: undefined, q: undefined })}
+      />
+    </div>
   );
 }

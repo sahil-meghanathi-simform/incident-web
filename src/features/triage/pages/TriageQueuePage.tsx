@@ -1,16 +1,16 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
+import { CheckCircle2, Inbox, List } from 'lucide-react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { PageHeader } from '../../../components/ui/PageHeader';
-import { SkeletonTable } from '../../../components/ui/SkeletonTable';
-import { ErrorState } from '../../../components/ui/ErrorState';
 import { EmptyState } from '../../../components/ui/EmptyState';
-import { TablePagination } from '../../../components/ui/TablePagination';
+import { PagedQuerySection } from '../../../components/ui/PagedQuerySection';
 import { TextLink } from '../../../components/ui/TextLink';
 import { TriageQueueTable } from '../components/TriageQueueTable';
 import { useTriageQueue } from '../hooks/useTriageQueue';
 import { useOffsetPagination } from '../../../hooks/useOffsetPagination';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
-import { cn } from '../../../lib/cn';
 import { ROUTES } from '../../../app/routes';
 import { LABELS } from '../../../lib/labels';
 
@@ -21,23 +21,28 @@ export function TriageQueuePage(): ReactElement {
 
   return (
     <PageContainer>
-      <PageHeader title={LABELS.triage.queueTitle} description={LABELS.triage.queueDescription} />
-
-      {query.isPending && <SkeletonTable />}
-      {query.isError && <ErrorState message={LABELS.triage.loadQueueError} onRetry={() => query.refetch()} />}
-      {query.data && query.data.items.length === 0 && (
-        <EmptyState
-          title={LABELS.triage.queueEmptyTitle}
-          body={LABELS.triage.queueEmptyBody}
-          action={<TextLink to={ROUTES.incidents}>{LABELS.triage.viewFullList}</TextLink>}
-        />
-      )}
-      {query.data && query.data.items.length > 0 && (
-        <div className={cn(query.isPlaceholderData && 'opacity-60 transition-opacity')}>
-          <TriageQueueTable items={query.data.items} />
-          <TablePagination page={query.data.page} totalPages={query.data.totalPages} onPageChange={setPage} />
-        </div>
-      )}
+      <PageHeader icon={Inbox} title={LABELS.triage.queueTitle} description={LABELS.triage.queueDescription} />
+      <PagedQuerySection
+        query={query}
+        errorMessage={LABELS.triage.loadQueueError}
+        onPageChange={setPage}
+        skeletonColumns={7}
+        empty={
+          <EmptyState
+            icon={CheckCircle2}
+            title={LABELS.triage.queueEmptyTitle}
+            body={LABELS.triage.queueEmptyBody}
+            action={
+              <TextLink to={ROUTES.incidents} className="inline-flex items-center gap-1.5">
+                <List className="size-4" aria-hidden="true" />
+                {LABELS.triage.viewFullList}
+              </TextLink>
+            }
+          />
+        }
+      >
+        {(items, footer) => <TriageQueueTable items={items} footer={footer} />}
+      </PagedQuerySection>
     </PageContainer>
   );
 }

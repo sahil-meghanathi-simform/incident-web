@@ -1,10 +1,11 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
-import { Table } from '../../../components/ui/Table';
-import { TableHeader } from '../../../components/ui/TableHeader';
-import { Button } from '../../../components/ui/Button';
-import { Card } from '../../../components/ui/Card';
-import { TierRow } from './TierRow';
+import { Route } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/Card';
+import { TierSeverityCard } from './TierSeverityCard';
 import { TierPreview } from './TierPreview';
+import { TierSaveBar } from './TierSaveBar';
 import { tierSetSchema, tierRowErrors, type TierInput } from '../schemas/tierSet.schema';
 import { SEVERITY_ORDER, type Severity } from '../../../lib/severity';
 import { LABELS } from '../../../lib/labels';
@@ -15,8 +16,12 @@ type TierEditorProps = Readonly<{
   onSave: (tiers: readonly TierInput[]) => void;
 }>;
 
-/** Editable grid, one local draft, one atomic [Save all] — no per-cell autosave
- * (build-plan.md §15.2's state-responsibilities rule). */
+function tierKey(tier: Pick<TierInput, 'severity' | 'level'>): string {
+  return `${tier.severity}:${tier.level}`;
+}
+
+/** Editable tiers grouped by severity, one local draft, one atomic [Save all] — no
+ * per-cell autosave (build-plan.md §15.2's state-responsibilities rule). */
 export function TierEditor({ initialTiers, isSaving, onSave }: TierEditorProps): ReactElement {
   const [draft, setDraft] = useState<readonly TierInput[]>(initialTiers);
 
@@ -27,59 +32,64 @@ export function TierEditor({ initialTiers, isSaving, onSave }: TierEditorProps):
     setDraft(initialTiers);
   }, [initialTiers]);
 
-  const isDirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(initialTiers), [draft, initialTiers]);
+  const savedMinutes = useMemo(
+    () => new Map(initialTiers.map((t) => [tierKey(t), t.thresholdMinutes] as const)),
+    [initialTiers],
+  );
+  const unsavedCount = useMemo(
+    () => draft.filter((t) => savedMinutes.get(tierKey(t)) !== t.thresholdMinutes).length,
+    [draft, savedMinutes],
+  );
   const rowErrors = useMemo(() => tierRowErrors(draft), [draft]);
   const validation = useMemo(() => tierSetSchema.safeParse({ tiers: draft }), [draft]);
-  const canSave = isDirty && validation.success;
 
-  const severitiesPresent = SEVERITY_ORDER.filter((s) => draft.some((t) => t.severity === s));
+  const severitiesPresent = SEVERITY_ORDER.filter((s) => draft.some((t) => t.severity === s)).reverse();
 
   function updateThreshold(severity: Severity, level: number, thresholdMinutes: number): void {
     setDraft((prev) => prev.map((t) => (t.severity === severity && t.level === level ? { ...t, thresholdMinutes } : t)));
   }
 
-  const sortedDraft = [...draft].sort((a, b) => {
-    const severityDiff = SEVERITY_ORDER.indexOf(a.severity) - SEVERITY_ORDER.indexOf(b.severity);
-    return severityDiff !== 0 ? severityDiff : a.level - b.level;
-  });
-
   return (
-    <div className="space-y-4">
-      <Table>
-        <TableHeader>
-          <th className="px-4 py-2">{LABELS.admin.tierColumns.severity}</th>
-          <th className="px-4 py-2">{LABELS.admin.tierColumns.level}</th>
-          <th className="px-4 py-2">{LABELS.admin.tierColumns.thresholdMinutes}</th>
-        </TableHeader>
-        <tbody className="divide-y divide-border">
-          {sortedDraft.map((tier) => (
-            <TierRow
-              key={`${tier.severity}-${tier.level}`}
-              severity={tier.severity}
-              level={tier.level}
-              thresholdMinutes={tier.thresholdMinutes}
-              error={rowErrors.get(`${tier.severity}:${tier.level}`)}
-              onChange={(thresholdMinutes) => updateThreshold(tier.severity, tier.level, thresholdMinutes)}
+    <>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
+          {severitiesPresent.map((severity) => (
+            <TierSeverityCard
+              key={severity}
+              severity={severity}
+              tiers={draft.filter((t) => t.severity === severity).sort((a, b) => a.level - b.level)}
+              savedMinutes={savedMinutes}
+              rowErrors={rowErrors}
+              onChange={(level, thresholdMinutes) => updateThreshold(severity, level, thresholdMinutes)}
             />
           ))}
-        </tbody>
-      </Table>
+        </div>
 
-      <Card className="space-y-1 p-4">
-        {severitiesPresent.map((severity) => (
-          <TierPreview key={severity} severity={severity} tiers={draft} />
-        ))}
-      </Card>
-
-      <div className="flex items-center justify-end gap-3">
-        {!validation.success && <p role="alert" className="text-xs text-destructive">{LABELS.admin.tierSaveDisabledReason}</p>}
-        <Button type="button" variant="outline" onClick={() => setDraft(initialTiers)} disabled={!isDirty || isSaving}>
-          Reset
-        </Button>
-        <Button type="button" onClick={() => onSave(draft)} isLoading={isSaving} disabled={!canSave}>
-          {LABELS.admin.saveAllTiers}
-        </Button>
+        <Card variant="muted" className="h-fit lg:sticky lg:top-6">
+          <CardHeader>
+            <CardTitle className="text-base">
+              <Route className="size-4 text-primary" aria-hidden="true" />
+              {LABELS.admin.tierPreviewTitle}
+            </CardTitle>
+            <CardDescription>{LABELS.admin.tierPreviewBody}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-4">
+              {severitiesPresent.map((severity) => (
+                <TierPreview key={severity} severity={severity} tiers={draft} />
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+
+      <TierSaveBar
+        unsavedCount={unsavedCount}
+        isValid={validation.success}
+        isSaving={isSaving}
+        onReset={() => setDraft(initialTiers)}
+        onSave={() => onSave(draft)}
+      />
+    </>
   );
 }

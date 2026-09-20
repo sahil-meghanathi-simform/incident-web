@@ -1,57 +1,86 @@
-import type { ReactElement } from 'react';
-import { Table } from '../../../components/ui/Table';
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
+import type { ReactElement, ReactNode } from 'react';
+import { Pencil } from 'lucide-react';
+import { Table, TableBody, TableCell, TableRow } from '../../../components/ui/Table';
 import { TableHeader } from '../../../components/ui/TableHeader';
-import { Badge } from '../../../components/ui/Badge';
+import { Avatar } from '../../../components/ui/Avatar';
 import { Button } from '../../../components/ui/Button';
-import { formatDateTime } from '../../../lib/datetime';
+import { StatusBadge } from '../../../components/ui/StatusBadge';
+import { RoleBadge } from './RoleBadge';
+import { ClearanceBadge } from './ClearanceBadge';
+import { formatDateTime, formatRelative } from '../../../lib/datetime';
 import { LABELS } from '../../../lib/labels';
 import type { AdminUserRow } from '../../../api/contracts/admin.contract';
 
 type UsersTableProps = Readonly<{
   items: readonly AdminUserRow[];
   onEdit: (user: AdminUserRow) => void;
+  /** Pagination, rendered inside the table card. */
+  footer?: ReactNode;
 }>;
 
-export function UsersTable({ items, onEdit }: UsersTableProps): ReactElement {
+const COLUMNS = LABELS.admin.usersColumns;
+
+export function UsersTable({ items, onEdit, footer }: UsersTableProps): ReactElement {
   return (
-    <Table>
+    <Table isStacked footer={footer}>
       <TableHeader>
-        <th className="px-4 py-2">{LABELS.admin.usersColumns.user}</th>
-        <th className="px-4 py-2">{LABELS.admin.usersColumns.role}</th>
-        <th className="px-4 py-2">{LABELS.admin.usersColumns.clearance}</th>
-        <th className="px-4 py-2">{LABELS.admin.usersColumns.status}</th>
-        <th className="px-4 py-2">{LABELS.admin.usersColumns.createdAt}</th>
-        <th className="px-4 py-2" />
+        <th>{COLUMNS.user}</th>
+        <th>{COLUMNS.role}</th>
+        <th>{COLUMNS.clearance}</th>
+        <th>{COLUMNS.status}</th>
+        <th>{COLUMNS.createdAt}</th>
+        <th>
+          <span className="sr-only">{COLUMNS.actions}</span>
+        </th>
       </TableHeader>
-      <tbody className="divide-y divide-border">
+      <TableBody>
         {items.map((user) => (
-          <tr key={user.id} className="hover:bg-accent">
-            <td className="px-4 py-2">
-              <div className="font-medium text-foreground">{user.displayName}</div>
-              <div className="text-xs text-muted-foreground">{user.email}</div>
-            </td>
-            <td className="px-4 py-2 text-foreground-soft">{user.role.replaceAll('_', ' ')}</td>
-            <td className="px-4 py-2 text-foreground-soft">{user.clearanceLevel}</td>
-            <td className="px-4 py-2">
-              <Badge
-                className={
-                  user.isActive
-                    ? 'border-border bg-muted text-stage-closed'
-                    : 'border-border bg-muted text-muted-foreground'
-                }
+          <TableRow key={user.id}>
+            <TableCell label={COLUMNS.user} isWide>
+              <div className="flex min-w-0 items-center gap-3">
+                <Avatar name={user.displayName} className="h-9 w-9" />
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-foreground">{user.displayName}</p>
+                  <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                </div>
+              </div>
+            </TableCell>
+            <TableCell label={COLUMNS.role}>
+              <RoleBadge role={user.role} />
+            </TableCell>
+            <TableCell label={COLUMNS.clearance}>
+              <ClearanceBadge level={user.clearanceLevel} />
+            </TableCell>
+            <TableCell label={COLUMNS.status}>
+              <StatusBadge
+                isActive={user.isActive}
+                activeLabel={LABELS.admin.statusActive}
+                inactiveLabel={LABELS.admin.statusInactive}
+              />
+            </TableCell>
+            <TableCell label={COLUMNS.createdAt} className="whitespace-nowrap text-xs text-muted-foreground">
+              <time dateTime={user.createdAt} title={formatDateTime(user.createdAt)}>
+                {formatRelative(user.createdAt)}
+              </time>
+            </TableCell>
+            <TableCell isWide className="md:text-right">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onEdit(user)}
+                aria-label={LABELS.admin.editUserAria(user.displayName)}
+                className="max-md:w-full"
               >
-                {user.isActive ? LABELS.admin.statusActive : LABELS.admin.statusInactive}
-              </Badge>
-            </td>
-            <td className="whitespace-nowrap px-4 py-2 text-xs text-muted-foreground">{formatDateTime(user.createdAt)}</td>
-            <td className="px-4 py-2 text-right">
-              <Button type="button" variant="outline" onClick={() => onEdit(user)}>
-                Edit
+                <Pencil aria-hidden="true" />
+                {LABELS.admin.editUser}
               </Button>
-            </td>
-          </tr>
+            </TableCell>
+          </TableRow>
         ))}
-      </tbody>
+      </TableBody>
     </Table>
   );
 }

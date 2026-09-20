@@ -1,4 +1,7 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
+import { Play } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { useToast } from '../../../components/ui/useToast';
 import { useRunEscalationJob } from '../hooks/useRunEscalationJob';
@@ -25,6 +28,7 @@ export function RunJobButton(): ReactElement {
 
   return (
     <Button type="button" onClick={handleRun} isLoading={mutation.isPending}>
+      {!mutation.isPending && <Play aria-hidden="true" />}
       {LABELS.admin.runJobNow}
     </Button>
   );

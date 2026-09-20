@@ -9,8 +9,9 @@
 import { ERRORS } from './errors';
 import { AUTH } from './auth';
 import { INCIDENTS } from './incidents';
+import { FILTERS } from './filters';
 import { TRIAGE, INVESTIGATION, CLOSURE } from './workflow';
-import { NAV, FEEDBACK, CHROME } from './ui';
+import { NAV, FEEDBACK, CHROME, PALETTE } from './ui';
 import { ESCALATIONS, NOTIFICATIONS, TIMELINE } from './monitoring';
 import { ADMIN } from './admin';
 import { ANALYTICS } from './analytics';
@@ -20,12 +21,14 @@ export const LABELS = {
   errors: ERRORS,
   auth: AUTH,
   incidents: INCIDENTS,
+  filters: FILTERS,
   triage: TRIAGE,
   investigation: INVESTIGATION,
   closure: CLOSURE,
   nav: NAV,
   feedback: FEEDBACK,
   chrome: CHROME,
+  palette: PALETTE,
   escalations: ESCALATIONS,
   notifications: NOTIFICATIONS,
   timeline: TIMELINE,

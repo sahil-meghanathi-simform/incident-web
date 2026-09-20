@@ -1,11 +1,23 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import { useEffect, type ReactElement } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Dialog, DialogContent, DialogTitle } from '../../../components/ui/Dialog';
+import { ArrowRight } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../../components/ui/Dialog';
 import { Field } from '../../../components/ui/Field';
-import { Select } from '../../../components/ui/Select';
+import { OptionSelect, type SelectOption } from '../../../components/ui/OptionSelect';
 import { Textarea } from '../../../components/ui/Textarea';
 import { Button } from '../../../components/ui/Button';
+import { CharacterCount } from '../../../components/ui/CharacterCount';
+import { SeverityBadge } from '../../../components/ui/SeverityBadge';
 import { useToast } from '../../../components/ui/useToast';
 import { useChangeSeverity } from '../hooks/useChangeSeverity';
 import { useAssignableInvestigators } from '../hooks/useAssignableInvestigators';
@@ -15,7 +27,8 @@ import { SeverityChangeImpactWarning } from './SeverityChangeImpactWarning';
 import { applyApiErrorToForm } from '../../../lib/formErrors';
 import { getErrorMessage } from '../../../lib/getErrorMessage';
 import { isApiError } from '../../../api/ApiError';
-import { SEVERITY_ORDER, SEVERITY_LABEL } from '../../../lib/severity';
+import { cn } from '../../../lib/cn';
+import { SEVERITY_ORDER, SEVERITY_LABEL, type Severity } from '../../../lib/severity';
 import { LABELS } from '../../../lib/labels';
 import type { ChangeSeverityRequest } from '../types/triage.type';
 import type { IncidentDetail } from '../../incidents/types/incident.type';
@@ -26,6 +39,21 @@ type ChangeSeverityModalProps = Readonly<{
   onClose: () => void;
 }>;
 
+/** Mirrors ChangeSeverityRequestSchema's reason bounds (triage.contract.ts) for the
+ * live counter only — validation itself stays with the schema. */
+// SEVERITY_ORDER/SEVERITY_LABEL are static, contract-defined constants — never
+// fetched — so the option list exists synchronously at mount and the form's
+// defaultValues/reset always has a matching option to show. (Loading these from
+// useIncidentTypes() instead once raced the async fetch against the form's initial
+// bind and left the select showing "Low" over a different submitted value.)
+const SEVERITY_OPTIONS: ReadonlyArray<SelectOption<Severity>> = SEVERITY_ORDER.map((severity) => ({
+  value: severity,
+  label: SEVERITY_LABEL[severity],
+}));
+
+const REASON_MIN = 10;
+const REASON_MAX = 500;
+
 export function ChangeSeverityModal({ incident, isOpen, onClose }: ChangeSeverityModalProps): ReactElement {
   const { show } = useToast();
   const investigatorsQuery = useAssignableInvestigators(1);
@@ -33,6 +61,7 @@ export function ChangeSeverityModal({ incident, isOpen, onClose }: ChangeSeverit
 
   const {
     register,
+    control,
     handleSubmit,
     watch,
     reset,
@@ -50,7 +79,9 @@ export function ChangeSeverityModal({ incident, isOpen, onClose }: ChangeSeverit
   }, [isOpen, incident.severity, reset]);
 
   const nextSeverity = watch('severity');
+  const reasonLength = watch('reason')?.length ?? 0;
   const impact = useSeverityImpact(incident, nextSeverity, investigatorsQuery.data);
+  const isUnchanged = nextSeverity === incident.severity;
 
   const submit = handleSubmit(async (values) => {
     try {
@@ -84,45 +115,77 @@ export function ChangeSeverityModal({ incident, isOpen, onClose }: ChangeSeverit
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
-        <DialogTitle>{LABELS.triage.changeSeverityModalTitle}</DialogTitle>
-        <form onSubmit={submit} noValidate className="mt-4 space-y-4">
-        <Field label={LABELS.incidents.columns.severity} htmlFor="change-severity" error={errors.severity?.message} required>
-          {/* SEVERITY_ORDER/SEVERITY_LABEL are static, contract-defined constants — never
-              fetched — so the option list exists synchronously at mount and the form's
-              defaultValues/reset always has a matching <option> to bind to. Loading these
-              from useIncidentTypes() instead raced the async fetch against RHF's initial
-              bind: with no HIGH option yet in the DOM, reset() silently fell back to
-              whatever option rendered first, leaving the select showing "Low" while the
-              real, submitted value stayed whatever reset() had set internally. */}
-          <Select id="change-severity" hasError={Boolean(errors.severity)} disabled={isSubmitting} {...register('severity')}>
-            {SEVERITY_ORDER.map((severity) => (
-              <option key={severity} value={severity}>
-                {SEVERITY_LABEL[severity]}
-              </option>
-            ))}
-          </Select>
-        </Field>
+        <DialogHeader>
+          <DialogTitle>{LABELS.triage.changeSeverityModalTitle}</DialogTitle>
+          <DialogDescription>{LABELS.triage.changeSeverityModalDescription}</DialogDescription>
+        </DialogHeader>
 
-        <SeverityChangeImpactWarning impact={impact} />
-
-        <Field
-          label={LABELS.triage.reasonLabel}
-          htmlFor="change-severity-reason"
-          error={errors.reason?.message}
-          hint={LABELS.triage.reasonHint}
-          required
+        <div
+          role="group"
+          aria-label={LABELS.triage.severityChangePreview}
+          className="mb-5 flex flex-wrap items-center gap-4 rounded-lg border border-border bg-muted/60 px-4 py-3"
         >
-          <Textarea id="change-severity-reason" rows={3} hasError={Boolean(errors.reason)} disabled={isSubmitting} {...register('reason')} />
-        </Field>
-
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button type="submit" isLoading={isSubmitting}>
-            {LABELS.triage.changeSeverity}
-          </Button>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-muted-foreground">{LABELS.triage.severityCurrent}</span>
+            <SeverityBadge severity={incident.severity} />
+          </div>
+          <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <div className={cn('flex flex-col gap-1 transition-opacity duration-200', isUnchanged && 'opacity-50')}>
+            <span className="text-xs font-medium text-muted-foreground">{LABELS.triage.severityNext}</span>
+            <SeverityBadge severity={nextSeverity} />
+          </div>
         </div>
+
+        <form onSubmit={submit} noValidate className="space-y-4">
+          <Field label={LABELS.incidents.columns.severity} htmlFor="change-severity" error={errors.severity?.message} required>
+            {(describedBy) => (
+              <Controller
+                control={control}
+                name="severity"
+                render={({ field }) => (
+                  <OptionSelect
+                    triggerRef={field.ref}
+                    id="change-severity"
+                    options={SEVERITY_OPTIONS}
+                    value={field.value}
+                    onChange={(next) => next && field.onChange(next)}
+                    onBlur={field.onBlur}
+                    hasError={Boolean(errors.severity)}
+                    disabled={isSubmitting}
+                    aria-describedby={describedBy}
+                  />
+                )}
+              />
+            )}
+          </Field>
+
+          <SeverityChangeImpactWarning impact={impact} />
+
+          <Field
+            label={LABELS.triage.reasonLabel}
+            htmlFor="change-severity-reason"
+            error={errors.reason?.message}
+            hint={LABELS.triage.reasonHint}
+            counter={<CharacterCount count={reasonLength} max={REASON_MAX} min={REASON_MIN} />}
+            required
+          >
+            <Textarea
+              id="change-severity-reason"
+              rows={3}
+              hasError={Boolean(errors.reason)}
+              disabled={isSubmitting}
+              {...register('reason')}
+            />
+          </Field>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
+              {LABELS.chrome.cancel}
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              {LABELS.triage.changeSeverity}
+            </Button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

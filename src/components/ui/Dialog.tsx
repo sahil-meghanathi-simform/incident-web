@@ -12,6 +12,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { useRestoreFocusOnClose } from '../../hooks/useRestoreFocusOnClose';
+import { LABELS } from '../../lib/labels';
 
 export const Dialog = DialogPrimitive.Root;
 export const DialogTrigger = DialogPrimitive.Trigger;
@@ -29,7 +30,7 @@ export const DialogOverlay = forwardRef<
         // The raw ink ramp lives outside @theme deliberately (index.css) and
         // generates no utilities, so foreground/40 is the nearest semantic,
         // utility-generating equivalent for a scrim.
-        'fixed inset-0 z-50 bg-foreground/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+        'fixed inset-0 z-50 bg-foreground/40 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         className,
       )}
       {...rest}
@@ -50,16 +51,18 @@ export const DialogContent = forwardRef<
         ref={ref}
         onCloseAutoFocus={onCloseAutoFocus ?? restoreFocus}
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-card p-5 shadow-lg outline-none',
-          'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+          // max-h + overflow so a tall form (select + warning + textarea) can
+          // always scroll to its own submit button on a short phone screen.
+          'fixed left-1/2 top-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-border bg-card p-5 shadow-lg outline-none sm:p-6',
+          'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-bottom-2 duration-200',
           className,
         )}
         {...rest}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm text-muted-foreground opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none">
+        <DialogPrimitive.Close className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none">
           <X className="h-4 w-4" aria-hidden="true" />
-          <span className="sr-only">Close</span>
+          <span className="sr-only">{LABELS.chrome.dialogClose}</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
     </DialogPortal>
@@ -68,11 +71,11 @@ export const DialogContent = forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 export function DialogHeader({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('mb-4 flex flex-col gap-1.5', className)} {...rest} />;
+  return <div className={cn('mb-4 flex flex-col gap-1.5 pr-8', className)} {...rest} />;
 }
 
 export function DialogFooter({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('mt-5 flex justify-end gap-2', className)} {...rest} />;
+  return <div className={cn('mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)} {...rest} />;
 }
 
 export const DialogTitle = forwardRef<
@@ -82,7 +85,7 @@ export const DialogTitle = forwardRef<
   return (
     <DialogPrimitive.Title
       ref={ref}
-      className={cn('font-display text-base font-semibold tracking-snug text-foreground', className)}
+      className={cn('font-display text-lg font-semibold tracking-snug text-foreground', className)}
       {...rest}
     />
   );

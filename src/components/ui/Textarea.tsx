@@ -1,7 +1,8 @@
 // rules-ok: naming — component files in this repo are PascalCase by convention;
-// this file is superseded by the shadcn textarea in a later migration phase.
+// a repo-wide rename is out of scope for this redesign.
 import { type TextareaHTMLAttributes, type ReactElement, forwardRef } from 'react';
 import { cn } from '../../lib/cn';
+import { controlClasses, controlStateClass } from './Input';
 
 type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> &
   Readonly<{
@@ -15,13 +16,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
   return (
     <textarea
       ref={ref}
-      className={cn(
-        // Same preflight-transparency fix as Input.tsx — see the comment there.
-        'w-full rounded-md border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground',
-        'focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring',
-        hasError ? 'border-destructive' : 'border-input',
-        className,
-      )}
+      className={cn(controlClasses, 'min-h-20 resize-y py-2 leading-relaxed', controlStateClass(hasError), className)}
       aria-invalid={hasError}
       {...rest}
     />

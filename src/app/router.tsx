@@ -1,11 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
 import { RouteErrorBoundary } from '../components/feedback/RouteErrorBoundary';
-import { ComingSoon } from '../components/feedback/ComingSoon';
+import { NotFound } from '../components/feedback/NotFound';
 import { Forbidden } from '../components/feedback/Forbidden';
 import { RequireAuth } from './guards/RequireAuth';
 import { RequireRole } from './guards/RequireRole';
 import { DashboardPage } from '../features/dashboard/pages/DashboardPage';
+import { AuthLayout } from '../features/auth/components/AuthLayout';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { RegisterPage } from '../features/auth/pages/RegisterPage';
 import { ReportIncidentPage } from '../features/incidents/pages/ReportIncidentPage';
@@ -28,19 +29,19 @@ import { ROUTES } from './routes';
 /**
  * Login/register are public, top-level routes (siblings of the AppShell tree). Every
  * child of AppShell now requires a session via RequireAuth — an anonymous visit to any
- * of them redirects to /login?next=<pathname+search>. Feature modules replace each
- * remaining ComingSoon element as they land (Modules 2-10 per build-plan.md).
+ * of them redirects to /login?next=<pathname+search>. Any unknown path inside the
+ * shell renders NotFound.
  */
 export const router = createBrowserRouter([
   {
-    path: ROUTES.login,
-    element: <LoginPage />,
+    // Pathless layout route: the showcase panel stays mounted while the form swaps
+    // between /login and /register.
+    element: <AuthLayout />,
     errorElement: <RouteErrorBoundary />,
-  },
-  {
-    path: ROUTES.register,
-    element: <RegisterPage />,
-    errorElement: <RouteErrorBoundary />,
+    children: [
+      { path: ROUTES.login, element: <LoginPage />, errorElement: <RouteErrorBoundary /> },
+      { path: ROUTES.register, element: <RegisterPage />, errorElement: <RouteErrorBoundary /> },
+    ],
   },
   {
     path: '/',
@@ -117,7 +118,7 @@ export const router = createBrowserRouter([
         ),
       },
       { path: '403', element: <Forbidden /> },
-      { path: '*', element: <ComingSoon title="Not Found" /> },
+      { path: '*', element: <NotFound /> },
     ],
   },
 ]);

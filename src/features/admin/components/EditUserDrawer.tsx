@@ -1,15 +1,18 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import { useState, type ReactElement } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/Sheet';
-import { Field } from '../../../components/ui/Field';
-import { Button } from '../../../components/ui/Button';
-import { Badge } from '../../../components/ui/Badge';
-import { Separator } from '../../../components/ui/Separator';
+import { Info } from 'lucide-react';
+import { Sheet, SheetContent } from '../../../components/ui/Sheet';
+import { Alert, AlertDescription } from '../../../components/ui/Alert';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { useToast } from '../../../components/ui/useToast';
 import { useChangeUserRole } from '../hooks/useChangeUserRole';
 import { useChangeUserClearance } from '../hooks/useChangeUserClearance';
 import { useToggleUserStatus } from '../hooks/useToggleUserStatus';
-import { RoleSelect } from './RoleSelect';
-import { ClearanceSelect } from './ClearanceSelect';
+import { EditUserHeader } from './EditUserHeader';
+import { EditUserRoleSection } from './EditUserRoleSection';
+import { EditUserClearanceSection } from './EditUserClearanceSection';
+import { EditUserStatusSection } from './EditUserStatusSection';
 import { ClearanceImpactDialog } from './ClearanceImpactDialog';
 import { getErrorMessage } from '../../../lib/getErrorMessage';
 import { isApiError } from '../../../api/ApiError';
@@ -43,9 +46,15 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
   const [roleError, setRoleError] = useState<string | null>(null);
   const [clearanceError, setClearanceError] = useState<string | null>(null);
   const [statusError, setStatusError] = useState<string | null>(null);
+  const [isDiscardOpen, setIsDiscardOpen] = useState(false);
+  const [isDeactivateOpen, setIsDeactivateOpen] = useState(false);
 
   const isSelf = user !== null && currentUser !== null && currentUser.id === user.id;
   const isOpen = user !== null;
+  const isDirty =
+    user !== null &&
+    ((roleDraft !== null && roleDraft !== user.role) ||
+      (clearanceDraft !== null && clearanceDraft !== user.clearanceLevel));
 
   function handleClose(): void {
     setRoleDraft(null);
@@ -54,7 +63,17 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
     setRoleError(null);
     setClearanceError(null);
     setStatusError(null);
+    setIsDiscardOpen(false);
+    setIsDeactivateOpen(false);
     onClose();
+  }
+
+  function requestClose(): void {
+    if (isDirty) {
+      setIsDiscardOpen(true);
+      return;
+    }
+    handleClose();
   }
 
   async function submitRole(): Promise<void> {
@@ -100,84 +119,53 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
       show(LABELS.admin.statusChangedToast(nextIsActive), 'success');
     } catch (err) {
       setStatusError(inlineErrorMessage(err));
+    } finally {
+      setIsDeactivateOpen(false);
     }
   }
 
   if (!user) return null;
 
-  const currentRole = roleDraft ?? user.role;
-  const currentClearance = clearanceDraft ?? user.clearanceLevel;
-
   return (
     <>
-      <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>{LABELS.admin.editUserDrawerTitle(user.displayName)}</SheetTitle>
-          </SheetHeader>
-          <div className="space-y-6">
-          <div className="flex items-center gap-2 text-sm text-foreground-soft">
-            <span>{user.email}</span>
-            <Badge className={user.isActive ? 'border-border bg-muted text-stage-closed' : 'border-border bg-muted text-muted-foreground'}>
-              {user.isActive ? LABELS.admin.statusActive : LABELS.admin.statusInactive}
-            </Badge>
-          </div>
+      <Sheet open={isOpen} onOpenChange={(open) => !open && requestClose()}>
+        <SheetContent className="max-w-lg">
+          <EditUserHeader user={user} />
 
-          {isSelf && <p className="text-xs text-muted-foreground">{LABELS.admin.selfModificationForbidden}</p>}
+          <div className="space-y-4">
+            {isSelf && (
+              <Alert variant="info" role="note" className="flex gap-2">
+                <Info aria-hidden="true" />
+                <AlertDescription>{LABELS.admin.selfModificationForbidden}</AlertDescription>
+              </Alert>
+            )}
 
-          <section className="space-y-2">
-            <Field label={LABELS.admin.roleLabel} htmlFor="edit-user-role">
-              <RoleSelect id="edit-user-role" value={currentRole} disabled={isSelf} onChange={setRoleDraft} />
-            </Field>
-            {roleError && <p role="alert" className="text-xs text-destructive">{roleError}</p>}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={submitRole}
-              isLoading={changeRole.isPending}
-              disabled={isSelf || roleDraft === null || roleDraft === user.role}
-            >
-              {LABELS.admin.saveRole}
-            </Button>
-          </section>
+            <EditUserRoleSection
+              savedRole={user.role}
+              draftRole={roleDraft ?? user.role}
+              isSelf={isSelf}
+              isSaving={changeRole.isPending}
+              error={roleError}
+              onDraftChange={setRoleDraft}
+              onSave={submitRole}
+            />
 
-          <Separator />
-          <section className="space-y-2">
-            <Field label={LABELS.admin.clearanceLabel} htmlFor="edit-user-clearance">
-              <ClearanceSelect
-                id="edit-user-clearance"
-                value={currentClearance}
-                disabled={isSelf}
-                onChange={(next) => {
-                  setClearanceDraft(next);
-                }}
-              />
-            </Field>
-            {clearanceError && <p role="alert" className="text-xs text-destructive">{clearanceError}</p>}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => clearanceDraft !== null && requestClearanceChange(clearanceDraft)}
-              isLoading={changeClearance.isPending}
-              disabled={isSelf || clearanceDraft === null || clearanceDraft === user.clearanceLevel}
-            >
-              {LABELS.admin.saveClearance}
-            </Button>
-          </section>
+            <EditUserClearanceSection
+              savedLevel={user.clearanceLevel}
+              draftLevel={clearanceDraft ?? user.clearanceLevel}
+              isSelf={isSelf}
+              isSaving={changeClearance.isPending}
+              error={clearanceError}
+              onDraftChange={setClearanceDraft}
+              onSave={() => clearanceDraft !== null && requestClearanceChange(clearanceDraft)}
+            />
 
-          <Separator />
-          <section className="space-y-2">
-            <p className="text-sm font-medium text-foreground-soft">{LABELS.admin.statusLabel}</p>
-            {statusError && <p role="alert" className="text-xs text-destructive">{statusError}</p>}
-            <Button
-              type="button"
-              variant={user.isActive ? 'destructive' : 'default'}
-              onClick={() => toggleStatusFor(!user.isActive)}
-              isLoading={toggleStatus.isPending}
-            >
-              {user.isActive ? LABELS.admin.deactivateUser : LABELS.admin.activateUser}
-            </Button>
-          </section>
+            <EditUserStatusSection
+              isActive={user.isActive}
+              isSaving={toggleStatus.isPending}
+              error={statusError}
+              onToggle={() => (user.isActive ? setIsDeactivateOpen(true) : void toggleStatusFor(true))}
+            />
           </div>
         </SheetContent>
       </Sheet>
@@ -185,10 +173,32 @@ export function EditUserDrawer({ user, onClose }: EditUserDrawerProps): ReactEle
       <ClearanceImpactDialog
         isOpen={pendingClearance !== null}
         userId={user.id}
+        currentClearanceLevel={user.clearanceLevel}
         nextClearanceLevel={pendingClearance}
         isSubmitting={changeClearance.isPending}
         onConfirm={() => pendingClearance !== null && void applyClearanceChange(pendingClearance)}
         onCancel={() => setPendingClearance(null)}
+      />
+
+      <ConfirmDialog
+        isOpen={isDeactivateOpen}
+        title={LABELS.admin.deactivateConfirmTitle(user.displayName)}
+        description={LABELS.admin.deactivateConfirmBody}
+        confirmLabel={LABELS.admin.deactivateConfirmAction}
+        isDanger
+        isLoading={toggleStatus.isPending}
+        onConfirm={() => void toggleStatusFor(false)}
+        onCancel={() => setIsDeactivateOpen(false)}
+      />
+
+      <ConfirmDialog
+        isOpen={isDiscardOpen}
+        title={LABELS.admin.discardTitle}
+        description={LABELS.admin.discardBody}
+        confirmLabel={LABELS.admin.discardAction}
+        isDanger
+        onConfirm={handleClose}
+        onCancel={() => setIsDiscardOpen(false)}
       />
     </>
   );

@@ -5,6 +5,7 @@ import { ChangeSeverityModal } from '../../../../src/features/triage/components/
 import { ToastContext } from '../../../../src/components/ui/ToastContext';
 import { ApiError } from '../../../../src/api/ApiError';
 import type { IncidentDetail } from '../../../../src/features/incidents/types/incident.type';
+import { chooseOption } from '../../../helpers/chooseOption';
 
 const { changeSeverityMock } = vi.hoisted(() => ({ changeSeverityMock: vi.fn() }));
 
@@ -57,7 +58,7 @@ function renderModal(onClose: () => void, show: (message: string, variant?: stri
 }
 
 async function submitCriticalChange() {
-  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'CRITICAL' } });
+  await chooseOption(screen.getByRole('combobox', { name: /severity/i }), 'Critical');
   fireEvent.change(screen.getByRole('textbox', { name: /reason/i }), {
     target: { value: 'Raising after a closer look at the reported conditions.' },
   });

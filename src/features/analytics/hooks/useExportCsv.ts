@@ -28,6 +28,7 @@ export function useExportCsv(filters: AnalyticsPeriodFilters): UseExportCsvRetur
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
+      toast.show(LABELS.analytics.exportSuccessToast, 'success');
     } catch (err) {
       toast.show(isApiError(err) ? err.message : LABELS.analytics.exportError, 'error');
     } finally {

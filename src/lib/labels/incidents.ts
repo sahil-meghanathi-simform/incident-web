@@ -11,6 +11,8 @@ export const INCIDENTS = {
   reportPageTitle: 'Report Incident',
   reportTitle: 'Report an incident',
   reportDescription: 'Fill in what you know — invalid input is rejected before it reaches anyone.',
+  reportAction: 'Report incident',
+  reportSubmittedToast: (reference: string) => `Report ${reference} submitted.`,
   listTitle: 'Incidents',
   listDescription: 'Showing incidents at or below your clearance level.',
   loadListError: 'Could not load incidents.',
@@ -35,6 +37,16 @@ export const INCIDENTS = {
     HIGH: 'Serious — starts the escalation clock; visible from clearance 3 up.',
     CRITICAL: 'Most severe — starts the escalation clock; visible to clearance 4 only.',
   },
+  /** Enum value → readable type name ("DATA_PRIVACY" → "DATA PRIVACY"), for places
+   * that only have the raw enum rather than the API's option label. */
+  /** 'DATA_PRIVACY' -> 'Data Privacy'. Title case here, once, so selects, pills and
+   * chips don't each shout the raw enum (or each re-case it their own way). */
+  typeName: (value: string) =>
+    value
+      .toLowerCase()
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' '),
   columns: {
     reference: 'Reference',
     title: 'Title',
@@ -43,5 +55,87 @@ export const INCIDENTS = {
     stage: 'Stage',
     assignee: 'Assignee',
     age: 'Age',
+    escalation: 'Escalation',
+  },
+  form: {
+    typeLabel: 'Type',
+    typePlaceholder: 'Select a type…',
+    severityLabel: 'Severity',
+    titleLabel: 'Title',
+    titlePlaceholder: 'e.g. Water pooling by loading dock B',
+    descriptionLabel: 'Description',
+    descriptionPlaceholder: 'What happened, where and when, and who was involved or affected?',
+    descriptionHint: 'At least 20 characters.',
+    requiredNote: 'Fields marked * are required.',
+    fixErrors: (count: number) => `Fix the ${count} highlighted field${count === 1 ? '' : 's'} to submit.`,
+    errors: {
+      typeRequired: 'Choose the type that best fits what happened.',
+      severityRequired: 'Choose how severe the incident is.',
+      titleTooShort: (min: number) => `Give the report a title of at least ${min} characters.`,
+      titleTooLong: (max: number) => `Keep the title to ${max} characters or fewer.`,
+      descriptionTooShort: (min: number) => `Describe what happened in at least ${min} characters.`,
+      descriptionTooLong: (max: number) => `Keep the description to ${max} characters or fewer.`,
+    },
+    sections: {
+      what: { title: 'What happened', body: 'Pick the closest category — a triage manager can refine it later.' },
+      severity: { title: 'How severe is it?', body: 'Severity decides who can see the report and whether the escalation clock starts.' },
+      details: { title: 'Details', body: 'A short headline and a clear account help triage act quickly.' },
+    },
+  },
+  receipt: {
+    pageTitle: 'Report Submitted',
+    title: 'Thanks — your report is in',
+    body: 'Keep the reference below for any follow-up. A triage manager will pick it up from here.',
+    referenceLabel: 'Reference',
+    severityLabel: 'Filed as',
+    nextStepsTitle: 'What happens next',
+    nextSteps: [
+      { id: 'triage', text: 'A triage manager reviews and acknowledges the report.' },
+      { id: 'investigate', text: 'An investigator with the right clearance is assigned.' },
+      { id: 'close', text: 'Findings and corrective actions are recorded before closure.' },
+    ],
+    viewMyReports: 'View my reports',
+    noDetails: 'No submission details are available.',
+  },
+  copy: {
+    copyReference: 'Copy reference',
+    copied: 'Copied!',
+    copyFailed: "Couldn't copy — select the reference and copy it manually.",
+  },
+  clearanceNotice: {
+    title: 'You may not be able to view this report',
+    body: 'This incident was filed at a severity above your clearance level. An investigator or manager can still act on it — keep the reference below if you need to follow up.',
+  },
+  detail: {
+    fallbackTitle: 'Incident',
+    documentTitle: (reference: string, title: string) => `${reference} · ${title}`,
+    loading: 'Loading incident…',
+    overviewTab: 'Overview',
+    descriptionHeading: 'Description',
+    resolutionHeading: 'Resolution',
+    detailsHeading: 'Details',
+    removedUser: 'someone since removed',
+    progressLabel: 'Incident progress',
+    stepState: {
+      complete: 'completed',
+      current: 'current stage',
+      upcoming: 'not reached yet',
+    },
+    meta: {
+      type: 'Type',
+      reportedBy: 'Reported by',
+      assignedInvestigator: 'Assigned investigator',
+      unassigned: 'Unassigned',
+      acknowledged: 'Acknowledged',
+      acknowledgedValue: (at: string, by: string) => `${at} by ${by}`,
+      notAcknowledged: 'Not yet acknowledged',
+      escalation: 'Escalation',
+      notEscalated: 'Not escalated',
+      created: 'Created',
+      lastUpdated: 'Last updated',
+    },
+  },
+  timelineView: {
+    listLabel: 'Incident history, newest first',
   },
 } as const;

@@ -9,16 +9,23 @@ export const STAGE_LABEL: Record<Stage, string> = {
   CLOSED: 'Closed',
 };
 
-// Opaque tint per stage — see severity.ts for why opacity-modified colors are
-// dropped. The stage/severity hues necessarily collide (only four palette hues
-// for nine states) — a neutral-chip-plus-dot treatment that resolves this by
-// treatment rather than hue lands with the Badge primitive's cva rebuild.
-export const STAGE_COLOR_CLASS: Record<Stage, string> = {
-  REPORTED: 'bg-muted text-stage-reported border-border',
-  TRIAGE: 'bg-muted text-stage-triage border-border',
-  INVESTIGATION: 'bg-muted text-stage-investigation border-border',
-  PENDING_CLOSURE: 'bg-muted text-stage-pending-closure border-border',
-  CLOSED: 'bg-muted text-stage-closed border-border',
+// The stage/severity hues necessarily collide (only four palette hues for nine
+// states), so a stage is shown by treatment rather than hue: a neutral chip with
+// a coloured dot, and the label always spelled out — never colour alone.
+export const STAGE_DOT_CLASS: Record<Stage, string> = {
+  REPORTED: 'bg-stage-reported',
+  TRIAGE: 'bg-stage-triage',
+  INVESTIGATION: 'bg-stage-investigation',
+  PENDING_CLOSURE: 'bg-stage-pending-closure',
+  CLOSED: 'bg-stage-closed',
+};
+
+export const STAGE_TEXT_CLASS: Record<Stage, string> = {
+  REPORTED: 'text-stage-reported',
+  TRIAGE: 'text-stage-triage',
+  INVESTIGATION: 'text-stage-investigation',
+  PENDING_CLOSURE: 'text-stage-pending-closure',
+  CLOSED: 'text-stage-closed',
 };
 
 // UI hint only — the server (policy/stage.policy.ts) is the real gate.

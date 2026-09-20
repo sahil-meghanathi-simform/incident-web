@@ -1,8 +1,10 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { Table } from '../../../components/ui/Table';
+import { Table, TableBody, TableCell, TableRow } from '../../../components/ui/Table';
 import { TableHeader } from '../../../components/ui/TableHeader';
-import { Badge } from '../../../components/ui/Badge';
-import { formatDateTime } from '../../../lib/datetime';
+import { JobOutcomeBadge } from './JobOutcomeBadge';
+import { formatDateTime, formatDuration, formatRelative } from '../../../lib/datetime';
 import { LABELS } from '../../../lib/labels';
 import type { AdminJobRun } from '../../../api/contracts/admin.contract';
 
@@ -10,53 +12,61 @@ type JobRunsTableProps = Readonly<{
   runs: readonly AdminJobRun[];
 }>;
 
-const OUTCOME_CLASS: Record<string, string> = {
-  COMPLETED: 'border-border bg-muted text-stage-closed',
-  SKIPPED_LOCKED: 'border-severity-medium-border bg-severity-medium-surface text-severity-medium',
-  // Not the severity-critical tokens — those are solid-only by design (index.css),
-  // so surface/border/ink there are identical and would render invisible text.
-  FAILED: 'border-destructive/30 bg-destructive/10 text-destructive',
-};
+const COLUMNS = LABELS.admin.jobRunColumns;
 
-function formatDuration(startedAt: string, finishedAt: string | null): string {
+/** Sub-minute runs keep one decimal ("2.4s") — the shared formatter rounds to whole
+ * seconds, which would flatten most runs to "0s"/"1s". Longer runs use it as-is. */
+function runDuration(startedAt: string, finishedAt: string | null): string {
   if (!finishedAt) return '—';
   const seconds = Math.max(0, (new Date(finishedAt).getTime() - new Date(startedAt).getTime()) / 1000);
-  return seconds < 1 ? '<1s' : `${seconds.toFixed(1)}s`;
+  if (seconds < 1) return LABELS.admin.jobDurationUnderSecond;
+  if (seconds < 60) return `${seconds.toFixed(1)}s`;
+  return formatDuration(seconds);
 }
 
 /** §6's idempotency claim is what this table exists to demonstrate live — two
  * consecutive [Run now] rows, the second showing SKIPPED_LOCKED or 0 escalated. */
 export function JobRunsTable({ runs }: JobRunsTableProps): ReactElement {
   return (
-    <Table>
+    <Table isStacked label={LABELS.admin.jobRunsTableLabel}>
       <TableHeader>
-        <th className="px-4 py-2">{LABELS.admin.jobRunColumns.startedAt}</th>
-        <th className="px-4 py-2">{LABELS.admin.jobRunColumns.outcome}</th>
-        <th className="px-4 py-2">{LABELS.admin.jobRunColumns.scanned}</th>
-        <th className="px-4 py-2">{LABELS.admin.jobRunColumns.escalated}</th>
-        <th className="px-4 py-2">{LABELS.admin.jobRunColumns.notified}</th>
-        <th className="px-4 py-2">{LABELS.admin.jobRunColumns.duration}</th>
+        <th>{COLUMNS.startedAt}</th>
+        <th>{COLUMNS.outcome}</th>
+        <th className="text-right">{COLUMNS.scanned}</th>
+        <th className="text-right">{COLUMNS.escalated}</th>
+        <th className="text-right">{COLUMNS.notified}</th>
+        <th className="text-right">{COLUMNS.duration}</th>
       </TableHeader>
-      <tbody className="divide-y divide-border">
+      <TableBody>
         {runs.map((run) => (
-          <tr key={run.id} className="hover:bg-accent">
-            <td className="whitespace-nowrap px-4 py-2 text-xs text-muted-foreground">{formatDateTime(run.startedAt)}</td>
-            <td className="px-4 py-2">
-              {run.outcome ? (
-                <Badge className={OUTCOME_CLASS[run.outcome] ?? 'border-border bg-muted text-foreground-soft'}>
-                  {run.outcome.replaceAll('_', ' ')}
-                </Badge>
-              ) : (
-                <Badge className="border-border bg-muted text-muted-foreground">RUNNING</Badge>
-              )}
-            </td>
-            <td className="px-4 py-2 text-foreground-soft">{run.scanned}</td>
-            <td className="px-4 py-2 text-foreground-soft">{run.escalated}</td>
-            <td className="px-4 py-2 text-foreground-soft">{run.notified}</td>
-            <td className="px-4 py-2 text-foreground-soft">{formatDuration(run.startedAt, run.finishedAt)}</td>
-          </tr>
+          <TableRow key={run.id}>
+            <TableCell label={COLUMNS.startedAt} className="whitespace-nowrap">
+              <time dateTime={run.startedAt} className="flex flex-col">
+                <span className="text-sm text-foreground">{formatRelative(run.startedAt)}</span>
+                <span className="text-xs text-muted-foreground">{formatDateTime(run.startedAt)}</span>
+              </time>
+            </TableCell>
+            <TableCell label={COLUMNS.outcome}>
+              <div className="space-y-1">
+                <JobOutcomeBadge outcome={run.outcome} />
+                {run.error && <p className="max-w-xs text-xs text-destructive md:line-clamp-2">{run.error}</p>}
+              </div>
+            </TableCell>
+            <TableCell label={COLUMNS.scanned} isNumeric>
+              {run.scanned}
+            </TableCell>
+            <TableCell label={COLUMNS.escalated} isNumeric className={run.escalated > 0 ? 'font-semibold text-foreground' : undefined}>
+              {run.escalated}
+            </TableCell>
+            <TableCell label={COLUMNS.notified} isNumeric>
+              {run.notified}
+            </TableCell>
+            <TableCell label={COLUMNS.duration} isNumeric className="whitespace-nowrap">
+              {runDuration(run.startedAt, run.finishedAt)}
+            </TableCell>
+          </TableRow>
         ))}
-      </tbody>
+      </TableBody>
     </Table>
   );
 }

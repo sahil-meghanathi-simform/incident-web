@@ -1,11 +1,13 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { Field } from '../../../components/ui/Field';
-import { Select } from '../../../components/ui/Select';
-import { Input } from '../../../components/ui/Input';
-import { Button } from '../../../components/ui/Button';
-import { DateRangePicker } from '../../../components/ui/DateRangePicker';
 import { Card } from '../../../components/ui/Card';
-import { AuditEventTypeValues } from '../../../api/contracts/enums';
+import { FilterChips, type FilterChip } from '../../../components/ui/FilterChips';
+import { FilterPanel } from '../../../components/ui/FilterPanel';
+import { ToggleGroup, ToggleGroupItem } from '../../../components/ui/ToggleGroup';
+import { AuditFilterControls } from './AuditFilterControls';
+import { AUDIT_EVENT_GROUPS, matchingGroup } from '../lib/auditEventGroups';
+import { CLEAR_AUDIT_FILTERS_PATCH } from '../schemas/auditFilterPatches';
 import { LABELS } from '../../../lib/labels';
 import type { AuditSearchFilters } from '../schemas/auditSearch.schema';
 
@@ -14,76 +16,88 @@ type AuditFiltersProps = Readonly<{
   onChange: (patch: Partial<AuditSearchFilters>) => void;
 }>;
 
-function isAuditEventType(value: string): value is (typeof AuditEventTypeValues)[number] {
-  return (AuditEventTypeValues as readonly string[]).includes(value);
+const COPY = LABELS.admin;
+const ALL_VIEW = 'all';
+
+function chip(id: string, label: string, onRemove: () => void): FilterChip {
+  return { id, label, removeLabel: COPY.removeFilter(label), onRemove };
 }
 
+/** A whole family of event types reads as one chip ("Events: Closure"), not one chip
+ * per type — five chips for a single click would bury the other filters. */
+function buildChips(filters: AuditSearchFilters, onChange: AuditFiltersProps['onChange']): FilterChip[] {
+  const chips: FilterChip[] = [];
+  const types = filters.type ?? [];
+  const group = matchingGroup(types);
+  if (group) {
+    chips.push(chip(`group-${group.key}`, COPY.auditChip.group(group.label), () => onChange({ type: undefined })));
+  } else {
+    for (const type of types) {
+      const remaining = types.filter((t) => t !== type);
+      chips.push(
+        chip(`type-${type}`, COPY.auditChip.type(COPY.auditEventLabel(type)), () =>
+          onChange({ type: remaining.length ? remaining : undefined }),
+        ),
+      );
+    }
+  }
+  if (filters.actorId) chips.push(chip('actor', COPY.auditChip.actor(filters.actorId), () => onChange({ actorId: undefined })));
+  if (filters.incidentId) {
+    chips.push(chip('incident', COPY.auditChip.incident(filters.incidentId), () => onChange({ incidentId: undefined })));
+  }
+  if (filters.from) chips.push(chip('from', COPY.auditChip.from(filters.from), () => onChange({ from: undefined })));
+  if (filters.to) chips.push(chip('to', COPY.auditChip.to(filters.to), () => onChange({ to: undefined })));
+  return chips;
+}
+
+/**
+ * The audit log's control row. Left: one-click views — all events, or one of the four
+ * event families — lit when the selected types are exactly that family, and scrolling
+ * sideways (bar hidden) rather than wrapping on a narrow screen. Right: the Filters
+ * button, whose panel holds the finer controls: individual event types, actor,
+ * incident and dates. Underneath, the active filters as removable chips.
+ */
 export function AuditFilters({ filters, onChange }: AuditFiltersProps): ReactElement {
-  const hasAnyFilter = !!filters.type?.length || !!filters.actorId || !!filters.incidentId || !!filters.from || !!filters.to;
+  const chips = buildChips(filters, onChange);
+  const group = matchingGroup(filters.type);
+  // '' = a hand-picked mix of types: no view is lit, which is the truth.
+  const view = group?.key ?? (filters.type?.length ? '' : ALL_VIEW);
 
   return (
-    <Card className="space-y-4 p-4">
-      <div className="flex flex-wrap items-end gap-4">
-        <div>
-          <Field label={LABELS.admin.auditFilterType} htmlFor="audit-filter-type">
-            <Select
-              id="audit-filter-type"
-              value={filters.type?.[0] ?? ''}
-              onChange={(e) => {
-                const { value } = e.target;
-                onChange({ type: value && isAuditEventType(value) ? [value] : undefined });
-              }}
-            >
-              <option value="">{LABELS.admin.auditFilterTypeAny}</option>
-              {AuditEventTypeValues.map((t) => (
-                <option key={t} value={t}>
-                  {t.replaceAll('_', ' ')}
-                </option>
-              ))}
-            </Select>
-          </Field>
-        </div>
+    <div className="mb-4 space-y-3">
+      <Card className="flex items-center gap-3 p-2 sm:p-3">
+        <ToggleGroup
+          type="single"
+          aria-label={COPY.auditViewsLabel}
+          className="scrollbar-none -m-1 flex min-w-0 flex-1 gap-1.5 overflow-x-auto overscroll-x-contain p-1"
+          value={view}
+          onValueChange={(next: string) => {
+            if (next === ALL_VIEW) onChange({ type: undefined });
+            const picked = AUDIT_EVENT_GROUPS.find((g) => g.key === next);
+            if (picked) onChange({ type: [...picked.types] });
+          }}
+        >
+          <ToggleGroupItem value={ALL_VIEW} className="shrink-0">
+            {COPY.auditViewAll}
+          </ToggleGroupItem>
+          {AUDIT_EVENT_GROUPS.map((g) => (
+            <ToggleGroupItem key={g.key} value={g.key} className="shrink-0">
+              {g.label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
 
-        <div className="min-w-56">
-          <Field label={LABELS.admin.auditFilterActor} htmlFor="audit-filter-actor">
-            <Input
-              id="audit-filter-actor"
-              placeholder={LABELS.admin.auditFilterActorPlaceholder}
-              value={filters.actorId ?? ''}
-              onChange={(e) => onChange({ actorId: e.target.value || undefined })}
-            />
-          </Field>
-        </div>
+        <FilterPanel
+          title={COPY.auditFiltersTitle}
+          activeCount={chips.length}
+          resetLabel={COPY.auditClearFilters}
+          onReset={() => onChange(CLEAR_AUDIT_FILTERS_PATCH)}
+        >
+          <AuditFilterControls filters={filters} onChange={onChange} />
+        </FilterPanel>
+      </Card>
 
-        <div className="min-w-56">
-          <Field label={LABELS.admin.auditFilterIncident} htmlFor="audit-filter-incident">
-            <Input
-              id="audit-filter-incident"
-              placeholder={LABELS.admin.auditFilterIncidentPlaceholder}
-              value={filters.incidentId ?? ''}
-              onChange={(e) => onChange({ incidentId: e.target.value || undefined })}
-            />
-          </Field>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <DateRangePicker
-          from={filters.from ?? ''}
-          to={filters.to ?? ''}
-          onChange={({ from, to }) => onChange({ from: from || undefined, to: to || undefined })}
-        />
-
-        {hasAnyFilter && (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => onChange({ type: undefined, actorId: undefined, incidentId: undefined, from: undefined, to: undefined })}
-          >
-            {LABELS.admin.auditClearFilters}
-          </Button>
-        )}
-      </div>
-    </Card>
+      <FilterChips chips={chips} clearAllLabel={COPY.auditClearFilters} onClearAll={() => onChange(CLEAR_AUDIT_FILTERS_PATCH)} />
+    </div>
   );
 }

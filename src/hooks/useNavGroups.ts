@@ -1,4 +1,5 @@
 import {
+  LayoutDashboard,
   FilePlus,
   List,
   User,
@@ -16,11 +17,16 @@ import {
 } from 'lucide-react';
 import { usePermissions } from './usePermissions';
 import { ROUTES } from '../app/routes';
+import { LABELS } from '../lib/labels';
 
 export type NavItem = Readonly<{
   to: string;
   label: string;
   icon: LucideIcon;
+  /** Match the path exactly (for `/` and for parents of other nav items). */
+  end?: boolean;
+  /** Sub-paths that belong to a different nav item, so this one isn't also active. */
+  excludes?: readonly string[];
 }>;
 
 export type NavGroup = Readonly<{
@@ -28,44 +34,56 @@ export type NavGroup = Readonly<{
   items: readonly NavItem[];
 }>;
 
-/** Grouped, icon-labeled nav items shared by the desktop SideNav and the
- * mobile Sheet nav — one source so the two can never drift apart. */
+const NAV = LABELS.nav.items;
+
+/** Grouped, icon-labeled nav items shared by the desktop SideNav, the mobile
+ * Sheet nav and the command palette — one source so they can never drift apart,
+ * and all three are filtered by the same role checks. */
 export function useNavGroups(): readonly NavGroup[] {
   const { canTriage, canInvestigate, canAdminister } = usePermissions();
 
   const groups: NavGroup[] = [
     {
-      label: 'Report',
+      label: LABELS.nav.groups.overview,
+      items: [{ to: ROUTES.home, label: NAV.dashboard, icon: LayoutDashboard, end: true }],
+    },
+    {
+      label: LABELS.nav.groups.report,
       items: [
-        { to: ROUTES.incidentNew, label: 'Report incident', icon: FilePlus },
-        { to: ROUTES.incidents, label: 'Incidents', icon: List },
-        { to: ROUTES.incidentMine, label: 'My reports', icon: User },
+        { to: ROUTES.incidentNew, label: NAV.reportIncident, icon: FilePlus },
+        {
+          to: ROUTES.incidents,
+          label: NAV.incidents,
+          icon: List,
+          excludes: [ROUTES.incidentNew, ROUTES.incidentMine],
+        },
+        { to: ROUTES.incidentMine, label: NAV.myReports, icon: User },
       ],
     },
     {
-      label: 'Work',
+      label: LABELS.nav.groups.work,
       items: [
-        ...(canTriage ? [{ to: ROUTES.triageQueue, label: 'Triage queue', icon: Inbox }] : []),
-        ...(canInvestigate ? [{ to: ROUTES.investigations, label: 'Investigations', icon: Search }] : []),
-        ...(canTriage ? [{ to: ROUTES.closuresPending, label: 'Pending closures', icon: CheckSquare }] : []),
+        ...(canTriage ? [{ to: ROUTES.triageQueue, label: NAV.triageQueue, icon: Inbox }] : []),
+        ...(canInvestigate ? [{ to: ROUTES.investigations, label: NAV.investigations, icon: Search }] : []),
+        ...(canTriage ? [{ to: ROUTES.closuresPending, label: NAV.pendingClosures, icon: CheckSquare }] : []),
       ],
     },
     {
-      label: 'Monitor',
+      label: LABELS.nav.groups.monitor,
       items: [
-        { to: ROUTES.escalations, label: 'Escalations', icon: TrendingUp },
-        { to: ROUTES.analytics, label: 'Analytics', icon: BarChart3 },
-        { to: ROUTES.notifications, label: 'Notifications', icon: Bell },
+        { to: ROUTES.escalations, label: NAV.escalations, icon: TrendingUp },
+        { to: ROUTES.analytics, label: NAV.analytics, icon: BarChart3 },
+        { to: ROUTES.notifications, label: NAV.notifications, icon: Bell },
       ],
     },
     {
-      label: 'Admin',
+      label: LABELS.nav.groups.admin,
       items: canAdminister
         ? [
-            { to: ROUTES.adminUsers, label: 'Users', icon: Users },
-            { to: ROUTES.adminEscalationPolicy, label: 'Escalation policy', icon: Shield },
-            { to: ROUTES.adminJobs, label: 'Job diagnostics', icon: Activity },
-            { to: ROUTES.adminAudit, label: 'Audit log', icon: ScrollText },
+            { to: ROUTES.adminUsers, label: NAV.users, icon: Users },
+            { to: ROUTES.adminEscalationPolicy, label: NAV.escalationPolicy, icon: Shield },
+            { to: ROUTES.adminJobs, label: NAV.jobDiagnostics, icon: Activity },
+            { to: ROUTES.adminAudit, label: NAV.auditLog, icon: ScrollText },
           ]
         : [],
     },

@@ -1,31 +1,36 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
 import { PageContainer } from '../../../components/layout/PageContainer';
-import { PageHeader } from '../../../components/ui/PageHeader';
+import { DashboardHero } from '../components/DashboardHero';
 import { StageSummaryCard } from '../components/StageSummaryCard';
 import { RecentEscalationsCard } from '../components/RecentEscalationsCard';
 import { QuickLinksCard } from '../components/QuickLinksCard';
-import { useAuth } from '../../../hooks/useAuth';
+import { AdminLinksCard } from '../components/AdminLinksCard';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { usePermissions } from '../../../hooks/usePermissions';
+import { cn } from '../../../lib/cn';
 import { LABELS } from '../../../lib/labels';
 
-/** The app's front door — was a ComingSoon placeholder. Composes existing
- * endpoints only (incident summary, escalation feed); no backend change. */
+/** The app's front door. Composes existing endpoints only (incident summary,
+ * escalation feed); no backend change. The hero carries the page's <h1>.
+ *
+ * Grid: 1 column on phones, 2 from md, 3 from xl. Escalations take two columns;
+ * the link cards fill the rest so no breakpoint leaves a lone half-width card. */
 export function DashboardPage(): ReactElement {
   useDocumentTitle(LABELS.dashboard.pageTitle);
-  const { user } = useAuth();
+  const { canAdminister } = usePermissions();
 
   return (
-    <PageContainer>
-      <PageHeader
-        title={user ? LABELS.dashboard.greeting(user.displayName) : LABELS.dashboard.pageTitle}
-        description={LABELS.dashboard.description}
-      />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="lg:col-span-2">
+    <PageContainer size="wide">
+      <DashboardHero />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 sm:gap-6">
+        <div className="md:col-span-2 xl:col-span-3">
           <StageSummaryCard />
         </div>
-        <QuickLinksCard />
-        <RecentEscalationsCard />
+        <RecentEscalationsCard className={cn('md:col-span-2', canAdminister && 'xl:row-span-2')} />
+        <QuickLinksCard className={cn(!canAdminister && 'md:col-span-2 xl:col-span-1')} />
+        {canAdminister && <AdminLinksCard />}
       </div>
     </PageContainer>
   );

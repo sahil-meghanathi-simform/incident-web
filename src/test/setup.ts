@@ -9,6 +9,12 @@ afterEach(() => {
   cleanup();
 });
 
+// jsdom implements neither pointer capture nor scrollIntoView, and Radix Select calls
+// both while opening its listbox — without these every select test throws on open.
+window.HTMLElement.prototype.hasPointerCapture = () => false;
+window.HTMLElement.prototype.releasePointerCapture = () => undefined;
+window.HTMLElement.prototype.scrollIntoView = () => undefined;
+
 // React 18 tripwire for the shadcn/Radix migration: a component that lost its
 // `forwardRef` (e.g. a fresh `npx shadcn add` reverting a hand-edit) silently breaks
 // Radix's focus-restore-on-close, since `ref` on a bare function component is stripped

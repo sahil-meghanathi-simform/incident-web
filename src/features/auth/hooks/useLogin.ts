@@ -3,6 +3,7 @@ import { useForm, type UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import { loginRequest } from '../../../api/endpoints/auth.api';
 import { setAccessToken } from '../../../api/client';
 import { queryKeys } from '../../../api/queryKeys';
@@ -13,6 +14,7 @@ import { LABELS } from '../../../lib/labels';
 import { resolvePostLoginRedirect } from '../../../lib/safeRedirect';
 import { roleHomeFor } from '../../../types/auth.type';
 import { loginSchema, type LoginRequest } from '../schemas/auth.schema';
+import { AUTH_TOAST_ID, SILENT_ERROR_TOAST } from '../authToastId';
 
 export type UseLoginReturn = Readonly<{
   form: UseFormReturn<LoginRequest>;
@@ -55,15 +57,19 @@ export function useLogin(): UseLoginReturn {
     setFormError(null);
     try {
       const { user } = await loginMutation.mutateAsync(values);
+      toast.success(LABELS.auth.welcomeBack(user.displayName), { id: AUTH_TOAST_ID });
       const next = resolvePostLoginRedirect(searchParams.get('next'), roleHomeFor(user.role));
       navigate(next, { replace: true });
     } catch (err) {
       if (isApiError(err) && err.status === 429) {
         setFormError(LABELS.auth.tooManyAttempts(err.meta?.retryAfterSeconds));
+        toast.error(LABELS.auth.tooManyAttempts(err.meta?.retryAfterSeconds), SILENT_ERROR_TOAST);
       } else if (isApiError(err) && err.status === 422) {
         applyApiErrorToForm(err, form.setError);
+        toast.error(LABELS.auth.checkHighlightedFields, { id: AUTH_TOAST_ID });
       } else {
         setFormError(getErrorMessage(err));
+        toast.error(getErrorMessage(err), SILENT_ERROR_TOAST);
       }
     }
   });

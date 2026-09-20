@@ -3,13 +3,24 @@ export const ESCALATIONS = {
   feedDescription: 'Unacknowledged incidents past a tier threshold, most severe and longest-overdue first.',
   loadFeedError: 'Could not load the escalation feed.',
   feedEmptyTitle: 'Nothing currently escalated',
-  feedEmptyBody: 'Every unacknowledged HIGH/CRITICAL incident within your clearance is caught up. Here is what triggers an escalation:',
+  feedEmptyBody:
+    'Every unacknowledged HIGH/CRITICAL incident within your clearance is caught up. The thresholds that trigger an escalation are listed here too.',
+  feedCount: (count: number, hasMore: boolean) =>
+    `${count}${hasMore ? '+' : ''} escalated incident${count === 1 && !hasMore ? '' : 's'}`,
+  columnLevel: 'Level',
+  columnSla: 'SLA',
+  columnActions: 'Actions',
+  tiersTitle: 'Escalation thresholds',
+  tiersDescription: 'How long an unacknowledged incident waits before each tier fires.',
+  tiersLoading: 'Loading escalation thresholds…',
   tiersLoadError: 'Could not load escalation tiers.',
   acknowledgeAction: 'Acknowledge',
   acknowledgedToast: 'Acknowledged — removed from the feed.',
   historyTitle: 'Escalation history',
+  historyLoading: 'Loading escalation history…',
   historyLoadError: 'Could not load escalation history.',
   historyEmpty: 'No tiers have fired yet.',
+  historyTriggered: (when: string) => `triggered ${when}`,
   dueLabel: (level: number) => `Level ${level}`,
 } as const;
 
@@ -26,6 +37,19 @@ export const NOTIFICATIONS = {
   emptyBody: "You'll be notified here when an incident you can see escalates.",
   lastUpdated: (relative: string) => `Last updated ${relative}`,
   updateFailed: 'Could not refresh — showing the last known state.',
+  unread: 'Unread: ',
+  allCaughtUp: 'All caught up',
+  viewLabel: 'Show notifications',
+  filterAll: 'All',
+  filterUnread: 'Unread',
+  markRead: 'Mark as read',
+  markReadFor: (reference: string) => `Mark the ${reference} notification as read`,
+  markAllRead: 'Mark all as read',
+  markedAllReadToast: (count: number) => `Marked ${count} notification${count === 1 ? '' : 's'} as read.`,
+  noUnreadTitle: "You're all caught up",
+  noUnreadBody: 'Every notification has been read.',
+  noUnreadLoadedBody: 'Nothing unread among the notifications loaded so far — load more to check older ones.',
+  showAll: 'Show all notifications',
 } as const;
 
 export const TIMELINE = {

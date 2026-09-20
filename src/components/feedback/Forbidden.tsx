@@ -1,6 +1,11 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
+import { Link } from 'react-router-dom';
+import { LayoutDashboard, Lock } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { StatusPage } from './StatusPage';
 import { ROUTES } from '../../app/routes';
-import { TextLink } from '../ui/TextLink';
 import { LABELS } from '../../lib/labels';
 
 /**
@@ -10,10 +15,19 @@ import { LABELS } from '../../lib/labels';
  */
 export function Forbidden(): ReactElement {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-3 p-10 text-center">
-      <h1 className="font-display text-lg font-semibold tracking-display text-foreground">{LABELS.feedback.forbiddenTitle}</h1>
-      <p className="max-w-sm text-sm text-muted-foreground">{LABELS.feedback.forbiddenBody}</p>
-      <TextLink to={ROUTES.home}>{LABELS.nav.backToHome}</TextLink>
-    </div>
+    <StatusPage
+      icon={Lock}
+      eyebrow="403"
+      title={LABELS.feedback.forbiddenTitle}
+      body={LABELS.feedback.forbiddenBody}
+      actions={
+        <Button asChild variant="outline">
+          <Link to={ROUTES.home}>
+            <LayoutDashboard aria-hidden="true" />
+            {LABELS.nav.backToHome}
+          </Link>
+        </Button>
+      }
+    />
   );
 }

@@ -1,15 +1,14 @@
 // rules-ok: naming — component files in this repo are PascalCase by convention;
 // a repo-wide rename is out of scope for this redesign.
 import { useState, type ReactElement } from 'react';
-import { NavLink } from 'react-router-dom';
-import { Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/Sheet';
-import { cn } from '../../lib/cn';
+import { Menu, ShieldAlert } from 'lucide-react';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/Sheet';
 import { useNavGroups } from '../../hooks/useNavGroups';
+import { NavList } from './NavList';
 import { LABELS } from '../../lib/labels';
 
 /** Below md: — the desktop SideNav is hidden and this hamburger + Sheet takes
- * over, sharing the same grouped nav items via useNavGroups. */
+ * over, sharing the same grouped nav items via NavList/useNavGroups. */
 export function MobileNav(): ReactElement {
   const groups = useNavGroups();
   const [isOpen, setIsOpen] = useState(false);
@@ -20,39 +19,24 @@ export function MobileNav(): ReactElement {
         <button
           type="button"
           aria-label={LABELS.chrome.sideNavToggle}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground-soft hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
+          className="inline-flex size-9 items-center justify-center rounded-md text-foreground-soft transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
         >
-          <Menu className="h-5 w-5" aria-hidden="true" />
+          <Menu className="size-5" aria-hidden="true" />
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="max-w-64 p-0">
-        <SheetHeader className="border-b border-border p-3">
-          <SheetTitle className="px-3">{LABELS.nav.appTitle}</SheetTitle>
+      <SheetContent
+        side="left"
+        className="scrollbar-inverse max-w-72 border-r-0 bg-foreground bg-linear-to-b from-foreground to-brand-deep p-0 text-primary-foreground sm:p-0 [&>button]:text-primary-foreground/80 [&>button]:hover:bg-primary-foreground/10 [&>button]:hover:text-primary-foreground"
+      >
+        <SheetHeader className="mb-0 flex-row items-center gap-2.5 border-b border-primary-foreground/10 px-5 py-4">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/15 ring-1 ring-primary-foreground/20">
+            <ShieldAlert className="size-5" aria-hidden="true" />
+          </span>
+          <SheetTitle className="text-primary-foreground">{LABELS.nav.appShortTitle}</SheetTitle>
+          <SheetDescription className="sr-only">{LABELS.nav.appTitle}</SheetDescription>
         </SheetHeader>
-        <nav aria-label={LABELS.chrome.sideNavLabel} className="space-y-4 overflow-y-auto p-3">
-          {groups.map((group) => (
-            <div key={group.label}>
-              <p className="px-3 py-1 font-display text-xs font-semibold uppercase tracking-caps text-muted-foreground">{group.label}</p>
-              <div className="space-y-0.5">
-                {group.items.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setIsOpen(false)}
-                    className={({ isActive }) =>
-                      cn(
-                        'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                        isActive ? 'bg-accent text-primary' : 'text-foreground-soft hover:bg-accent',
-                      )
-                    }
-                  >
-                    <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                    {item.label}
-                  </NavLink>
-                ))}
-              </div>
-            </div>
-          ))}
+        <nav aria-label={LABELS.chrome.sideNavLabel} className="scrollbar-stable min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain py-5 pl-4 pr-1.5">
+          <NavList groups={groups} onNavigate={() => setIsOpen(false)} />
         </nav>
       </SheetContent>
     </Sheet>

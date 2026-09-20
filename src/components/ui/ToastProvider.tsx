@@ -1,46 +1,26 @@
-import { useCallback, useRef, useState, type ReactElement, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
-import { Toast, type ToastItem, type ToastVariant } from './Toast';
-import { ToastContext } from './ToastContext';
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
+import { useCallback, useMemo, type ReactElement, type ReactNode } from 'react';
+import { toast } from 'react-hot-toast';
+import { ToastContext, type ToastContextValue, type ToastVariant } from './ToastContext';
 
-const AUTO_DISMISS_MS = 4000;
+const SHOW_BY_VARIANT: Readonly<Record<ToastVariant, (message: string) => string>> = {
+  success: (message) => toast.success(message),
+  error: (message) => toast.error(message),
+  info: (message) => toast(message),
+};
 
+/**
+ * Keeps the app's `useToast().show(message, variant)` API (28 call sites, and the
+ * specs that mock it) while rendering through react-hot-toast — so every toast in
+ * the app, auth included, looks and behaves the same. The single <HotToaster />
+ * mount in AppProviders does the rendering and the screen-reader announcements.
+ */
 export function ToastProvider({ children }: { children: ReactNode }): ReactElement {
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
-  const counter = useRef(0);
-
-  const dismiss = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+  const show = useCallback((message: string, variant: ToastVariant = 'info') => {
+    SHOW_BY_VARIANT[variant](message);
   }, []);
+  const value = useMemo<ToastContextValue>(() => ({ show }), [show]);
 
-  const show = useCallback(
-    (message: string, variant: ToastVariant = 'info') => {
-      counter.current += 1;
-      const id = `toast-${counter.current}`;
-      setToasts((prev) => [...prev, { id, variant, message }]);
-      setTimeout(() => dismiss(id), AUTO_DISMISS_MS);
-    },
-    [dismiss],
-  );
-
-  // Error toasts interrupt (assertive) — anything else waits for a pause in speech
-  // (polite), per accessibility.md's aria-live guidance.
-  const liveness = toasts.some((t) => t.variant === 'error') ? 'assertive' : 'polite';
-
-  return (
-    <ToastContext.Provider value={{ show }}>
-      {children}
-      {createPortal(
-        // rules-ok: z-[60] is deliberately above Modal/Drawer's z-50 so a toast stays
-        // visible over an open dialog — not worth a dedicated @theme z-index scale for
-        // this one ordering constraint (tailwind.md).
-        <div aria-live={liveness} className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2">
-          {toasts.map((t) => (
-            <Toast key={t.id} toast={t} onDismiss={dismiss} />
-          ))}
-        </div>,
-        document.body,
-      )}
-    </ToastContext.Provider>
-  );
+  return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>;
 }

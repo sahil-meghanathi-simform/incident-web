@@ -16,6 +16,13 @@ export function formatRelative(value: string | Date, now: Date = new Date()): st
   return relativeFormatter.format(diffDay, 'day');
 }
 
+/** A calendar-date range ("18 Aug – 17 Sep 2026") from two YYYY-MM-DD strings. Formatted
+ * in UTC because that is how the strings are produced and parsed — in a local zone west
+ * of UTC, midnight UTC is still the previous evening and every date would read a day early. */
+export function formatDateRange(from: string, to: string): string {
+  return new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'UTC' }).formatRange(new Date(from), new Date(to));
+}
+
 /** For an SLA countdown: minutes remaining until `dueAt`, negative if overdue. */
 export function minutesUntil(dueAt: string | Date, now: Date = new Date()): number {
   const d = typeof dueAt === 'string' ? new Date(dueAt) : dueAt;

@@ -2,7 +2,13 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
+import { existsSync } from 'node:fs';
 
+// Inside the Docker `web` container the source is a Windows bind mount, and file-change
+// events from the host never reach the container — so Vite's watcher sees nothing and
+// the page never updates. Polling fixes that; it's dev-only and gated to the container,
+// so a native `npm run dev` on the host keeps its cheaper event-based watching.
+const isInDocker = existsSync('/.dockerenv');
 // Tailwind v4: no tailwind.config.ts — tokens live in an @theme block in
 // src/styles/index.css, loaded via this Vite plugin (build-plan.md decision).
 export default defineConfig({
@@ -14,10 +20,11 @@ export default defineConfig({
   // Vite's dependency pre-bundler discovers and re-bundles them lazily on first
   // use, which shows up as a slow, janky first paint on every cold dev start.
   optimizeDeps: {
-    include: ['lucide-react'],
+    include: ['lucide-react', 'cmdk'],
   },
   server: {
     port: 5173,
+    watch: isInDocker ? { usePolling: true, interval: 300 } : undefined,
     proxy: {
       '/api': {
         target: process.env.VITE_API_BASE_URL ?? 'http://api:4000',

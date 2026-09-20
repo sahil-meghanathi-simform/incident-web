@@ -1,7 +1,9 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import { type ReactElement } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, FileCheck, FileSearch, FileText, History, NotebookPen } from 'lucide-react';
 import { PageContainer } from '../../../components/layout/PageContainer';
-import { SkeletonCard } from '../../../components/ui/SkeletonCard';
 import { ErrorState } from '../../../components/ui/ErrorState';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Tabs, type TabItem } from '../../../components/ui/Tabs';
@@ -9,6 +11,7 @@ import { TextLink } from '../../../components/ui/TextLink';
 import { Breadcrumb } from '../../../components/ui/Breadcrumb';
 import { AccessRevokedNotice } from '../../../components/feedback/AccessRevokedNotice';
 import { IncidentDetailHeader } from '../components/IncidentDetailHeader';
+import { IncidentDetailSkeleton } from '../components/IncidentDetailSkeleton';
 import { IncidentOverviewTab } from '../components/IncidentOverviewTab';
 import { IncidentActionBar } from '../../triage/components/IncidentActionBar';
 import { NotesPanel } from '../../investigation/components/NotesPanel';
@@ -20,11 +23,12 @@ import { isApiError } from '../../../api/ApiError';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { ROUTES } from '../../../app/routes';
 import { LABELS } from '../../../lib/labels';
+import { cn } from '../../../lib/cn';
 import type { IncidentDetail } from '../types/incident.type';
 
 const BASE_TABS: readonly TabItem[] = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'timeline', label: LABELS.timeline.timelineTab },
+  { key: 'overview', label: LABELS.incidents.detail.overviewTab, icon: FileText },
+  { key: 'timeline', label: LABELS.timeline.timelineTab, icon: History },
 ];
 
 /**
@@ -46,8 +50,8 @@ function tabsFor(incident: IncidentDetail): readonly TabItem[] {
     (incident.stage === 'INVESTIGATION' || incident.stage === 'PENDING_CLOSURE' || incident.stage === 'CLOSED');
 
   const tabs = [...BASE_TABS];
-  if (canSeeNotesTab) tabs.push({ key: 'notes', label: LABELS.investigation.notesTab });
-  if (canSeeClosureTab) tabs.push({ key: 'closure', label: LABELS.closure.closureTab });
+  if (canSeeNotesTab) tabs.push({ key: 'notes', label: LABELS.investigation.notesTab, icon: NotebookPen });
+  if (canSeeClosureTab) tabs.push({ key: 'closure', label: LABELS.closure.closureTab, icon: FileCheck });
   return tabs;
 }
 
@@ -65,8 +69,8 @@ function IncidentDetailBody({ incident }: IncidentDetailBodyProps): ReactElement
   // isn't in the clickable strip (§10.2) — NotesPanel does its own gating and renders
   // NotesRestrictedNotice rather than this page silently redirecting to Overview,
   // which would be indistinguishable from the incident having no notes at all.
-  const activeTab =
-    requested === 'notes' ? 'notes' : tabs.some((t) => t.key === requested) ? (requested as string) : (tabs[0]?.key ?? 'overview');
+  const matchedTab = tabs.find((t) => t.key === requested);
+  const activeTab = requested === 'notes' ? 'notes' : (matchedTab?.key ?? tabs[0]?.key ?? 'overview');
 
   function setTab(key: string): void {
     setSearchParams(
@@ -79,32 +83,44 @@ function IncidentDetailBody({ incident }: IncidentDetailBodyProps): ReactElement
     );
   }
 
+  // Mirrors IncidentActionBar's own render gate: below `md` it docks as a fixed bottom
+  // bar, so the page needs room underneath the last of the tab content.
+  const { canTriage, canAssign, canAcknowledge } = incident._actions;
+  const hasActionBar = canTriage || canAssign || canAcknowledge;
+
   return (
-    <>
-      <div className="mb-3">
-        <Breadcrumb items={[{ to: ROUTES.incidents, label: LABELS.incidents.listTitle }, { label: incident.reference }]} />
-      </div>
+    <div className={cn('space-y-5', hasActionBar && 'max-md:pb-24')}>
+      <Breadcrumb items={[{ to: ROUTES.incidents, label: LABELS.incidents.listTitle }, { label: incident.reference }]} />
       <IncidentDetailHeader incident={incident} />
-      <IncidentActionBar incident={incident} />
-      <Tabs tabs={tabs} activeKey={activeTab} onChange={setTab} />
-      {activeTab === 'overview' && <IncidentOverviewTab incident={incident} />}
-      {activeTab === 'timeline' && <IncidentTimeline incidentId={incident.id} />}
-      {activeTab === 'notes' && <NotesPanel incident={incident} />}
-      {activeTab === 'closure' && <ClosureTab incident={incident} />}
-    </>
+      {/* Fixed to the bottom below md (the bar's own styling); from md up it sticks to
+          the top so actions stay in reach while a long timeline or notes list scrolls. */}
+      <div className="empty:hidden md:sticky md:top-0 md:z-10 md:bg-background/90 md:backdrop-blur">
+        <IncidentActionBar incident={incident} />
+      </div>
+      <div>
+        <Tabs tabs={tabs} activeKey={activeTab} onChange={setTab} />
+        <div className="pt-5">
+          {activeTab === 'overview' && <IncidentOverviewTab incident={incident} />}
+          {activeTab === 'timeline' && <IncidentTimeline incidentId={incident.id} />}
+          {activeTab === 'notes' && <NotesPanel incident={incident} />}
+          {activeTab === 'closure' && <ClosureTab incident={incident} />}
+        </div>
+      </div>
+    </div>
   );
 }
 
 export function IncidentDetailPage(): ReactElement {
   const { id = '' } = useParams<{ id: string }>();
-  useDocumentTitle('Incident');
   const query = useIncident(id);
+  const copy = LABELS.incidents.detail;
+  useDocumentTitle(query.data ? copy.documentTitle(query.data.reference, query.data.title) : copy.fallbackTitle);
   const accessRevoked = useAccessRevoked(query.error);
   const notFound = isApiError(query.error) && query.error.status === 404;
 
   return (
     <PageContainer>
-      {query.isPending && <SkeletonCard />}
+      {query.isPending && <IncidentDetailSkeleton />}
 
       {/* A 403 arriving on a focus-refetch (Q10) swaps the body in place — the user
           never gets navigated away, so they see exactly what happened. */}
@@ -112,9 +128,15 @@ export function IncidentDetailPage(): ReactElement {
 
       {notFound && (
         <EmptyState
+          icon={FileSearch}
           title={LABELS.incidents.notFoundTitle}
           body={LABELS.incidents.notFoundBody}
-          action={<TextLink to={ROUTES.incidents}>{LABELS.incidents.backToList}</TextLink>}
+          action={
+            <TextLink to={ROUTES.incidents} className="inline-flex items-center gap-1.5">
+              <ArrowLeft className="size-4" aria-hidden="true" />
+              {LABELS.incidents.backToList}
+            </TextLink>
+          }
         />
       )}
 

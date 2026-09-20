@@ -1,9 +1,15 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import { useState, type ReactElement } from 'react';
+import { CheckCircle2, ClipboardCheck, Clock, Undo2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../../components/ui/Card';
+import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { useToast } from '../../../components/ui/useToast';
 import { useApproveClosure } from '../hooks/useApproveClosure';
 import { RejectClosureDialog } from './RejectClosureDialog';
+import { ClosureRcaSections } from './ClosureRcaSections';
 import { getErrorMessage } from '../../../lib/getErrorMessage';
 import { LABELS } from '../../../lib/labels';
 import type { IncidentDetail } from '../../incidents/types/incident.type';
@@ -22,6 +28,7 @@ export function ClosureReviewPanel({ incident }: ClosureReviewPanelProps): React
   const { show } = useToast();
   const [approveConfirmOpen, setApproveConfirmOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [isRejectPending, setIsRejectPending] = useState(false);
   const approveMutation = useApproveClosure(incident.id);
 
   async function handleApprove(): Promise<void> {
@@ -36,33 +43,50 @@ export function ClosureReviewPanel({ incident }: ClosureReviewPanelProps): React
   }
 
   return (
-    <div className="space-y-4 py-4">
-      <div>
-        <h2 className="text-sm font-semibold text-foreground-soft">{LABELS.closure.reviewTitle}</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">{LABELS.closure.reviewDescription}</p>
-      </div>
+    <div className="py-4">
+      <Card className="animate-in fade-in duration-300 motion-reduce:animate-none">
+        <CardHeader className="gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-1">
+            <CardTitle>
+              <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                <ClipboardCheck className="size-4" aria-hidden="true" />
+              </span>
+              <span>{LABELS.closure.reviewTitle}</span>
+            </CardTitle>
+            <CardDescription>{LABELS.closure.reviewDescription}</CardDescription>
+          </div>
+          <Badge tone="warning">
+            <Clock className="size-3" aria-hidden="true" />
+            {LABELS.closure.awaitingReview}
+          </Badge>
+        </CardHeader>
 
-      <div className="space-y-3 rounded-md border border-border bg-muted p-3">
-        <div>
-          <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">{LABELS.closure.rootCauseLabel}</h3>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.rootCause}</p>
-        </div>
-        <div>
-          <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">
-            {LABELS.closure.correctiveActionLabel}
-          </h3>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.correctiveAction}</p>
-        </div>
-      </div>
+        <CardContent>
+          <ClosureRcaSections incident={incident} />
+        </CardContent>
 
-      {incident._actions.canApproveClosure && (
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setRejectOpen(true)}>
-            {LABELS.closure.requestChangesAction}
-          </Button>
-          <Button onClick={() => setApproveConfirmOpen(true)}>{LABELS.closure.approveAction}</Button>
-        </div>
-      )}
+        {incident._actions.canApproveClosure && (
+          <CardFooter className="flex-col-reverse items-stretch bg-muted/40 sm:flex-row sm:items-center sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setRejectOpen(true)}
+              disabled={approveMutation.isPending}
+              isLoading={isRejectPending}
+            >
+              {!isRejectPending && <Undo2 aria-hidden="true" />}
+              {LABELS.closure.requestChangesAction}
+            </Button>
+            <Button
+              onClick={() => setApproveConfirmOpen(true)}
+              disabled={isRejectPending}
+              isLoading={approveMutation.isPending}
+            >
+              {!approveMutation.isPending && <CheckCircle2 aria-hidden="true" />}
+              {LABELS.closure.approveAction}
+            </Button>
+          </CardFooter>
+        )}
+      </Card>
 
       <ConfirmDialog
         isOpen={approveConfirmOpen}
@@ -73,7 +97,17 @@ export function ClosureReviewPanel({ incident }: ClosureReviewPanelProps): React
         onConfirm={() => void handleApprove()}
         onCancel={() => setApproveConfirmOpen(false)}
       />
-      {rejectOpen && <RejectClosureDialog incident={incident} isOpen={rejectOpen} onClose={() => setRejectOpen(false)} />}
+      {rejectOpen && (
+        <RejectClosureDialog
+          incident={incident}
+          isOpen={rejectOpen}
+          onClose={() => {
+            setRejectOpen(false);
+            setIsRejectPending(false);
+          }}
+          onPendingChange={setIsRejectPending}
+        />
+      )}
     </div>
   );
 }

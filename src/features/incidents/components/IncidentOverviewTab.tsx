@@ -1,82 +1,129 @@
-import type { ReactElement, ReactNode } from 'react';
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
+import type { ReactElement } from 'react';
+import {
+  BellRing,
+  CalendarPlus,
+  CheckCheck,
+  CircleCheck,
+  Clock,
+  FileText,
+  Tag,
+  UserRound,
+  UserSearch,
+} from 'lucide-react';
 import { formatDateTime } from '../../../lib/datetime';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/Card';
 import { EscalationBadge } from '../../../components/ui/EscalationBadge';
 import { EscalationHistoryPanel } from '../../escalations/components/EscalationHistoryPanel';
+import { MetaRow } from './MetaRow';
+import { LABELS } from '../../../lib/labels';
 import type { IncidentDetail } from '../types/incident.type';
-
-function Field({ label, value }: { label: string; value: ReactNode }): ReactElement {
-  return (
-    <div>
-      <dt className="text-xs font-medium uppercase tracking-caps text-muted-foreground">{label}</dt>
-      <dd className="mt-0.5 text-sm text-foreground">{value}</dd>
-    </div>
-  );
-}
 
 type IncidentOverviewTabProps = Readonly<{
   incident: IncidentDetail;
 }>;
 
-/** Core fields + the meta panel — everyone who passed the clearance gate sees this much. */
+const COPY = LABELS.incidents.detail;
+const META = COPY.meta;
+
+/** Core fields + the meta panel — everyone who passed the clearance gate sees this
+ * much. On mobile the details card comes first (it answers "who/what/when" at a
+ * glance); from `lg` it sits in the right-hand column. */
 export function IncidentOverviewTab({ incident }: IncidentOverviewTabProps): ReactElement {
+  const hasResolution = Boolean(incident.rootCause || incident.correctiveAction);
   return (
-    <div className="grid gap-6 py-4 sm:grid-cols-3">
-      <div className="space-y-4 sm:col-span-2">
-        <div>
-          <h2 className="text-sm font-semibold text-foreground-soft">Description</h2>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.description}</p>
-        </div>
-        {(incident.rootCause || incident.correctiveAction) && (
-          <div className="space-y-3 rounded-md border border-border bg-muted p-3">
-            {incident.rootCause && (
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">Root cause</h3>
-                <p className="mt-1 text-sm text-foreground">{incident.rootCause}</p>
-              </div>
-            )}
-            {incident.correctiveAction && (
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">Corrective action</h3>
-                <p className="mt-1 text-sm text-foreground">{incident.correctiveAction}</p>
-              </div>
-            )}
-          </div>
+    <div className="grid gap-5 animate-in fade-in duration-300 lg:grid-cols-3">
+      <div className="space-y-5 lg:col-span-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              <FileText className="size-4 text-muted-foreground" aria-hidden="true" />
+              {COPY.descriptionHeading}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground">{incident.description}</p>
+          </CardContent>
+        </Card>
+        {hasResolution && (
+          <Card className="border-success-border">
+            <CardHeader>
+              <CardTitle className="text-base">
+                <CircleCheck className="size-4 text-success" aria-hidden="true" />
+                {COPY.resolutionHeading}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {incident.rootCause && (
+                <div>
+                  <h4 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">
+                    {LABELS.closure.rootCauseLabel}
+                  </h4>
+                  <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.rootCause}</p>
+                </div>
+              )}
+              {incident.correctiveAction && (
+                <div>
+                  <h4 className="text-xs font-semibold uppercase tracking-caps text-muted-foreground">
+                    {LABELS.closure.correctiveActionLabel}
+                  </h4>
+                  <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{incident.correctiveAction}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
       </div>
-      <dl className="space-y-3">
-        <Field label="Type" value={incident.type.replace('_', ' ')} />
-        <Field label="Reported by" value={incident.reporter.displayName} />
-        {incident.assignedInvestigator !== undefined && (
-          <Field label="Assigned investigator" value={incident.assignedInvestigator?.displayName ?? 'Unassigned'} />
-        )}
-        {incident.acknowledgement !== undefined && (
-          <Field
-            label="Acknowledged"
-            value={
-              incident.acknowledgement
-                ? `${formatDateTime(incident.acknowledgement.acknowledgedAt)} by ${incident.acknowledgement.acknowledgedBy?.displayName ?? 'someone since removed'}`
-                : 'Not yet acknowledged'
-            }
-          />
-        )}
-        {incident.escalation !== undefined && (
-          <Field
-            label="Escalation"
-            value={
-              incident.escalation.currentEscalationLevel > 0 ? (
-                <div className="space-y-2">
-                  <EscalationBadge level={incident.escalation.currentEscalationLevel} />
-                  <EscalationHistoryPanel incidentId={incident.id} />
-                </div>
-              ) : (
-                'Not escalated'
-              )
-            }
-          />
-        )}
-        <Field label="Created" value={formatDateTime(incident.createdAt)} />
-        <Field label="Last updated" value={formatDateTime(incident.updatedAt)} />
-      </dl>
+
+      <Card className="order-first lg:order-none">
+        <CardHeader>
+          <CardTitle className="text-base">{COPY.detailsHeading}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <dl className="divide-y divide-border">
+            <MetaRow icon={Tag} label={META.type}>
+              <span className="capitalize">{LABELS.incidents.typeName(incident.type).toLowerCase()}</span>
+            </MetaRow>
+            <MetaRow icon={UserRound} label={META.reportedBy}>
+              {incident.reporter.displayName}
+            </MetaRow>
+            {incident.assignedInvestigator !== undefined && (
+              <MetaRow icon={UserSearch} label={META.assignedInvestigator}>
+                {incident.assignedInvestigator?.displayName ?? META.unassigned}
+              </MetaRow>
+            )}
+            {incident.acknowledgement !== undefined && (
+              <MetaRow icon={CheckCheck} label={META.acknowledged}>
+                {incident.acknowledgement
+                  ? META.acknowledgedValue(
+                      formatDateTime(incident.acknowledgement.acknowledgedAt),
+                      incident.acknowledgement.acknowledgedBy?.displayName ?? COPY.removedUser,
+                    )
+                  : META.notAcknowledged}
+              </MetaRow>
+            )}
+            {incident.escalation !== undefined && (
+              <MetaRow icon={BellRing} label={META.escalation}>
+                {incident.escalation.currentEscalationLevel > 0 ? (
+                  <div className="space-y-2">
+                    <EscalationBadge level={incident.escalation.currentEscalationLevel} />
+                    <EscalationHistoryPanel incidentId={incident.id} />
+                  </div>
+                ) : (
+                  META.notEscalated
+                )}
+              </MetaRow>
+            )}
+            <MetaRow icon={CalendarPlus} label={META.created}>
+              {formatDateTime(incident.createdAt)}
+            </MetaRow>
+            <MetaRow icon={Clock} label={META.lastUpdated}>
+              {formatDateTime(incident.updatedAt)}
+            </MetaRow>
+          </dl>
+        </CardContent>
+      </Card>
     </div>
   );
 }

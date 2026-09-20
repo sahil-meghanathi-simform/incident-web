@@ -1,6 +1,10 @@
+// rules-ok: naming — component files in this repo are PascalCase by convention;
+// a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { ROUTES } from '../../app/routes';
+import { ArrowLeft, ShieldOff } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '../ui/Alert';
 import { TextLink } from '../ui/TextLink';
+import { ROUTES } from '../../app/routes';
 import { LABELS } from '../../lib/labels';
 
 /**
@@ -10,12 +14,16 @@ import { LABELS } from '../../lib/labels';
  */
 export function AccessRevokedNotice(): ReactElement {
   return (
-    <div role="alert" className="rounded-lg border border-severity-medium-border bg-severity-medium-surface p-6 text-center">
-      <p className="text-sm font-medium text-severity-medium">{LABELS.feedback.accessRevokedTitle}</p>
-      <p className="mt-1 text-sm text-severity-medium">{LABELS.feedback.accessRevokedBody}</p>
-      <TextLink to={ROUTES.incidents} className="mt-3 inline-block">
-        {LABELS.incidents.backToList}
-      </TextLink>
-    </div>
+    <Alert variant="warning" className="flex gap-3 p-5 animate-in fade-in duration-300">
+      <ShieldOff aria-hidden="true" />
+      <div>
+        <AlertTitle>{LABELS.feedback.accessRevokedTitle}</AlertTitle>
+        <AlertDescription>{LABELS.feedback.accessRevokedBody}</AlertDescription>
+        <TextLink to={ROUTES.incidents} className="mt-3 inline-flex items-center gap-1.5">
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          {LABELS.incidents.backToList}
+        </TextLink>
+      </div>
+    </Alert>
   );
 }

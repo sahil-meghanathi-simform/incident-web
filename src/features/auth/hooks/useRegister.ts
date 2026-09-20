@@ -3,6 +3,7 @@ import { useForm, type UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import { registerRequest } from '../../../api/endpoints/auth.api';
 import { setAccessToken } from '../../../api/client';
 import { queryKeys } from '../../../api/queryKeys';
@@ -12,6 +13,7 @@ import { getErrorMessage } from '../../../lib/getErrorMessage';
 import { LABELS } from '../../../lib/labels';
 import { roleHomeFor } from '../../../types/auth.type';
 import { registerSchema, type RegisterRequest } from '../schemas/auth.schema';
+import { AUTH_TOAST_ID, SILENT_ERROR_TOAST } from '../authToastId';
 
 export type UseRegisterReturn = Readonly<{
   form: UseFormReturn<RegisterRequest>;
@@ -41,14 +43,18 @@ export function useRegister(): UseRegisterReturn {
     setFormError(null);
     try {
       const { user } = await registerMutation.mutateAsync(values);
+      toast.success(LABELS.auth.accountCreated, { id: AUTH_TOAST_ID });
       navigate(roleHomeFor(user.role), { replace: true });
     } catch (err) {
       if (isApiError(err) && err.status === 409) {
         form.setError('email', { type: 'EMAIL_ALREADY_EXISTS', message: LABELS.auth.emailAlreadyExists });
+        toast.error(LABELS.auth.checkHighlightedFields, { id: AUTH_TOAST_ID });
       } else if (isApiError(err) && err.status === 422) {
         applyApiErrorToForm(err, form.setError);
+        toast.error(LABELS.auth.checkHighlightedFields, { id: AUTH_TOAST_ID });
       } else {
         setFormError(getErrorMessage(err));
+        toast.error(getErrorMessage(err), SILENT_ERROR_TOAST);
       }
     }
   });

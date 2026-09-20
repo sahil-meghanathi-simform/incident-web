@@ -7,6 +7,7 @@ import { ToastContext } from '../../../../src/components/ui/ToastContext';
 import { AuthContext, type AuthContextValue } from '../../../../src/app/AuthProvider';
 import { ApiError } from '../../../../src/api/ApiError';
 import type { AdminUserRow } from '../../../../src/api/contracts/admin.contract';
+import { chooseOption } from '../../../helpers/chooseOption';
 
 const {
   changeUserRoleMock,
@@ -80,7 +81,7 @@ describe('EditUserDrawer — build-plan.md §15.1/§15.2', () => {
     const target = adminUserRow({ id: 'target-1', role: 'ADMIN' });
     renderDrawer(target, { id: 'admin-1', email: 'admin-1@test.local', displayName: 'Admin One', role: 'ADMIN', clearanceLevel: 4 });
 
-    fireEvent.change(screen.getByLabelText(/role/i), { target: { value: 'TRIAGE_MANAGER' } });
+    await chooseOption(screen.getByLabelText(/role/i), /triage manager/i);
     fireEvent.click(screen.getByRole('button', { name: /save role/i }));
 
     await waitFor(() => {
@@ -100,7 +101,7 @@ describe('EditUserDrawer — build-plan.md §15.1/§15.2', () => {
     const target = adminUserRow({ id: 'target-1', clearanceLevel: 4 });
     renderDrawer(target, { id: 'admin-1', email: 'admin-1@test.local', displayName: 'Admin One', role: 'ADMIN', clearanceLevel: 4 });
 
-    fireEvent.change(screen.getByLabelText(/clearance level/i), { target: { value: '2' } });
+    await chooseOption(screen.getByLabelText(/clearance level/i), /2/);
     fireEvent.click(screen.getByRole('button', { name: /save clearance/i }));
 
     // The PATCH must not fire yet — only the read-only preview.
