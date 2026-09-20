@@ -12,7 +12,10 @@ import { AuthShowcase } from './AuthShowcase';
  */
 export function AuthLayout(): ReactElement {
   return (
-    <div className="grid min-h-screen grid-cols-1 bg-background lg:grid-cols-2">
+    // Owns its own scrollport, the way AppShell does — the document itself never
+    // scrolls (src/styles/index.css), so a short viewport has to scroll here instead
+    // or the form below the fold would be unreachable.
+    <div className="grid h-dvh grid-cols-1 overflow-y-auto bg-background lg:grid-cols-2">
       <main className="flex items-center justify-center px-4 py-10 sm:px-6 lg:py-12">
         <Outlet />
       </main>

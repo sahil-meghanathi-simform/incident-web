@@ -8,6 +8,7 @@ import {
   CircleCheck,
   Clock,
   FileText,
+  ImageOff,
   Tag,
   UserRound,
   UserSearch,
@@ -32,6 +33,10 @@ const META = COPY.meta;
  * glance); from `lg` it sits in the right-hand column. */
 export function IncidentOverviewTab({ incident }: IncidentOverviewTabProps): ReactElement {
   const hasResolution = Boolean(incident.rootCause || incident.correctiveAction);
+  // security.md: never build a src/href from API input without checking the scheme —
+  // this is always our own backend's signed Supabase URL, but the contract only types
+  // it as `string`, so the check stays here rather than trusting the shape.
+  const imageUrl = incident.imageUrl?.startsWith('https://') ? incident.imageUrl : null;
   return (
     <div className="grid gap-5 animate-in fade-in duration-300 lg:grid-cols-3">
       <div className="space-y-5 lg:col-span-2">
@@ -44,6 +49,33 @@ export function IncidentOverviewTab({ incident }: IncidentOverviewTabProps): Rea
           </CardHeader>
           <CardContent>
             <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground">{incident.description}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {imageUrl ? (
+                <FileText className="size-4 text-muted-foreground" aria-hidden="true" />
+              ) : (
+                <ImageOff className="size-4 text-muted-foreground" aria-hidden="true" />
+              )}
+              {imageUrl ? COPY.photoHeading : COPY.noPhotoReasonHeading}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {imageUrl ? (
+              <a href={imageUrl} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={imageUrl}
+                  alt={COPY.photoAlt}
+                  className="max-h-96 w-full rounded-md border border-border object-contain"
+                />
+              </a>
+            ) : (
+              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground">
+                {incident.noImageReason}
+              </p>
+            )}
           </CardContent>
         </Card>
         {hasResolution && (

@@ -3,7 +3,7 @@
 import { useState, type ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Gauge, NotebookPen, Send, Tag } from 'lucide-react';
+import { AlertCircle, Camera, Gauge, NotebookPen, Send, Tag } from 'lucide-react';
 import { Field } from '../../../components/ui/Field';
 import { Input } from '../../../components/ui/Input';
 import { Textarea } from '../../../components/ui/Textarea';
@@ -13,8 +13,15 @@ import { CharacterCount } from '../../../components/ui/CharacterCount';
 import { Alert, AlertDescription } from '../../../components/ui/Alert';
 import { IncidentTypeSelect } from './IncidentTypeSelect';
 import { SeveritySelect } from './SeveritySelect';
+import { IncidentImageInput } from './IncidentImageInput';
 import { FormSection } from './FormSection';
-import { createIncidentSchema, type CreateIncidentRequest } from '../schemas/incident.schema';
+import {
+  createIncidentSchema,
+  incidentFormSchema,
+  NO_IMAGE_REASON_MAX,
+  NO_IMAGE_REASON_MIN,
+  type IncidentFormValues,
+} from '../schemas/incident.schema';
 import { incidentFormErrorMap } from '../schemas/incidentFormErrorMap';
 import { applyApiErrorToForm } from '../../../lib/formErrors';
 import { isApiError } from '../../../api/ApiError';
@@ -27,7 +34,7 @@ type IncidentFormProps = Readonly<{
   typeOptions: readonly IncidentTypeOption[];
   severityOptions: readonly SeverityOption[];
   userClearance: number;
-  onSubmit: (values: CreateIncidentRequest) => Promise<void>;
+  onSubmit: (values: IncidentFormValues) => Promise<void>;
 }>;
 
 // Read from the contract schema itself so the counter can never disagree with validation.
@@ -40,7 +47,7 @@ const COPY = LABELS.incidents.form;
 // The order the fields appear on screen. react-hook-form focuses the first invalid
 // field in *registration* order, and a Controller registers after every plain
 // register() call — so left alone, an empty submit skipped past Type to Title.
-const FOCUS_ORDER = ['type', 'title', 'description'] as const;
+const FOCUS_ORDER = ['type', 'title', 'description', 'image', 'noImageReason'] as const;
 
 export function IncidentForm({
   typeOptions,
@@ -59,15 +66,16 @@ export function IncidentForm({
     setValue,
     setFocus,
     formState: { errors, isSubmitting, submitCount },
-  } = useForm<CreateIncidentRequest>({
+  } = useForm<IncidentFormValues>({
     // path/async are ParseParams' own defaults, spelled out only because the resolver
     // types the whole object as required — errorMap is the one option that matters.
-    resolver: zodResolver(createIncidentSchema, { errorMap: incidentFormErrorMap, path: [], async: true }),
-    defaultValues: { severity: 'LOW' },
+    resolver: zodResolver(incidentFormSchema, { errorMap: incidentFormErrorMap, path: [], async: true }),
+    defaultValues: { severity: 'LOW', image: null },
     shouldFocusError: false,
   });
 
   const severity = watch('severity');
+  const image = watch('image');
   const descriptionLength = (watch('description') ?? '').length;
   // Only after a submit attempt — the count would otherwise nag while someone is
   // still halfway through a field.
@@ -79,7 +87,9 @@ export function IncidentForm({
       try {
         await onSubmit(values);
       } catch (err) {
-        if (isApiError(err) && err.status === 422) {
+        if (isApiError(err) && err.code === 'IMAGE_OR_REASON_REQUIRED') {
+          setError('noImageReason', { type: err.code, message: err.message });
+        } else if (isApiError(err) && err.status === 422) {
           applyApiErrorToForm(err, setError);
         } else {
           setFormError(getErrorMessage(err));
@@ -170,6 +180,57 @@ export function IncidentForm({
                   {...register('description')}
                 />
               </Field>
+            </div>
+          </FormSection>
+
+          <FormSection icon={Camera} title={COPY.sections.evidence.title} description={COPY.sections.evidence.body}>
+            <div className="space-y-5">
+              <Field label={COPY.imageLabel} htmlFor="image" error={errors.image?.message} hint={COPY.imageHint}>
+                {(describedBy) => (
+                  <Controller
+                    control={control}
+                    name="image"
+                    render={({ field }) => (
+                      <IncidentImageInput
+                        ref={field.ref}
+                        id="image"
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        hasError={Boolean(errors.image)}
+                        disabled={isSubmitting}
+                        aria-describedby={describedBy}
+                      />
+                    )}
+                  />
+                )}
+              </Field>
+
+              {!image && (
+                <Field
+                  label={COPY.noImageReasonLabel}
+                  htmlFor="noImageReason"
+                  error={errors.noImageReason?.message}
+                  required
+                  hint={COPY.noImageReasonHint}
+                  counter={
+                    <CharacterCount
+                      count={(watch('noImageReason') ?? '').length}
+                      max={NO_IMAGE_REASON_MAX}
+                      min={NO_IMAGE_REASON_MIN}
+                    />
+                  }
+                >
+                  <Textarea
+                    id="noImageReason"
+                    rows={3}
+                    placeholder={COPY.noImageReasonPlaceholder}
+                    hasError={Boolean(errors.noImageReason)}
+                    disabled={isSubmitting}
+                    {...register('noImageReason')}
+                  />
+                </Field>
+              )}
             </div>
           </FormSection>
         </div>

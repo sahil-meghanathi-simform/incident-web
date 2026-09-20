@@ -2,12 +2,12 @@ import { useMutation, useQueryClient, type UseMutationResult } from '@tanstack/r
 import { createIncident } from '../../../api/endpoints/incidents.api';
 import { queryKeys } from '../../../api/queryKeys';
 import type { ApiError } from '../../../api/ApiError';
-import type { CreateIncidentInput, IncidentReceipt } from '../types/incident.type';
+import type { CreateIncidentVariables, IncidentReceipt } from '../types/incident.type';
 
-export function useCreateIncident(): UseMutationResult<IncidentReceipt, ApiError, CreateIncidentInput> {
+export function useCreateIncident(): UseMutationResult<IncidentReceipt, ApiError, CreateIncidentVariables> {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateIncidentInput) => createIncident(input),
+    mutationFn: ({ body, image }: CreateIncidentVariables) => createIncident(body, image),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.incidents.all });
     },

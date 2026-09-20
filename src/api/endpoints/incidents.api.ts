@@ -14,8 +14,23 @@ import {
 } from '../contracts/incident.contract';
 import type { IncidentFilters } from '../../features/incidents/schemas/incidentFilters.schema';
 
-export function createIncident(body: CreateIncidentRequest): Promise<IncidentReceipt> {
-  return api.post<IncidentReceipt>('/api/v1/incidents', IncidentReceiptSchema, body);
+/**
+ * Always multipart, whether or not a photo is attached — one request shape for the
+ * backend's multer-then-validate pipeline (incident.router.ts) rather than branching
+ * between JSON and multipart at the call site.
+ */
+export function createIncident(body: CreateIncidentRequest, image: File | null): Promise<IncidentReceipt> {
+  const formData = new FormData();
+  formData.set('type', body.type);
+  formData.set('severity', body.severity);
+  formData.set('title', body.title);
+  formData.set('description', body.description);
+  if (image) {
+    formData.set('image', image);
+  } else if (body.noImageReason) {
+    formData.set('noImageReason', body.noImageReason);
+  }
+  return api.post<IncidentReceipt>('/api/v1/incidents', IncidentReceiptSchema, formData);
 }
 
 export function listIncidentTypes(): Promise<IncidentTypesResponse> {

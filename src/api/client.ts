@@ -70,7 +70,10 @@ async function parseErrorBody(res: Response): Promise<ApiError> {
 
 async function rawRequest<T>(path: string, schema: z.ZodType<T> | null, opts: RequestOptions): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' };
-  if (opts.body !== undefined) headers['Content-Type'] = 'application/json';
+  // FormData ships as-is — fetch sets its own Content-Type with the multipart
+  // boundary, which a hand-set header would clobber (§ image upload: incidents.api.ts).
+  const requestBody = opts.body;
+  if (requestBody !== undefined && !(requestBody instanceof FormData)) headers['Content-Type'] = 'application/json';
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
   if (opts.ifMatchVersion !== undefined) headers['If-Match'] = String(opts.ifMatchVersion);
 
@@ -78,7 +81,7 @@ async function rawRequest<T>(path: string, schema: z.ZodType<T> | null, opts: Re
     method: opts.method ?? 'GET',
     headers,
     credentials: 'include',
-    body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+    body: requestBody instanceof FormData ? requestBody : requestBody !== undefined ? JSON.stringify(requestBody) : undefined,
     signal: opts.signal,
   });
 

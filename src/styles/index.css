@@ -245,6 +245,19 @@
    make `<h1 className="text-lg">` render at its landing-page clamp() size).
    ========================================================================== */
 
+/* The shell owns every scrollport: AppShell is `h-dvh overflow-hidden`, `<main>`
+   scrolls the page body, and a page may scroll a panel inside that. The document
+   itself is therefore never meant to scroll — and because nothing said so, a
+   scrollable overflow region inflated beyond the viewport (a full-page capture
+   expanding the render, a transform mid-animation) left a real document scrollbar
+   with dead background below the shell, which paints only `h-dvh` worth. Pinning
+   both elements makes that whole class of phantom scroll impossible. */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);

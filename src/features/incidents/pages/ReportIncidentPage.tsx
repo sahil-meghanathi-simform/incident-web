@@ -15,7 +15,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { ROUTES } from '../../../app/routes';
 import { LABELS } from '../../../lib/labels';
-import type { CreateIncidentRequest } from '../schemas/incident.schema';
+import type { IncidentFormValues } from '../schemas/incident.schema';
 
 export function ReportIncidentPage(): ReactElement {
   useDocumentTitle(LABELS.incidents.reportPageTitle);
@@ -25,8 +25,8 @@ export function ReportIncidentPage(): ReactElement {
   const typesQuery = useIncidentTypes();
   const createIncidentMutation = useCreateIncident();
 
-  async function handleSubmit(values: CreateIncidentRequest): Promise<void> {
-    const receipt = await createIncidentMutation.mutateAsync(values);
+  async function handleSubmit({ image, ...body }: IncidentFormValues): Promise<void> {
+    const receipt = await createIncidentMutation.mutateAsync({ body, image });
     toast.show(LABELS.incidents.reportSubmittedToast(receipt.reference), 'success');
     navigate(`${ROUTES.incidentNewSubmitted}?ref=${encodeURIComponent(receipt.reference)}`, {
       state: { receipt },
