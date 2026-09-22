@@ -20,6 +20,8 @@ function incident(overrides: Partial<IncidentDetail> = {}): IncidentDetail {
     stage: 'INVESTIGATION',
     title: 'A slip hazard',
     description: 'Long enough description for validation purposes.',
+    imageUrl: null,
+    noImageReason: 'No camera was available at the time.',
     reporter: { id: 'reporter-1', displayName: 'A Reporter' },
     assignedInvestigator: { id: 'investigator-1', displayName: 'An Investigator' },
     rootCause: null,
