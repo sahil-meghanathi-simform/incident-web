@@ -60,7 +60,10 @@ export function PasswordStrength({ value }: PasswordStrengthProps): ReactElement
           {level}
         </p>
       </div>
-      <ul className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
+      {/* One column at every width: this list only ever sits inside AuthCard's
+          `max-w-md`, so a second column would be ~184px wide and wrap all four
+          items rather than save any height. */}
+      <ul className="grid grid-cols-1 gap-y-1">
         {PASSWORD_CHECK_KEYS.map((key) => {
           const isMet = checks[key];
           const Icon = isMet ? Check : Circle;

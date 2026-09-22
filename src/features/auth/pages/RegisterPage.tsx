@@ -37,7 +37,8 @@ export function RegisterPage(): ReactElement {
       footer={
         <>
           {LABELS.auth.hasAccountPrompt}{' '}
-          <TextLink to={ROUTES.login} className="group inline-flex items-center gap-1">
+          {/* py-1 lifts the inline link past the 24px minimum touch target on a phone. */}
+          <TextLink to={ROUTES.login} className="group inline-flex items-center gap-1 py-1">
             {LABELS.auth.logIn}
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </TextLink>
@@ -92,7 +93,8 @@ export function RegisterPage(): ReactElement {
         </div>
         {formError && <FormErrorAlert message={formError} />}
         <div className={cn(ENTRANCE, 'delay-300')}>
-          <Button type="submit" className="w-full py-2.5" isLoading={isSubmitting}>
+          {/* Matches IconInput's h-11 / sm:h-10 step — a 44px primary action on a phone. */}
+          <Button type="submit" className="h-11 w-full sm:h-10" isLoading={isSubmitting}>
             {isSubmitting ? LABELS.auth.creatingAccount : LABELS.auth.createAccount}
           </Button>
         </div>

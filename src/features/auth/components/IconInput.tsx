@@ -31,7 +31,15 @@ export const IconInput = forwardRef<HTMLInputElement, IconInputProps>(function I
       />
       <Input
         ref={ref}
-        className={cn('py-2.5 pl-9 transition-shadow read-only:cursor-progress', trailing ? 'pr-11' : undefined, className)}
+        className={cn(
+          // `text-base` below `sm`, not the app's usual `text-sm`: iOS Safari zooms the
+          // whole page in when a focused control's font is under 16px, and it does not
+          // zoom back out on blur. `h-11` gives the same fields a 44px touch target on a
+          // phone; both step back down to the app's dense desktop sizing at `sm`.
+          'h-11 pl-9 text-base transition-shadow read-only:cursor-progress sm:h-10 sm:text-sm',
+          trailing ? 'pr-11' : undefined,
+          className,
+        )}
         {...rest}
       />
       {trailing}

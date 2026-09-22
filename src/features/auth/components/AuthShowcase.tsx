@@ -1,10 +1,11 @@
 // rules-ok: naming — component files in this repo are PascalCase by convention;
 // a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { BellRing, FilePlus, Inbox, Search, ShieldAlert, type LucideIcon } from 'lucide-react';
+import { BellRing, FilePlus, Inbox, Search, type LucideIcon } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import { LABELS } from '../../../lib/labels';
 import { useShowcaseCarousel } from '../hooks/useShowcaseCarousel';
+import { AuthBrandMark } from './AuthBrandMark';
 import { ShowcaseControls } from './ShowcaseControls';
 
 type SlideId = (typeof LABELS.auth.showcase.slides)[number]['id'];
@@ -20,9 +21,10 @@ const SLIDE_ICONS: Readonly<Record<SlideId, LucideIcon>> = {
 const SHOWCASE_INTERVAL_MS = 6000;
 
 /**
- * The brand panel beside the login/register form: an auto-advancing carousel of product
- * highlights. Slides are stacked in one grid cell and cross-fade with a small horizontal
- * offset, so the panel's height is always the tallest slide's and nothing jumps.
+ * The brand panel beside the login/register form at `lg` and up — AuthLayout hides it
+ * below that. An auto-advancing carousel of product highlights: slides are stacked in one
+ * grid cell and cross-fade with a small horizontal offset, so the panel's height is always
+ * the tallest slide's and nothing jumps.
  */
 export function AuthShowcase(): ReactElement {
   const copy = LABELS.auth.showcase;
@@ -33,7 +35,9 @@ export function AuthShowcase(): ReactElement {
     <section
       aria-roledescription="carousel"
       aria-label={copy.regionLabel}
-      className="relative isolate flex w-full flex-col justify-between gap-10 overflow-hidden bg-brand-deep bg-linear-to-br from-foreground via-brand-deep to-primary px-6 py-10 text-primary-foreground sm:px-10 lg:px-14 lg:py-14"
+      // AuthLayout hides this panel below `lg`, so the base padding here is already the
+      // desktop one — a `sm:` step would be dead weight.
+      className="relative isolate flex w-full flex-col justify-between gap-10 overflow-hidden bg-brand-deep bg-linear-to-br from-foreground via-brand-deep to-primary px-10 py-12 text-primary-foreground xl:px-14 xl:py-14"
       {...carousel.regionHandlers}
     >
       <div
@@ -45,12 +49,7 @@ export function AuthShowcase(): ReactElement {
         aria-hidden="true"
       />
 
-      <p className="flex items-center gap-2.5 font-display text-base font-semibold tracking-snug">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-foreground/15 ring-1 ring-primary-foreground/20">
-          <ShieldAlert className="h-5 w-5" aria-hidden="true" />
-        </span>
-        {LABELS.nav.appTitle}
-      </p>
+      <AuthBrandMark tone="onDark" />
 
       <div className="grid" aria-live={carousel.isAutoplaying ? 'off' : 'polite'}>
         {slides.map((slide, position) => {
