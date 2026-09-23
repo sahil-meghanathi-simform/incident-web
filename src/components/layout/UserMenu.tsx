@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/DropdownMenu';
-import { useLogout } from '../../features/auth/hooks/useLogout';
+import { useLogoutConfirm } from '../../features/auth/hooks/useLogoutConfirm';
 import { ROUTES } from '../../app/routes';
 import { LABELS } from '../../lib/labels';
 import type { SessionUser } from '../../types/auth.type';
@@ -20,13 +20,8 @@ import type { SessionUser } from '../../types/auth.type';
 type UserMenuProps = Readonly<{ user: SessionUser }>;
 
 export function UserMenu({ user }: UserMenuProps): ReactElement {
-  const logout = useLogout();
+  const { requestLogout } = useLogoutConfirm();
   const navigate = useNavigate();
-
-  async function handleLogout(): Promise<void> {
-    await logout.mutateAsync();
-    navigate(ROUTES.login, { replace: true });
-  }
 
   return (
     <DropdownMenu>
@@ -65,7 +60,7 @@ export function UserMenu({ user }: UserMenuProps): ReactElement {
           {LABELS.nav.items.notifications}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => void handleLogout()} destructive>
+        <DropdownMenuItem onSelect={requestLogout} destructive>
           <LogOut className="size-4" aria-hidden="true" />
           {LABELS.auth.logOut}
         </DropdownMenuItem>

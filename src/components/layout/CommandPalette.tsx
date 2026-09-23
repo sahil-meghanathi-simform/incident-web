@@ -15,7 +15,7 @@ import {
   CommandShortcut,
 } from '../ui/Command';
 import { useNavGroups } from '../../hooks/useNavGroups';
-import { useLogout } from '../../features/auth/hooks/useLogout';
+import { useLogoutConfirm } from '../../features/auth/hooks/useLogoutConfirm';
 import { ROUTES } from '../../app/routes';
 import { LABELS } from '../../lib/labels';
 
@@ -35,7 +35,7 @@ export const MAIN_CONTENT_ID = 'main-content';
 export function CommandPalette({ isOpen, onOpenChange }: CommandPaletteProps): ReactElement {
   const groups = useNavGroups();
   const navigate = useNavigate();
-  const logout = useLogout();
+  const { requestLogout } = useLogoutConfirm();
   const [query, setQuery] = useState('');
   const trimmed = query.trim();
 
@@ -45,10 +45,10 @@ export function CommandPalette({ isOpen, onOpenChange }: CommandPaletteProps): R
     navigate(to);
   }
 
-  async function handleLogout(): Promise<void> {
+  function handleLogout(): void {
     onOpenChange(false);
-    await logout.mutateAsync();
-    navigate(ROUTES.login, { replace: true });
+    setQuery('');
+    requestLogout();
   }
 
   return (
@@ -105,7 +105,7 @@ export function CommandPalette({ isOpen, onOpenChange }: CommandPaletteProps): R
             ))}
             <CommandSeparator />
             <CommandGroup heading={LABELS.palette.accountGroup}>
-              <CommandItem value={LABELS.palette.logOut} onSelect={() => void handleLogout()}>
+              <CommandItem value={LABELS.palette.logOut} onSelect={handleLogout}>
                 <LogOut aria-hidden="true" />
                 {LABELS.palette.logOut}
               </CommandItem>

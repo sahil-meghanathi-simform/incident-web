@@ -31,6 +31,12 @@ export const AUTH = {
   accountCreated: 'Account created — you are signed in.',
   checkHighlightedFields: 'Check the highlighted fields and try again.',
 
+  logoutConfirm: {
+    title: 'Log out?',
+    body: "You'll need to log in again to pick up where you left off.",
+    confirm: 'Log out',
+  },
+
   strength: {
     meterLabel: 'Password strength',
     levels: {
