@@ -4,14 +4,13 @@ export const NAV = {
   backToHome: 'Back to home',
   groups: {
     overview: 'Overview',
-    report: 'Report',
+    report: 'Incidents',
     work: 'Work',
     monitor: 'Monitor',
     admin: 'Admin',
   },
   items: {
     dashboard: 'Dashboard',
-    reportIncident: 'Report incident',
     incidents: 'Incidents',
     myReports: 'My reports',
     triageQueue: 'Triage queue',
@@ -96,6 +95,7 @@ export const CHROME = {
   dismiss: 'Dismiss',
   confirm: 'Confirm',
   cancel: 'Cancel',
+  done: 'Done',
   dateFrom: 'From',
   dateTo: 'To',
   escalatedLevel: (level: number) => `Escalated · L${level}`,

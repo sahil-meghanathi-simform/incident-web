@@ -1,23 +1,20 @@
 // rules-ok: naming — component files in this repo are PascalCase by convention;
 // a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { Link } from 'react-router-dom';
-import { FilePlus, List, Plus } from 'lucide-react';
+import { FilePlus, List } from 'lucide-react';
 import { PageContainer } from '../../../components/layout/PageContainer';
 import { PageHeader } from '../../../components/ui/PageHeader';
 import { PagedQuerySection } from '../../../components/ui/PagedQuerySection';
 import { RefreshIndicator } from '../../../components/ui/RefreshIndicator';
-import { Button } from '../../../components/ui/Button';
-import { TextLink } from '../../../components/ui/TextLink';
 import { IncidentFilters } from '../components/IncidentFilters';
 import { IncidentTable } from '../components/IncidentTable';
 import { IncidentListEmpty } from '../components/IncidentListEmpty';
+import { ReportIncidentButton } from '../components/ReportIncidentButton';
 import { useIncidentFilters } from '../hooks/useIncidentFilters';
 import { useIncidentList } from '../hooks/useIncidentList';
 import { useAuth } from '../../../hooks/useAuth';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { SEVERITY_RANK } from '../../../lib/severity';
-import { ROUTES } from '../../../app/routes';
 import { LABELS } from '../../../lib/labels';
 import { CLEAR_FILTERS_PATCH, hasAnyFilter } from '../schemas/incidentFilterPatches';
 
@@ -44,14 +41,7 @@ export function IncidentListPage(): ReactElement {
             <RefreshIndicator isFetching={query.isFetching} updatedAt={query.dataUpdatedAt} onRefresh={() => void query.refetch()} />
           ) : undefined
         }
-        actions={
-          <Button asChild>
-            <Link to={ROUTES.incidentNew}>
-              <Plus aria-hidden="true" />
-              {LABELS.incidents.reportAction}
-            </Link>
-          </Button>
-        }
+        actions={<ReportIncidentButton />}
       />
       <div className="mb-4">
         <IncidentFilters filters={filters} onChange={setFilters} isFetching={query.isFetching} />
@@ -68,10 +58,7 @@ export function IncidentListPage(): ReactElement {
             clearanceLimited={clearanceLimited}
             onClearFilters={() => setFilters(CLEAR_FILTERS_PATCH)}
             noDataAction={
-              <TextLink to={ROUTES.incidentNew} className="inline-flex items-center gap-1.5">
-                <FilePlus className="size-4" aria-hidden="true" />
-                {LABELS.incidents.reportTitle}
-              </TextLink>
+              <ReportIncidentButton variant="link" icon={FilePlus} label={LABELS.incidents.reportTitle} />
             }
           />
         }

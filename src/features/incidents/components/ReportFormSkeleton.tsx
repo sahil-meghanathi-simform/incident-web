@@ -1,7 +1,6 @@
 // rules-ok: naming — component files in this repo are PascalCase by convention;
 // a repo-wide rename is out of scope for this redesign.
 import type { ReactElement } from 'react';
-import { Card } from '../../../components/ui/Card';
 import { Skeleton } from '../../../components/ui/Skeleton';
 import { LABELS } from '../../../lib/labels';
 
@@ -19,12 +18,12 @@ function SectionHeadingSkeleton(): ReactElement {
   );
 }
 
-/** The report form's own shape — three sections, the 2×2 severity grid, the submit
- * bar — so the real form lands without anything jumping. */
+/** The report form's own shape — its sections, the 2×2 severity grid, the submit
+ * bar — so the real form lands in the dialog without anything jumping. */
 export function ReportFormSkeleton(): ReactElement {
   return (
     <div role="status">
-      <Card variant="elevated" className="divide-y divide-border overflow-hidden" aria-hidden="true">
+      <div className="divide-y divide-border" aria-hidden="true">
         <div className="space-y-4 p-5 sm:p-6">
           <SectionHeadingSkeleton />
           <Skeleton className="h-3 w-12" />
@@ -54,7 +53,7 @@ export function ReportFormSkeleton(): ReactElement {
         <div className="flex justify-end bg-muted/40 p-5 sm:px-6">
           <Skeleton className="h-10 w-full sm:w-36" />
         </div>
-      </Card>
+      </div>
       <span className="sr-only">{LABELS.chrome.loading}</span>
     </div>
   );

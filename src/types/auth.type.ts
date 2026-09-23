@@ -6,7 +6,7 @@ export type AuthStatus = 'loading' | 'authenticated' | 'anonymous';
 
 /** Where a freshly-logged-in user lands absent a `?next=` target. */
 const ROLE_HOME: Record<SessionUser['role'], string> = {
-  REPORTER: ROUTES.incidentNew,
+  REPORTER: ROUTES.incidentMine,
   TRIAGE_MANAGER: ROUTES.triageQueue,
   INVESTIGATOR: ROUTES.investigations,
   ADMIN: ROUTES.analytics,

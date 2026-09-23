@@ -35,6 +35,11 @@ export const buttonVariants = cva(
   },
 );
 
+/** The variant/size names, for a wrapper that forwards a caller's choice through
+ * to Button without restating the list. */
+export type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>;
+export type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>['size']>;
+
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> &
   Readonly<{

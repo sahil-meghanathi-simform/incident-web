@@ -8,11 +8,14 @@ export const INCIDENTS = {
   backToList: 'Back to incident list',
   loadDetailError: 'Could not load this incident.',
   loadFormError: 'Could not load the report form.',
-  reportPageTitle: 'Report Incident',
   reportTitle: 'Report an incident',
   reportDescription: 'Fill in what you know — invalid input is rejected before it reaches anyone.',
   reportAction: 'Report incident',
-  reportSubmittedToast: (reference: string) => `Report ${reference} submitted.`,
+  discardReport: {
+    title: 'Discard this report?',
+    body: "You've started filling this in. Closing now discards what you've entered — nothing is submitted.",
+    confirm: 'Discard report',
+  },
   listTitle: 'Incidents',
   listDescription: 'Showing incidents at or below your clearance level.',
   loadListError: 'Could not load incidents.',
@@ -100,7 +103,6 @@ export const INCIDENTS = {
     },
   },
   receipt: {
-    pageTitle: 'Report Submitted',
     title: 'Thanks — your report is in',
     body: 'Keep the reference below for any follow-up. A triage manager will pick it up from here.',
     referenceLabel: 'Reference',
@@ -112,7 +114,6 @@ export const INCIDENTS = {
       { id: 'close', text: 'Findings and corrective actions are recorded before closure.' },
     ],
     viewMyReports: 'View my reports',
-    noDetails: 'No submission details are available.',
   },
   copy: {
     copyReference: 'Copy reference',

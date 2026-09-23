@@ -40,7 +40,7 @@ describe('IncidentForm', () => {
 
     await chooseType('Safety');
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'hi' } });
-    fireEvent.change(screen.getByLabelText(/description/i), { target: { value: 'too short' } });
+    fireEvent.change(screen.getByLabelText(/^description/i), { target: { value: 'too short' } });
     fireEvent.click(screen.getByRole('button', { name: /submit report/i }));
 
     await waitFor(() => expect(screen.getByText(/at least 20 character/i)).toBeInTheDocument());
@@ -56,8 +56,12 @@ describe('IncidentForm', () => {
     await chooseType('Safety');
     fireEvent.click(screen.getByRole('radio', { name: /critical/i }));
     fireEvent.change(screen.getByLabelText(/title/i), { target: { value: 'A slip hazard near the dock' } });
-    fireEvent.change(screen.getByLabelText(/description/i), {
+    fireEvent.change(screen.getByLabelText(/^description/i), {
       target: { value: 'Water pooled near the loading dock after overnight cleaning.' },
+    });
+    // No photo attached, so the schema requires a reason instead.
+    fireEvent.change(screen.getByLabelText(/why is there no photo/i), {
+      target: { value: 'The spill was mopped up before I could photograph it.' },
     });
     fireEvent.click(screen.getByRole('button', { name: /submit report/i }));
 

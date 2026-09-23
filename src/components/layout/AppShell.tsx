@@ -7,6 +7,7 @@ import { SideNav } from './SideNav';
 import { SkipLink } from './SkipLink';
 import { CommandPalette, MAIN_CONTENT_ID } from './CommandPalette';
 import { TopLoadingBar } from '../feedback/TopLoadingBar';
+import { ReportIncidentProvider } from '../../features/incidents/components/ReportIncidentProvider';
 import { useHotkey } from '../../hooks/useHotkey';
 
 export function AppShell(): ReactElement {
@@ -14,17 +15,21 @@ export function AppShell(): ReactElement {
   useHotkey({ key: 'k' }, () => setIsPaletteOpen((open) => !open));
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-background">
-      <SkipLink targetId={MAIN_CONTENT_ID} />
-      <TopLoadingBar />
-      <SideNav />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar onOpenPalette={() => setIsPaletteOpen(true)} />
-        <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1 overflow-y-auto outline-none">
-          <Outlet />
-        </main>
+    // Reporting an incident is a dialog available from every screen in the shell —
+    // the sidebar, the palette, the dashboard and both lists all open this one.
+    <ReportIncidentProvider>
+      <div className="flex h-dvh overflow-hidden bg-background">
+        <SkipLink targetId={MAIN_CONTENT_ID} />
+        <TopLoadingBar />
+        <SideNav />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <TopBar onOpenPalette={() => setIsPaletteOpen(true)} />
+          <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1 overflow-y-auto outline-none">
+            <Outlet />
+          </main>
+        </div>
+        <CommandPalette isOpen={isPaletteOpen} onOpenChange={setIsPaletteOpen} />
       </div>
-      <CommandPalette isOpen={isPaletteOpen} onOpenChange={setIsPaletteOpen} />
-    </div>
+    </ReportIncidentProvider>
   );
 }

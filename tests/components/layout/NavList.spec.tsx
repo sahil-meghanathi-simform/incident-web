@@ -23,6 +23,20 @@ function renderNav(user: SessionUser, path: string, isCollapsed = false) {
 
 const REPORTER: SessionUser = { id: 'u1', email: 'r@x.com', displayName: 'Rae', role: 'REPORTER', clearanceLevel: 1 };
 const ADMIN: SessionUser = { id: 'u2', email: 'a@x.com', displayName: 'Ada', role: 'ADMIN', clearanceLevel: 4 };
+const TRIAGE_MANAGER: SessionUser = {
+  id: 'u3',
+  email: 't@x.com',
+  displayName: 'Tia',
+  role: 'TRIAGE_MANAGER',
+  clearanceLevel: 4,
+};
+const INVESTIGATOR: SessionUser = {
+  id: 'u4',
+  email: 'i@x.com',
+  displayName: 'Ivo',
+  role: 'INVESTIGATOR',
+  clearanceLevel: 4,
+};
 
 describe('NavList', () => {
   it('marks only the matching item as the current page', () => {
@@ -65,6 +79,18 @@ describe('NavList', () => {
   it('keeps every link named when collapsed to icons', () => {
     renderNav(ADMIN, '/', true);
     expect(screen.getByRole('link', { name: 'Analytics' })).toHaveAttribute('href', '/analytics');
-    expect(screen.getByRole('link', { name: 'Report incident' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Incidents' })).toBeInTheDocument();
+  });
+
+  // Reporting an incident is a dialog opened from the dashboard, the incident
+  // lists and their empty states — not a sidebar destination — for every role.
+  it.each([
+    ['a reporter', REPORTER],
+    ['a triage manager', TRIAGE_MANAGER],
+    ['an investigator', INVESTIGATOR],
+    ['an administrator', ADMIN],
+  ])('never shows Report incident in the sidebar for %s', (_label, user) => {
+    renderNav(user, '/');
+    expect(screen.queryByText('Report incident')).not.toBeInTheDocument();
   });
 });

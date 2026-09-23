@@ -9,8 +9,7 @@ import { DashboardPage } from '../features/dashboard/pages/DashboardPage';
 import { AuthLayout } from '../features/auth/components/AuthLayout';
 import { LoginPage } from '../features/auth/pages/LoginPage';
 import { RegisterPage } from '../features/auth/pages/RegisterPage';
-import { ReportIncidentPage } from '../features/incidents/pages/ReportIncidentPage';
-import { SubmissionReceiptPage } from '../features/incidents/pages/SubmissionReceiptPage';
+import { ReportIncidentRedirect } from '../features/incidents/pages/ReportIncidentRedirect';
 import { IncidentListPage } from '../features/incidents/pages/IncidentListPage';
 import { IncidentDetailPage } from '../features/incidents/pages/IncidentDetailPage';
 import { MyReportsPage } from '../features/incidents/pages/MyReportsPage';
@@ -54,8 +53,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'incidents', element: <IncidentListPage /> },
-      { path: 'incidents/new', element: <ReportIncidentPage /> },
-      { path: 'incidents/new/submitted', element: <SubmissionReceiptPage /> },
+      { path: 'incidents/new', element: <ReportIncidentRedirect /> },
       { path: 'incidents/mine', element: <MyReportsPage /> },
       { path: 'incidents/:id', element: <IncidentDetailPage /> },
       {

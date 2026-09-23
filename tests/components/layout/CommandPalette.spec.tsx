@@ -55,6 +55,9 @@ describe('CommandPalette', () => {
     expect(screen.getByRole('option', { name: /My reports/ })).toBeInTheDocument();
     expect(screen.queryByRole('option', { name: /Users/ })).not.toBeInTheDocument();
     expect(screen.queryByRole('option', { name: /Triage queue/ })).not.toBeInTheDocument();
+    // Reporting an incident is a dialog opened from the dashboard and the incident
+    // lists, not a page to jump to — it never appears as a quick-jump destination.
+    expect(screen.queryByRole('option', { name: /^Report incident$/ })).not.toBeInTheDocument();
   });
 
   it('navigates to a page when an option is chosen', () => {

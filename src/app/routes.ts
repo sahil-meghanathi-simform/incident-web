@@ -7,8 +7,8 @@ export const ROUTES = {
   notFound: '/404',
 
   incidents: '/incidents',
+  /** Legacy entry point — reporting is a dialog now; this path opens it. */
   incidentNew: '/incidents/new',
-  incidentNewSubmitted: '/incidents/new/submitted',
   incidentMine: '/incidents/mine',
   incidentDetail: (id: string) => `/incidents/${id}`,
 
