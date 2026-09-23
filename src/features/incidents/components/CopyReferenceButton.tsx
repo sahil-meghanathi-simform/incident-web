@@ -22,7 +22,7 @@ const COPY = LABELS.incidents.copy;
  * Copies an incident reference. Success flips the label to "Copied!" for two seconds;
  * a refused clipboard (insecure context, denied permission) shows an inline hint
  * instead — the reference is on screen either way, so copying is a convenience.
- * Deliberately no toast: this renders in context-free places (ReceiptCard's spec).
+ * Deliberately no toast: this renders in context-free places (ClearanceNotice's spec).
  */
 export function CopyReferenceButton({ reference, appearance = 'labelled', className }: CopyReferenceButtonProps): ReactElement {
   const [state, setState] = useState<CopyState>('idle');

@@ -1,6 +1,5 @@
 import {
   LayoutDashboard,
-  FilePlus,
   List,
   User,
   Inbox,
@@ -19,7 +18,10 @@ import { usePermissions } from './usePermissions';
 import { ROUTES } from '../app/routes';
 import { LABELS } from '../lib/labels';
 
+/** Identity for keys and command-palette values — the label is display copy and
+ * the destination is optional, so neither can serve (labels.md). */
 export type NavItem = Readonly<{
+  id: string;
   to: string;
   label: string;
   icon: LucideIcon;
@@ -45,45 +47,43 @@ export function useNavGroups(): readonly NavGroup[] {
   const groups: NavGroup[] = [
     {
       label: LABELS.nav.groups.overview,
-      items: [{ to: ROUTES.home, label: NAV.dashboard, icon: LayoutDashboard, end: true }],
+      items: [{ id: 'dashboard', to: ROUTES.home, label: NAV.dashboard, icon: LayoutDashboard, end: true }],
     },
     {
       label: LABELS.nav.groups.report,
       items: [
-        { to: ROUTES.incidentNew, label: NAV.reportIncident, icon: FilePlus },
-        {
-          to: ROUTES.incidents,
-          label: NAV.incidents,
-          icon: List,
-          excludes: [ROUTES.incidentNew, ROUTES.incidentMine],
-        },
-        { to: ROUTES.incidentMine, label: NAV.myReports, icon: User },
+        { id: 'incidents', to: ROUTES.incidents, label: NAV.incidents, icon: List, excludes: [ROUTES.incidentMine] },
+        { id: 'my-reports', to: ROUTES.incidentMine, label: NAV.myReports, icon: User },
       ],
     },
     {
       label: LABELS.nav.groups.work,
       items: [
-        ...(canTriage ? [{ to: ROUTES.triageQueue, label: NAV.triageQueue, icon: Inbox }] : []),
-        ...(canInvestigate ? [{ to: ROUTES.investigations, label: NAV.investigations, icon: Search }] : []),
-        ...(canTriage ? [{ to: ROUTES.closuresPending, label: NAV.pendingClosures, icon: CheckSquare }] : []),
+        ...(canTriage ? [{ id: 'triage-queue', to: ROUTES.triageQueue, label: NAV.triageQueue, icon: Inbox }] : []),
+        ...(canInvestigate
+          ? [{ id: 'investigations', to: ROUTES.investigations, label: NAV.investigations, icon: Search }]
+          : []),
+        ...(canTriage
+          ? [{ id: 'pending-closures', to: ROUTES.closuresPending, label: NAV.pendingClosures, icon: CheckSquare }]
+          : []),
       ],
     },
     {
       label: LABELS.nav.groups.monitor,
       items: [
-        { to: ROUTES.escalations, label: NAV.escalations, icon: TrendingUp },
-        { to: ROUTES.analytics, label: NAV.analytics, icon: BarChart3 },
-        { to: ROUTES.notifications, label: NAV.notifications, icon: Bell },
+        { id: 'escalations', to: ROUTES.escalations, label: NAV.escalations, icon: TrendingUp },
+        { id: 'analytics', to: ROUTES.analytics, label: NAV.analytics, icon: BarChart3 },
+        { id: 'notifications', to: ROUTES.notifications, label: NAV.notifications, icon: Bell },
       ],
     },
     {
       label: LABELS.nav.groups.admin,
       items: canAdminister
         ? [
-            { to: ROUTES.adminUsers, label: NAV.users, icon: Users },
-            { to: ROUTES.adminEscalationPolicy, label: NAV.escalationPolicy, icon: Shield },
-            { to: ROUTES.adminJobs, label: NAV.jobDiagnostics, icon: Activity },
-            { to: ROUTES.adminAudit, label: NAV.auditLog, icon: ScrollText },
+            { id: 'admin-users', to: ROUTES.adminUsers, label: NAV.users, icon: Users },
+            { id: 'admin-escalation-policy', to: ROUTES.adminEscalationPolicy, label: NAV.escalationPolicy, icon: Shield },
+            { id: 'admin-jobs', to: ROUTES.adminJobs, label: NAV.jobDiagnostics, icon: Activity },
+            { id: 'admin-audit', to: ROUTES.adminAudit, label: NAV.auditLog, icon: ScrollText },
           ]
         : [],
     },

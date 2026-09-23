@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { FilePlus, List, ShieldCheck, UserRound } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
+import { ReportIncidentButton } from '../../incidents/components/ReportIncidentButton';
 import { cn } from '../../../lib/cn';
 import { useAuth } from '../../../hooks/useAuth';
 import { ROUTES } from '../../../app/routes';
@@ -60,16 +61,12 @@ export function DashboardHero(): ReactElement {
         </div>
 
         <div aria-label={LABELS.dashboard.heroActionsLabel} role="group" className="flex flex-col gap-2 sm:flex-row lg:shrink-0">
-          <Button
-            asChild
+          <ReportIncidentButton
             size="lg"
+            icon={FilePlus}
+            label={LABELS.dashboard.reportIncident}
             className={cn('bg-primary-foreground text-brand-deep shadow-sm hover:bg-primary-foreground/90 hover:shadow-md', ON_DARK_FOCUS)}
-          >
-            <Link to={ROUTES.incidentNew}>
-              <FilePlus aria-hidden="true" />
-              {LABELS.dashboard.reportIncident}
-            </Link>
-          </Button>
+          />
           <Button
             asChild
             size="lg"
